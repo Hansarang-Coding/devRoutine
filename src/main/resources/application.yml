@@ -1,19 +1,18 @@
 server.port: 8080
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ec2-54-180-80-4.ap-northeast-2.compute.amazonaws.com/devroutine?serverTimezone=Asia/Seoul
     username: root
     password: 123456
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
   jpa:
     database: mysql
     show-sql: true
     hibernate:
-      dda-auto: update
-  jwt:
-    token:
-      secret: hello
+      ddl-auto: update
 
