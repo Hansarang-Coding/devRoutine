@@ -20,8 +20,9 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column
     private String picture;
+
+    private String oauthId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
