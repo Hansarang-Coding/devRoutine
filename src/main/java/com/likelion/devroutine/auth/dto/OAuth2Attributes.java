@@ -30,6 +30,8 @@ public class OAuth2Attributes {
         this.picture = pictrue;
     }
 
+
+
     public static OAuth2Attributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) throws JsonProcessingException {
         log.info("userNameAttributeName = {}", new ObjectMapper().writerWithDefaultPrettyPrinter()
                 .writeValueAsString(userNameAttributeName));
@@ -47,9 +49,19 @@ public class OAuth2Attributes {
         }
     }
 
-    private static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return null;
+    //구글 로그인 정보를 가지고 DTO 만들기
+
+    public static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
+        return OAuth2Attributes.builder()
+                .name((String) attributes.get("name"))
+                .email((String) attributes.get("email"))
+                .pictrue((String) attributes.get("picture"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .build();
     }
+
+
 
     private static OAuth2Attributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
         String name = ObjectUtils.isEmpty(attributes.get("name")) ? "login" : "name";
