@@ -20,26 +20,29 @@ public class OAuth2Attributes {
     private final String name;
     private final String email;
     private final String picture;
+    private final String oauthId;
 
     @Builder
-    public OAuth2Attributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String pictrue) {
+    public OAuth2Attributes(
+            Map<String, Object> attributes, String nameAttributeKey,
+            String name, String email,
+            String pictrue, String oauthId) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
         this.email = email;
         this.picture = pictrue;
+        this.oauthId = oauthId;
     }
 
-
-
     public static OAuth2Attributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) throws JsonProcessingException {
+        log.info("registrationId = {}", registrationId);
         log.info("userNameAttributeName = {}", new ObjectMapper().writerWithDefaultPrettyPrinter()
                 .writeValueAsString(userNameAttributeName));
         log.info("attributes = {}", new ObjectMapper().writerWithDefaultPrettyPrinter()
                 .writeValueAsString(attributes));
 
-        String registration = registrationId.toLowerCase();
-        switch (registration) {
+        switch (registrationId) {
             case "google":
                 return ofGoogle(userNameAttributeName, attributes);
             case "github":
@@ -50,9 +53,9 @@ public class OAuth2Attributes {
     }
 
     //구글 로그인 정보를 가지고 DTO 만들기
-
     public static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
         return OAuth2Attributes.builder()
+                .oauthId((String) attributes.get(userNameAttributeName))
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .pictrue((String) attributes.get("picture"))
@@ -61,27 +64,28 @@ public class OAuth2Attributes {
                 .build();
     }
 
-
-
     private static OAuth2Attributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
-        String name = ObjectUtils.isEmpty(attributes.get("name")) ? "login" : "name";
-        String nickName = String.valueOf(attributes.get(name));
+        String nickName = ObjectUtils.isEmpty(attributes.get("name")) ? "login" : "name";
+        String userName = String.valueOf(attributes.get(nickName));
         String email = String.valueOf(attributes.get("email"));
-        String avatarUrl = String.valueOf(attributes.get("avatar_url"));
+        String picture = String.valueOf(attributes.get("avatar_url"));
+        String oauthId = String.valueOf(attributes.get("id"));
         return OAuth2Attributes.builder()
-                .name(nickName)
+                .name(userName)
                 .email(email)
-                .pictrue(avatarUrl)
+                .pictrue(picture)
+                .oauthId(oauthId)
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
     }
 
-    public User toEntity(){
+    public User toEntity() {
         return User.builder()
                 .name(name)
                 .email(email)
                 .picture(picture)
+                .oauthId(oauthId)
                 .role(UserRole.USER)
                 .build();
     }
