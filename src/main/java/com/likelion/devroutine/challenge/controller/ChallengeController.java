@@ -16,7 +16,7 @@ public class ChallengeController {
         this.challengeService = challengeService;
     }
     @GetMapping
-    public ResponseEntity<List<ChallengeResponse>> findAllChallengeList(@RequestParam(defaultValue = "0") Long challengeId,
+    public ResponseEntity<List<ChallengeResponse>> findAllChallengeList(Long challengeId,
                                                                         @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String keyword){
         List<ChallengeResponse> challengeResponses;
         if(keyword==null) {

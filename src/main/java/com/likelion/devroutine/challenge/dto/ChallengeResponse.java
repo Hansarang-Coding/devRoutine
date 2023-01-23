@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Slice;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +22,7 @@ public class ChallengeResponse {
     private Long fromUserId;
     private List<String> hashTag;
 
-    public static List<ChallengeResponse> toList(Slice<Challenge> challenges) {
+    public static List<ChallengeResponse> toList(List<Challenge> challenges) {
         return challenges.stream()
                 .filter(entity->entity.isVigibility())
                 .map(entity -> ChallengeResponse.builder()

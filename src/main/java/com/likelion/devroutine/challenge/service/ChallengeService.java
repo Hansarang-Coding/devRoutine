@@ -8,10 +8,12 @@ import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly=true)
 public class ChallengeService {
     private final ChallengeRepository challengeRepository;
 
@@ -20,13 +22,13 @@ public class ChallengeService {
     }
 
     public List<ChallengeResponse> findAllChallenge(Long challengeId, int size) {
-        Slice<Challenge> challenges=challengeRepository.findByIdLessThanOrderByIdDesc(challengeId, PageRequest.of(0, size));
+        List<Challenge> challenges=challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
 
         return ChallengeResponse.toList(challenges);
     }
 
     public List<ChallengeResponse> findAllChallengeTitle(Long challengeId, int size, String keyword) {
-        Slice<Challenge> challenges = challengeRepository.findByIdLessThanAndTitleContainingOrderByIdDesc(challengeId, keyword, PageRequest.of(0, size));
+        List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
         List<ChallengeResponse> challengeResponses=ChallengeResponse.toList(challenges);
         return challengeResponses;
     }
