@@ -1,0 +1,29 @@
+= DevRoutine API
+test-api-docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
+== 1. TEST CONTROLLER
+---
+=== [GET] hello
+==== Request
+include::{snippets}/hello-controller/http-request.adoc[]
+
+==== Response
+include::{snippets}/hello-controller/http-response.adoc[]
+
+---
+
+=== [GET] hello/dto
+==== Parameters
+include::{snippets}/hello-controller/helloDto/query-parameters.adoc[]
+
+==== Request
+include::{snippets}/hello-controller/helloDto/http-request.adoc[]
+
+==== Response
+include::{snippets}/hello-controller/helloDto/http-response.adoc[]
