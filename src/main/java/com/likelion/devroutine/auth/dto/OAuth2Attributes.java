@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -42,26 +43,10 @@ public class OAuth2Attributes {
         log.info("attributes = {}", new ObjectMapper().writerWithDefaultPrettyPrinter()
                 .writeValueAsString(attributes));
 
-        switch (registrationId) {
-            case "google":
-                return ofGoogle(userNameAttributeName, attributes);
-            case "github":
-                return ofGithub(userNameAttributeName, attributes);
-            default:
-                throw new OAuth2RegistrationException();
-        }
-    }
-
-    //구글 로그인 정보를 가지고 DTO 만들기
-    public static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuth2Attributes.builder()
-                .oauthId((String) attributes.get(userNameAttributeName))
-                .name((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .pictrue((String) attributes.get("picture"))
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
+        if (StringUtils.hasText(registrationId))
+            return ofGithub(userNameAttributeName, attributes);
+        else
+            throw new OAuth2RegistrationException();
     }
 
     private static OAuth2Attributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {

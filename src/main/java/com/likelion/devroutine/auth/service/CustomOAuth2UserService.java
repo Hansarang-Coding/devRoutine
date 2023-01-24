@@ -22,7 +22,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
+    private static final String SESSION_USER = "user";
     private final UserRepository userRepository;
     private final HttpSession httpSession;
 
@@ -40,16 +40,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
-        httpSession.setAttribute("user", new SessionUser(user)); //세션에 유저 저장
+        httpSession.setAttribute(SESSION_USER, new SessionUser(user)); //세션에 유저 저장
         Set<SimpleGrantedAuthority> role = Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleKey()));
         return new DefaultOAuth2User(role, attributes.getAttributes(), attributes.getNameAttributeKey()); //OAuth2AuthenticationToken으로 변환
     }
 
     private User saveOrUpdate(OAuth2Attributes attributes) {
-        String oauthId = attributes.getOauthId();
         String name = attributes.getName();
         String picture = attributes.getPicture();
-        User user = userRepository.findByOauthId(oauthId)
+        User user = userRepository.findByName(name)
                 .map(entity -> entity.update(name, picture)) //유저를 불러 오는데, 이미 존재하면, 바뀐 이미지와 이름 반영
                 .orElse(attributes.toEntity()); //유저를 불러 오는데, 존재 하지 않으면 새로 생성
         return userRepository.save(user);
