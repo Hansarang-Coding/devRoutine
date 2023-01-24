@@ -1,4 +1,4 @@
-package com.likelion.devroutine.dto;
+package com.likelion.devroutine.hello.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
