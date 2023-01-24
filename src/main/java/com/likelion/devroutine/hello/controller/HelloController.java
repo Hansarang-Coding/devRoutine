@@ -1,6 +1,6 @@
-package com.likelion.devroutine.controller;
+package com.likelion.devroutine.hello.controller;
 
-import com.likelion.devroutine.dto.HelloResponseDto;
+import com.likelion.devroutine.hello.dto.HelloResponseDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

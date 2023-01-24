@@ -78,8 +78,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-}
-
 build { //의존작업 명시
     dependsOn copyDocument
 }
