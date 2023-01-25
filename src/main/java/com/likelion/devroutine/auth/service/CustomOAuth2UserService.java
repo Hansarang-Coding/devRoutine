@@ -2,9 +2,7 @@ package com.likelion.devroutine.auth.service;
 
 import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.auth.dto.OAuth2Attributes;
-import com.likelion.devroutine.auth.dto.SessionUser;
 import com.likelion.devroutine.auth.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,9 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-    private static final String SESSION_USER = "user";
     private final UserRepository userRepository;
-    private final HttpSession httpSession;
 
     @SneakyThrows
     @Override
@@ -33,6 +29,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String tokenValue = userRequest.getAccessToken().getTokenValue();
+        System.out.println("tokenvalue : " + tokenValue);
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
@@ -40,7 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
-        httpSession.setAttribute(SESSION_USER, new SessionUser(user)); //세션에 유저 저장
         Set<SimpleGrantedAuthority> role = Collections.singleton(new SimpleGrantedAuthority(user.getRole().getRoleKey()));
         return new DefaultOAuth2User(role, attributes.getAttributes(), attributes.getNameAttributeKey()); //OAuth2AuthenticationToken으로 변환
     }

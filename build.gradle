@@ -41,6 +41,17 @@ dependencies {
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    // com.sun.xml.bind
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+    implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    // javax.xml.bind
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+
+    //template Engine
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     //querydsl dependencies 추가(스프링부트 3.0 이상)
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
