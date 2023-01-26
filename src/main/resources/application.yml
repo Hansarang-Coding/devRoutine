@@ -6,6 +6,15 @@ spring:
     username: root
     password: 123456
 
+# Redis 설정
+  data:
+    redis:
+      host: localhost
+      port: 1234
+
+  session:
+    storage-type: redis
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
