@@ -1,7 +1,7 @@
 package com.likelion.devroutine.challenge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.devroutine.challenge.dto.ChallengeResponse;
+import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.service.ChallengeService;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +34,7 @@ class ChallengeRestControllerTest {
     @Test
     @DisplayName("챌린지 상세 조회 성공")
     void findByChallengeId_success() throws Exception {
-        ChallengeResponse challengeResponse=ChallengeResponse.builder()
+        ChallengeDto challengeDto= ChallengeDto.builder()
                 .id(1l)
                 .title("1일 1 알고리즘 풀기")
                 .description("하루에 알고리즘 하나 이상 풀기")
@@ -42,7 +42,7 @@ class ChallengeRestControllerTest {
                 .authenticationType(AuthenticationType.PICTURE)
                 .fromUserId(1l)
                 .build();
-        given(challengeService.findByChallengeId(any())).willReturn(challengeResponse);
+        given(challengeService.findByChallengeId(any())).willReturn(challengeDto);
 
         mockMvc.perform(get("/api/v1/challenges/1"))
                 .andDo(print())
@@ -54,11 +54,11 @@ class ChallengeRestControllerTest {
     @Test
     @DisplayName("챌린지 전체 리스트 - 조회 성공 ")
     void findAllchallenge_success() throws Exception {
-        List<ChallengeResponse> challengeResponses=List.of(
-                new ChallengeResponse(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
-                new ChallengeResponse(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
+        List<ChallengeDto> challengeDtos=List.of(
+                new ChallengeDto(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
+                new ChallengeDto(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
         );
-        given(challengeService.findAllChallenge(null, 10)).willReturn(challengeResponses);
+        given(challengeService.findAllChallenge(null, 10)).willReturn(challengeDtos);
 
         mockMvc.perform(get("/api/v1/challenges")
                         .param("keyword", "알고리즘")
@@ -69,11 +69,11 @@ class ChallengeRestControllerTest {
     @Test
     @DisplayName("챌린지 검색 - 조회 성공 ")
     void findSearchChallenge_success() throws Exception {
-        List<ChallengeResponse> challengeResponses=List.of(
-            new ChallengeResponse(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
-                new ChallengeResponse(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
+        List<ChallengeDto> challengeDtos=List.of(
+            new ChallengeDto(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
+                new ChallengeDto(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
         );
-        given(challengeService.findAllChallengeTitle(null, 10, "알고리즘")).willReturn(challengeResponses);
+        given(challengeService.findAllChallengeTitle(null, 10, "알고리즘")).willReturn(challengeDtos);
 
         mockMvc.perform(get("/api/v1/challenges")
                 .param("keyword", "알고리즘")

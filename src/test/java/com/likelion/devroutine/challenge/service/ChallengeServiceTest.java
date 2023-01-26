@@ -1,7 +1,7 @@
 package com.likelion.devroutine.challenge.service;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.challenge.dto.ChallengeResponse;
+import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
@@ -10,9 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +25,7 @@ class ChallengeServiceTest {
             .id(1l)
             .title("1일 1알고리즘")
             .description("하루에 알고리즘 한문제 이상 풀기")
-            .vigibility(true)
+            .isVigibility(true)
             .authenticationType(AuthenticationType.PICTURE)
             .fromUserId(1l)
             .build();
@@ -40,10 +38,10 @@ class ChallengeServiceTest {
     void findByChallengeId_success(){
         Mockito.when(challengeRepository.findById(CHALLENGE.getId())).thenReturn(Optional.of(CHALLENGE));
 
-        ChallengeResponse challengeResponse=challengeService.findByChallengeId(CHALLENGE.getId());
+        ChallengeDto challengeDto=challengeService.findByChallengeId(CHALLENGE.getId());
 
-        assertEquals(challengeResponse.getTitle(), CHALLENGE.getTitle());
-        assertEquals(challengeResponse.getAuthenticationType(), CHALLENGE.getAuthenticationType());
+        assertEquals(challengeDto.getTitle(), CHALLENGE.getTitle());
+        assertEquals(challengeDto.getAuthenticationType(), CHALLENGE.getAuthenticationType());
     }
     @Test
     @DisplayName("챌린지 상세 조회 실패 - 챌린지 존재하지 않을 때")
