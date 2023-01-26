@@ -24,7 +24,7 @@ public class ChallengeResponse {
 
     public static List<ChallengeResponse> toList(List<Challenge> challenges) {
         return challenges.stream()
-                .filter(entity->entity.isVigibility())
+                .filter(entity->entity.getIsVigibility())
                 .map(entity -> ChallengeResponse.builder()
                         .id(entity.getId())
                         .title(entity.getTitle())
@@ -32,7 +32,7 @@ public class ChallengeResponse {
                         .authenticationType(entity.getAuthenticationType())
                         .fromUserId(entity.getFromUserId())
                         .hashTag(List.of("알고리즘", "사진인증"))
-                        .vigibility(entity.isVigibility() ? "공개" : "비공개")
+                        .vigibility(entity.getIsVigibility() ? "공개" : "비공개")
                         .build())
                 .collect(Collectors.toList());
     }
@@ -45,7 +45,7 @@ public class ChallengeResponse {
                 .authenticationType(challenge.getAuthenticationType())
                 .fromUserId(challenge.getFromUserId())
                 .hashTag(List.of("알고리즘", "사진인증"))
-                .vigibility(challenge.isVigibility() ? "공개" : "비공개")
+                .vigibility(challenge.getIsVigibility() ? "공개" : "비공개")
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.likelion.devroutine.challenge.domain;
 
+import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,14 +26,28 @@ public class Challenge {
 
     private String title;
     private String description;
-    private boolean vigibility;
+    private boolean isVigibility;
     private Long fromUserId;
     @Enumerated(EnumType.STRING)
     private AuthenticationType authenticationType;
 
+    //사용자 id 추가
     @CreatedDate
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    public boolean getIsVigibility(){
+        return this.isVigibility;
+    }
+    public static Challenge createChallenge(ChallengeCreateRequest dto) {
+        return Challenge.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .isVigibility(dto.getIsVigibility())
+                .authenticationType(dto.getAuthenticationType())
+                .fromUserId(1l)
+                .build();
+    }
 }

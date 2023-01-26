@@ -1,6 +1,8 @@
 package com.likelion.devroutine.challenge.service;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
+import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
 import com.likelion.devroutine.challenge.dto.ChallengeResponse;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
@@ -40,8 +42,18 @@ public class ChallengeService {
         return ChallengeResponse.toResponse(challenge);
     }
 
+    @Transactional
+    public ChallengeCreateResponse createChallenge(ChallengeCreateRequest dto) {
+        //userId 존재하지 않으면 USER_NOT_FOUND 예외처리
+
+        //사용자 id 추가(FK)
+        Challenge savedChallenge=challengeRepository.save(Challenge.createChallenge(dto));
+        return ChallengeCreateResponse.toResponse(savedChallenge);
+    }
     public boolean isVigibility(Challenge challenge){
-        if(challenge.isVigibility()) return true;
+        if(challenge.getIsVigibility()) return true;
         else throw new InaccessibleChallengeException();
     }
+
+
 }
