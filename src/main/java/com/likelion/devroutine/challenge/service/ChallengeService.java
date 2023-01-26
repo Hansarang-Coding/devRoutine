@@ -1,27 +1,32 @@
 package com.likelion.devroutine.challenge.service;
 
+import com.likelion.devroutine.auth.domain.User;
+import com.likelion.devroutine.auth.exception.UserNotFoundException;
+import com.likelion.devroutine.auth.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Transactional(readOnly=true)
 public class ChallengeService {
     private final ChallengeRepository challengeRepository;
+    private final UserRepository userRepository;
 
-    public ChallengeService(ChallengeRepository challengeRepository) {
+    public ChallengeService(ChallengeRepository challengeRepository, UserRepository userRepository) {
         this.challengeRepository = challengeRepository;
+        this.userRepository = userRepository;
     }
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
@@ -43,21 +48,20 @@ public class ChallengeService {
     }
 
     @Transactional
-    public ChallengeCreateResponse createChallenge(ChallengeCreateRequest dto) {
-        //userId 존재하지 않으면 USER_NOT_FOUND 예외처리
+    public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
+        User user=getUser(oauthId);
 
-        //사용자 id 추가(FK)
-        //기간 추가
-        Challenge savedChallenge=challengeRepository.save(Challenge.createChallenge(dto));
+        Challenge savedChallenge=challengeRepository.save(Challenge.createChallenge(user, dto));
         return ChallengeCreateResponse.toResponse(savedChallenge);
     }
 
     @Transactional
-    public ChallengeResponse deleteChallenge(Long id) {
-        //로그인한 User 받아오기
-        //로그인한 User가 생성한 challenge인지 확인
-
+    public ChallengeResponse deleteChallenge(String oauthId, Long id) {
+        User user=getUser(oauthId);
         Challenge challenge=getChallenge(id);
+
+        matchWriterAndUser(getChallenge(id), getUser(oauthId));
+
         //챌린지 시작 전인지 확인
         isProgressChallenge(challenge.getStartDate());
 
@@ -67,11 +71,12 @@ public class ChallengeService {
     }
 
     @Transactional
-    public ChallengeResponse modifyChallenge(Long id, ChallengeModifiyRequest dto) {
-        //로그인한 User 받아오기
-        //로그인한 User가 생성한 challenge인지 확인
-
+    public ChallengeResponse modifyChallenge(String oauthId, Long id, ChallengeModifiyRequest dto) {
+        User user=getUser(oauthId);
         Challenge challenge=getChallenge(id);
+
+        matchWriterAndUser(getChallenge(id), getUser(oauthId));
+
         isProgressChallenge(challenge.getStartDate());
         challenge.updateChallenge(dto);
         return ChallengeResponse.builder()
@@ -93,5 +98,18 @@ public class ChallengeService {
         if(LocalDate.now().isAfter(startDate))
             throw new InProgressingChallengeException();
         return false;
+    }
+    public User getUser(String oauthId){
+        User user = userRepository.findByOauthId(oauthId)
+                .orElseThrow(()->new UserNotFoundException());
+
+        return user;
+    }
+
+    public boolean matchWriterAndUser(Challenge challenge, User user) {
+        if(!user.getId().equals(challenge.getUser().getId())){
+            throw new InvalidPermissionException();
+        }
+        return true;
     }
 }

@@ -30,7 +30,7 @@ public class ChallengeDto {
                         .title(entity.getTitle())
                         .description(entity.getDescription())
                         .authenticationType(entity.getAuthenticationType())
-                        .fromUserId(entity.getFromUserId())
+                        .fromUserId(entity.getUser().getId())
                         .hashTag(List.of("알고리즘", "사진인증"))
                         .vigibility(entity.getVigibility() ? "공개" : "비공개")
                         .build())
@@ -43,7 +43,7 @@ public class ChallengeDto {
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .authenticationType(challenge.getAuthenticationType())
-                .fromUserId(challenge.getFromUserId())
+                .fromUserId(challenge.getUser().getId())
                 .hashTag(List.of("알고리즘", "사진인증"))
                 .vigibility(challenge.getVigibility() ? "공개" : "비공개")
                 .build();
