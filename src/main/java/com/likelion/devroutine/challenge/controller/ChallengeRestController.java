@@ -2,6 +2,7 @@ package com.likelion.devroutine.challenge.controller;
 
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/challenges")
+@Slf4j
 public class ChallengeRestController {
     private final ChallengeService challengeService;
 
@@ -37,6 +39,7 @@ public class ChallengeRestController {
     }
     @PostMapping
     public ResponseEntity<ChallengeCreateResponse> createChallenge(@RequestBody ChallengeCreateRequest dto){
+        log.info(dto.getStartDate().toString());
         //로그인 되어있는 사용자만 가능
         ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(dto);
         return ResponseEntity.ok().body(challengeCreateResponse);

@@ -4,12 +4,15 @@ import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
+import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -56,6 +59,7 @@ public class ChallengeService {
 
         Challenge challenge=getChallenge(id);
         //챌린지 시작 전인지 확인
+        isProgressChallenge(challenge.getStartDate());
 
         challenge.deleteChallenge();
         return ChallengeResponse.builder()
@@ -68,8 +72,7 @@ public class ChallengeService {
         //로그인한 User가 생성한 challenge인지 확인
 
         Challenge challenge=getChallenge(id);
-        //챌린지 시작 전인지 확인
-
+        isProgressChallenge(challenge.getStartDate());
         challenge.updateChallenge(dto);
         return ChallengeResponse.builder()
                 .message(ResponseMessage.CHALLENGE_MODIFY_SUCCESS.getMessage()).build();
@@ -82,7 +85,13 @@ public class ChallengeService {
     }
 
     public boolean isVigibility(Challenge challenge){
-        if(challenge.getIsVigibility()) return true;
+        if(challenge.getVigibility()) return true;
         else throw new InaccessibleChallengeException();
+    }
+
+    public boolean isProgressChallenge(LocalDate startDate){
+        if(LocalDate.now().isAfter(startDate))
+            throw new InProgressingChallengeException();
+        return false;
     }
 }

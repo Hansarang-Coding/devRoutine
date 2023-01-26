@@ -24,7 +24,7 @@ public class ChallengeCreateResponse {
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
-                .vigibility(challenge.getIsVigibility()?"공개":"비공개")
+                .vigibility(challenge.getVigibility()?"공개":"비공개")
                 .authenticationType(challenge.getAuthenticationType())
                 .build();
     }

@@ -16,11 +16,11 @@ public class ChallengeModifiyRequest {
     @NotEmpty(message = "설명을 입력해주세요.")
     private String description;
 
-    private boolean isVigibility;
+    private boolean vigibility;
     private AuthenticationType authenticationType;
     //해시태그 추가
 
-    public boolean getIsVigibility(){
-        return this.isVigibility;
+    public boolean getVigibility(){
+        return this.vigibility;
     }
 }
