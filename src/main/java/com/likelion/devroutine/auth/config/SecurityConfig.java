@@ -24,6 +24,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/challenges/**", "/").permitAll()
                         .anyRequest().authenticated())
+                .logout()
+                .logoutSuccessUrl("/")
+
+                .and()
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint()
