@@ -4,6 +4,7 @@ import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,22 +39,18 @@ public class ChallengeRestController {
         return ResponseEntity.ok().body(challengeDto);
     }
     @PostMapping
-    public ResponseEntity<ChallengeCreateResponse> createChallenge(@RequestBody ChallengeCreateRequest dto){
-        log.info(dto.getStartDate().toString());
-        //로그인 되어있는 사용자만 가능
-        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(dto);
+    public ResponseEntity<ChallengeCreateResponse> createChallenge(Authentication authentication, @RequestBody ChallengeCreateRequest dto){
+        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(authentication.getName(), dto);
         return ResponseEntity.ok().body(challengeCreateResponse);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<ChallengeResponse> deleteChallenge(@PathVariable Long id){
-        //로그인한 사용자만 가능
-        ChallengeResponse challengeResponse=challengeService.deleteChallenge(id);
+    public ResponseEntity<ChallengeResponse> deleteChallenge(Authentication authentication, @PathVariable Long id){
+        ChallengeResponse challengeResponse=challengeService.deleteChallenge(authentication.getName(), id);
         return ResponseEntity.ok().body(challengeResponse);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ChallengeResponse> modifyChallenge(@PathVariable Long id, @RequestBody ChallengeModifiyRequest dto){
-        //로그인한 사용자만 가능
-        ChallengeResponse challengeResponse=challengeService.modifyChallenge(id, dto);
+    public ResponseEntity<ChallengeResponse> modifyChallenge(Authentication authentication, @PathVariable Long id, @RequestBody ChallengeModifiyRequest dto){
+        ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), id, dto);
         return ResponseEntity.ok().body(challengeResponse);
     }
 }

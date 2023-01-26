@@ -1,6 +1,7 @@
 package com.likelion.devroutine.challenge.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeModifiyRequest;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
@@ -33,9 +34,13 @@ public class Challenge {
     private String title;
     private String description;
     private boolean vigibility;
-    private Long fromUserId; //user와 FK로 추후에 수정
     @Enumerated(EnumType.STRING)
     private AuthenticationType authenticationType;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
+
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -53,15 +58,15 @@ public class Challenge {
     public boolean getVigibility(){
         return this.vigibility;
     }
-    public static Challenge createChallenge(ChallengeCreateRequest dto) {
+    public static Challenge createChallenge(User user, ChallengeCreateRequest dto) {
         return Challenge.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .vigibility(dto.getVigibility())
                 .authenticationType(dto.getAuthenticationType())
+                .user(user)
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .fromUserId(1l)
                 .build();
     }
     public void deleteChallenge(){
