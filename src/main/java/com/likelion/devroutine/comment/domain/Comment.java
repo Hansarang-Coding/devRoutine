@@ -30,7 +30,8 @@ public class Comment {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "certification_id")
 //    private Certification certification;
-    private Long dummycertificationId; ;
+
+    private Long certificationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -55,10 +56,10 @@ public class Comment {
 
 
 
-    public static Comment createComment(String comment, Long dummycertificationId, User user) {
+    public static Comment createComment(String comment, Long certificationId, User user) {
         return Comment.builder()
                 .comment(comment)
-                .dummycertificationId(1L)
+                .certificationId(1L)
                 .user(user)
                 .build();
     }

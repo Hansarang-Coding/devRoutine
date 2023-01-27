@@ -16,7 +16,7 @@ public class CommentCreateResponse {
     private Long id;
     private String comment;
     private String userName;
-    private Long certificationId;
+    private String certificationId;
 
 
     private LocalDateTime createdAt;
@@ -26,7 +26,7 @@ public class CommentCreateResponse {
                 .id(savedComment.getId())
                 .comment(savedComment.getComment())
                 .userName(savedComment.getUser().getName())
-                //.CertificationId(savedComment.getCertification().getId())
+                //.certificationId(savedComment.getCertification().getId;
                 .createdAt(savedComment.getCreatedAt())
                 .build();
     }

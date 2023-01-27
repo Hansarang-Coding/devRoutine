@@ -5,14 +5,20 @@ import com.likelion.devroutine.auth.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
+import com.likelion.devroutine.comment.domain.Certification;
 import com.likelion.devroutine.comment.domain.Comment;
 import com.likelion.devroutine.comment.dto.CommentCreateResponse;
 import com.likelion.devroutine.comment.dto.CommentRequest;
+import com.likelion.devroutine.comment.dto.CommentResponse;
 import com.likelion.devroutine.comment.exception.UserNotFoundException;
 import com.likelion.devroutine.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.cert.Certificate;
 
 @Service
 @RequiredArgsConstructor
@@ -23,16 +29,22 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentCreateResponse createComment(Long certificationId, CommentRequest request, Long userId) {
+    public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String name) {
         //API Authentication
 
-        //Certification certification = findCertification(CertificationId);
+        //Certification certification = findCertification(CertificationId)
 
-        User user = findUser(7L);
+        User user = findUser(name);
 
         //id들
-        Comment savedComment=commentRepository.save(Comment.createComment(request.getComment(),7L, user));
+        Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certificationId, user));
         return CommentCreateResponse.of(savedComment);
+    }
+
+
+    public Page<CommentResponse> findAll(Long certificationId, Pageable pageable) {
+        //validateCertificationExists(postId);
+        return CommentResponse.of(commentRepository.findAllByCertificationId(certificationId, pageable));
     }
 
 
@@ -41,10 +53,17 @@ public class CommentService {
 //                new CertificationNotFoundException());
 //    }
 
-    private User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
+    private User findUser(String name) {
+        return userRepository.findByName(name).orElseThrow(() ->
                 new UserNotFoundException());
     }
+
+
+//    private void validateCertificationExists(Long certificationId){
+//        if(!Repository.existsById(certifitcationId)){
+//            throw new CertificationNotFoundException()
+//    }
+//}
 
 
 
