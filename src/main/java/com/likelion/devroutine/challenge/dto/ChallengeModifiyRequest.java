@@ -18,7 +18,9 @@ public class ChallengeModifiyRequest {
 
     private boolean vigibility;
     private AuthenticationType authenticationType;
+
     //해시태그 추가
+    private String keyword;
 
     public boolean getVigibility(){
         return this.vigibility;

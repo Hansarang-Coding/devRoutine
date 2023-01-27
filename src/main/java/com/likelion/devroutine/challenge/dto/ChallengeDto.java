@@ -2,6 +2,7 @@ package com.likelion.devroutine.challenge.dto;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
+import com.likelion.devroutine.hashtag.domain.HashTag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +21,9 @@ public class ChallengeDto {
     private AuthenticationType authenticationType;
     private String vigibility;
     private Long fromUserId;
-    private List<String> hashTag;
+    private List<HashTag> hashTag;
 
-    public static List<ChallengeDto> toList(List<Challenge> challenges) {
+    public static List<ChallengeDto> toList(List<Challenge> challenges, List<HashTag> hashTags) {
         return challenges.stream()
                 .filter(entity->entity.getVigibility())
                 .map(entity -> ChallengeDto.builder()
@@ -31,20 +32,20 @@ public class ChallengeDto {
                         .description(entity.getDescription())
                         .authenticationType(entity.getAuthenticationType())
                         .fromUserId(entity.getUser().getId())
-                        .hashTag(List.of("알고리즘", "사진인증"))
+                        .hashTag(hashTags)
                         .vigibility(entity.getVigibility() ? "공개" : "비공개")
                         .build())
                 .collect(Collectors.toList());
     }
 
-    public static ChallengeDto toDto(Challenge challenge) {
+    public static ChallengeDto toDto(Challenge challenge, List<HashTag> hashTags) {
         return ChallengeDto.builder()
                 .id(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .authenticationType(challenge.getAuthenticationType())
                 .fromUserId(challenge.getUser().getId())
-                .hashTag(List.of("알고리즘", "사진인증"))
+                .hashTag(hashTags)
                 .vigibility(challenge.getVigibility() ? "공개" : "비공개")
                 .build();
     }
