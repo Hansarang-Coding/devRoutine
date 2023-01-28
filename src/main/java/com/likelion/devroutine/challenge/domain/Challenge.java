@@ -1,16 +1,15 @@
 package com.likelion.devroutine.challenge.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeModifiyRequest;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
+import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,6 +17,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,10 +42,11 @@ public class Challenge {
     @JoinColumn(name="user_id")
     private User user;
 
-
     private LocalDate startDate;
     private LocalDate endDate;
 
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ChallengeHashTag> challengeHashTags = new ArrayList<>();
 
     //사용자 id 추가
     @CreatedDate
