@@ -11,10 +11,10 @@ import com.likelion.devroutine.challenge.exception.InProgressingChallengeExcepti
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
+import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
 import com.likelion.devroutine.hashtag.domain.HashTag;
+import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
-import com.likelion.devroutine.keyword.domain.Keyword;
-import com.likelion.devroutine.keyword.repository.KeywordRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,47 +29,47 @@ import java.util.stream.Collectors;
 public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
-    private final KeywordRepository keywordRepository;
     private final HashTagRepository hashTagRepository;
+    private final ChallengeHashTagRepository challengeHashTagRepository;
     private final UserRepository userRepository;
 
     public ChallengeService(
             ChallengeRepository challengeRepository,
-            KeywordRepository keywordRepository,
             HashTagRepository hashTagRepository,
+            ChallengeHashTagRepository challengeHashTagRepository,
             UserRepository userRepository) {
         this.challengeRepository = challengeRepository;
-        this.keywordRepository = keywordRepository;
         this.hashTagRepository = hashTagRepository;
+        this.challengeHashTagRepository = challengeHashTagRepository;
         this.userRepository = userRepository;
     }
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
         List<Challenge> challenges = challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
-        List<HashTag> hashTags = hashTagRepository.findHashTagsByRandom();
-        return ChallengeDto.toList(challenges, hashTags);
+        List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
+        return ChallengeDto.toList(challenges, challengeHashTags);
     }
 
     public List<ChallengeDto> findAllChallengeTitle(Long challengeId, int size, String keyword) {
         List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
-        List<HashTag> hashTags = hashTagRepository.findByChallengeId(challengeId);
-        return ChallengeDto.toList(challenges, hashTags);
+        List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
+        return ChallengeDto.toList(challenges, challengeHashTags);
     }
 
-    public ChallengeDto findByChallengeId(Long id) {
-        Challenge challenge = getChallenge(id);
+    public ChallengeDto findByChallengeId(Long challengeId) {
+        Challenge challenge = getChallenge(challengeId);
         isVigibility(challenge);
-        List<HashTag> hashTags = hashTagRepository.findByChallengeId(id);
-        return ChallengeDto.toDto(challenge, hashTags);
+        List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
+        return ChallengeDto.toDto(challenge, challengeHashTags);
     }
 
     @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
         User user = getUser(oauthId);
         Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user, dto));
-        List<String> keywordList = extractKeywords(dto.getKeyword());
-        saveHashTagAndKeyword(savedChallenge, keywordList);
-        return ChallengeCreateResponse.toResponse(savedChallenge, keywordList);
+        List<String> hashTags = extractHashTag(dto.getHashTag());
+        saveNewHashTags(savedChallenge.getId(), hashTags);
+        return ChallengeCreateResponse.toResponse(savedChallenge, hashTags);
     }
 
     @Transactional
@@ -88,38 +88,43 @@ public class ChallengeService {
     }
 
     @Transactional
-    public ChallengeResponse modifyChallenge(String oauthId, Long id, ChallengeModifiyRequest dto) {
+    public ChallengeResponse modifyChallenge(String oauthId, Long challengeId, ChallengeModifiyRequest dto) {
         User user = getUser(oauthId);
-        Challenge challenge = getChallenge(id);
-
+        Challenge challenge = getChallenge(challengeId);
         matchWriterAndUser(challenge, user);
-
         isProgressChallenge(challenge.getStartDate());
         challenge.updateChallenge(dto);
-
-        //해시태그 수정 기능 추가
-
+        removeChallengeHashTag(challenge);
+        saveNewHashTags(challengeId, extractHashTag(dto.getHashtag()));
         return ChallengeResponse.builder()
                 .message(ResponseMessage.CHALLENGE_MODIFY_SUCCESS.getMessage()).build();
     }
 
-    private void saveHashTagAndKeyword(Challenge challenge, List<String> keywordList) {
-        for (String keywordContent : keywordList) {
-            Keyword savedKeyword = keywordRepository.findByContents(keywordContent)
-                    .orElseGet(() -> keywordRepository.save(Keyword.createKeyword(keywordContent)));
-            hashTagRepository.save(HashTag.createHashTag(challenge, savedKeyword));
+    private void removeChallengeHashTag(Challenge challenge) {
+        List<ChallengeHashTag> challengeHashTags = challenge.getChallengeHashTags();
+        challengeHashTagRepository.deleteAll(challengeHashTags);
+        challengeHashTags.clear();
+    }
+
+    private void saveNewHashTags(Long challengeId, List<String> hashTags) {
+        Challenge challenge = getChallenge(challengeId);
+        for (String hashTagContents : hashTags) { //#자바 #김영한
+            HashTag savedHashTag = hashTagRepository.findByContents(hashTagContents)
+                    .orElseGet(() -> hashTagRepository.save(HashTag.createHashTag(hashTagContents)));
+            challengeHashTagRepository.save(ChallengeHashTag.create(challenge, savedHashTag));
         }
     }
 
-    /**
-     * 여러 개의 키워드가 입력되는 경우 이를 분리해준다
-     * e.g #Spring #강의 #김영한 #인프런
-     * Spring 강의 김영한 인프런 4개의 키워드로 분리시킬 수 있다.
-     * @param keywords
-     * @return
-     */
-    private List<String> extractKeywords(String keywords) {
-        return Arrays.stream(keywords.split("#"))
+    private List<ChallengeHashTag> getHashTags(Long challengeId) {
+        return challengeHashTagRepository.findByChallengeId(challengeId);
+    }
+
+    public List<Challenge> findAll() {
+        return challengeRepository.findAll();
+    }
+
+    private List<String> extractHashTag(String hashTag) {
+        return Arrays.stream(hashTag.split("#"))
                 .map(String::trim)
                 .filter(s -> s.length() > 0)
                 .collect(Collectors.toList());
@@ -145,7 +150,6 @@ public class ChallengeService {
     public User getUser(String oauthId) {
         User user = userRepository.findByOauthId(oauthId)
                 .orElseThrow(() -> new UserNotFoundException());
-
         return user;
     }
 
