@@ -23,7 +23,7 @@ public class ChallengeCreateRequest {
 
     private AuthenticationType authenticationType;
 
-    private String keyword;
+    private String hashTag;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;

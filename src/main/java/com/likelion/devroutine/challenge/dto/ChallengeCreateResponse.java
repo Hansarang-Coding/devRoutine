@@ -19,16 +19,16 @@ public class ChallengeCreateResponse {
     private String description;
     private String vigibility;
     private AuthenticationType authenticationType;
-    private List<String> keywordList;
+    private List<String> hashTags;
 
-    public static ChallengeCreateResponse toResponse(Challenge challenge, List<String> keywordList) {
+    public static ChallengeCreateResponse toResponse(Challenge challenge, List<String> hashTags) {
         return ChallengeCreateResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .vigibility(challenge.getVigibility()?"공개":"비공개")
                 .authenticationType(challenge.getAuthenticationType())
-                .keywordList(keywordList)
+                .hashTags(hashTags)
                 .build();
     }
 }
