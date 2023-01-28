@@ -1,13 +1,11 @@
 package com.likelion.devroutine.hashtag.domain;
 
-import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.keyword.domain.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "hashtag")
 @Entity
@@ -17,16 +15,11 @@ public class HashTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Challenge challenge;
+    private String contents;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Keyword keyword;
-
-    public static HashTag createHashTag(Challenge challenge, Keyword keyword) {
+    public static HashTag createHashTag(String hashTagContents) {
         return HashTag.builder()
-                .challenge(challenge)
-                .keyword(keyword)
+                .contents(hashTagContents)
                 .build();
     }
 }
