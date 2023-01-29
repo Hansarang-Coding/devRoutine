@@ -33,6 +33,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.security:spring-security-test:5.7.3'
 
     //asciidoc, mockmvc
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
@@ -60,10 +61,8 @@ dependencies {
     //타임리프
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-
     //validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-}
 
 asciidoctor.doFirst { //폴더 비우기
     println("---------------- delete present asciidoctor.")
