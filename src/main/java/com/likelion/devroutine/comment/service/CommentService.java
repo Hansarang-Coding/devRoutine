@@ -6,7 +6,6 @@ import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
-import com.likelion.devroutine.comment.domain.Certification;
 import com.likelion.devroutine.comment.domain.Comment;
 import com.likelion.devroutine.comment.dto.*;
 import com.likelion.devroutine.comment.exception.CommentNotFoundException;
