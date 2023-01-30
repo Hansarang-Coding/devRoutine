@@ -4,6 +4,7 @@ import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
 import com.likelion.devroutine.follow.exception.AlreadyFollowingException;
+import com.likelion.devroutine.follow.exception.FollowNotPermittedException;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
 import com.likelion.devroutine.follow.repository.FollowRepository;
 import com.likelion.devroutine.user.domain.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -27,13 +29,20 @@ public class UserService {
     public FollowCreateResponse follow(Long followerId, String oauthId) {
         User followingUser = findUserByOauthId(oauthId);
         User follower = findUser(followerId);
-        validateExistingFollow(follower.getId(), followingUser.getId());
+        validateFollowExists(follower.getId(), followingUser.getId());
+        validateSelfFollow(follower.getId(), followingUser.getId());
         Follow follow = Follow.createFollow(follower, followingUser);
         followRepository.save(follow);
         return FollowCreateResponse.of(followingUser.getName(), follower.getName());
     }
 
-    private void validateExistingFollow(Long followerId, Long followingUserId) {
+    private void validateSelfFollow(Long followerId, Long followingUserId) {
+        if (Objects.equals(followerId, followingUserId)) {
+            throw new FollowNotPermittedException();
+        }
+    }
+
+    private void validateFollowExists(Long followerId, Long followingUserId) {
         if (followRepository.existsByFollowerIdAndFollowingId(followerId, followingUserId)) {
             throw new AlreadyFollowingException();
         }
