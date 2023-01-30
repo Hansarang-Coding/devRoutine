@@ -13,6 +13,7 @@ import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
 import com.likelion.devroutine.hashtag.domain.HashTag;
+import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
 import org.springframework.data.domain.PageRequest;
@@ -47,20 +48,19 @@ public class ChallengeService {
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
         List<Challenge> challenges = challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
         List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
-        return ChallengeDto.toList(challenges, challengeHashTags);
+        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
     }
 
     public List<ChallengeDto> findAllChallengeTitle(Long challengeId, int size, String keyword) {
         List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
         List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
-        return ChallengeDto.toList(challenges, challengeHashTags);
+        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
     }
 
     public ChallengeDto findByChallengeId(Long challengeId) {
         Challenge challenge = getChallenge(challengeId);
         isVigibility(challenge);
-        List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
-        return ChallengeDto.toDto(challenge, challengeHashTags);
+        return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
     }
 
     @Transactional
