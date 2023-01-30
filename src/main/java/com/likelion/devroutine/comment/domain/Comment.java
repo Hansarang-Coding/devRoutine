@@ -2,10 +2,7 @@ package com.likelion.devroutine.comment.domain;
 
 import com.likelion.devroutine.auth.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -46,9 +43,6 @@ public class Comment {
 
     private LocalDateTime deletedAt;
 
-    public void modifiedAtComment(String comment) {
-        this.comment = comment;
-    }
 
     public void setDeletedAt(LocalDateTime deletedAt){
         this.deletedAt = deletedAt;
@@ -63,6 +57,15 @@ public class Comment {
                 .user(user)
                 .build();
     }
+
+    public void deleteComment(){
+        this.setDeletedAt(LocalDateTime.now());
+    }
+
+    public void updateComment(String comment) {
+        this.comment = comment;
+    }
+
 
 
 

@@ -1,8 +1,6 @@
 package com.likelion.devroutine.comment.controller;
 
-import com.likelion.devroutine.comment.dto.CommentCreateResponse;
-import com.likelion.devroutine.comment.dto.CommentRequest;
-import com.likelion.devroutine.comment.dto.CommentResponse;
+import com.likelion.devroutine.comment.dto.*;
 import com.likelion.devroutine.comment.service.CommentService;
 import com.nimbusds.oauth2.sdk.Response;
 import jakarta.validation.Valid;
@@ -13,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -28,13 +27,11 @@ public class CommentRestController {
     @PostMapping("/{certificationId}/comments")
     public ResponseEntity<CommentCreateResponse> createComment(
             @PathVariable("certificationId") Long certificationId,
-            @Valid @RequestBody CommentRequest request) {
+            @Valid @RequestBody CommentRequest request,
+            Authentication authentication) {
         //로그인 확인해야함 authentication
-        log.info(request.toString());
 
-        String authentication = "user";
-
-        CommentCreateResponse response = commentService.createComment(certificationId, request, authentication);
+        CommentCreateResponse response = commentService.createComment(certificationId, request, authentication.getName());
         //로그인 확인해야함 authentication
         return ResponseEntity.ok().body(response);
     }
@@ -42,9 +39,26 @@ public class CommentRestController {
     @GetMapping("/{certificationId}/comments")
     public ResponseEntity<Page<CommentResponse>> findAllComments(
             @PathVariable("certificationId") Long certificationId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.ok().body(commentService.findAll(certificationId,pageable));
 
+    }
+
+    @DeleteMapping("/{certificationId}/comments/{id}")
+    public ResponseEntity<CommentDeleteResponse> deleteComment(
+            @PathVariable("certificationId") Long certificationId,
+            @PathVariable("id") Long commentId,
+            Authentication authentication){
+        return ResponseEntity.ok().body(commentService.deleteComment(certificationId, commentId, authentication.getName()));
+    }
+
+    @PutMapping("/{certificationId}/comments/{id}")
+    public ResponseEntity<CommentUpdateResponse> updateComment(
+            @PathVariable("certificationId") Long certificationId,
+            @PathVariable("id") Long commentId,
+            @Valid @RequestBody CommentRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok().body(commentService.updateComment(certificationId, commentId, request, authentication.getName()));
     }
 
 
