@@ -9,7 +9,7 @@ import java.util.List;
 public interface ChallengeHashTagRepository extends JpaRepository<ChallengeHashTag, Long> {
     List<ChallengeHashTag> findByChallengeId(Long challengeId);
 
-    @Query(value = "SELECT * from hashtag h order by RAND() LIMIT 5", nativeQuery = true)
+    @Query(value = "SELECT * from challenge_hashtag h order by RAND() LIMIT 5", nativeQuery = true)
     List<ChallengeHashTag> findHashTagsByRandom();
 
 }
