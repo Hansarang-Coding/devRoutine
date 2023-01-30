@@ -1,16 +1,16 @@
 package com.likelion.devroutine.challenge.service;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.domain.UserRole;
-import com.likelion.devroutine.auth.repository.UserRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.domain.UserRole;
+import com.likelion.devroutine.user.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
+import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
-import com.likelion.devroutine.keyword.repository.KeywordRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.mock;
 class ChallengeServiceTest {
     private ChallengeService challengeService;
     private ChallengeRepository challengeRepository = mock(ChallengeRepository.class);
-    private KeywordRepository keywordRepository = mock(KeywordRepository.class);
     private HashTagRepository hashTagRepository = mock(HashTagRepository.class);
+    private ChallengeHashTagRepository challengeHashTagRepository = mock(ChallengeHashTagRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
 
     private final Challenge CHALLENGE = Challenge.builder()
@@ -38,11 +38,12 @@ class ChallengeServiceTest {
             .user(new User(1L, "홍길동", "1a2s@naver.com", "asdfasdfasdfas", "123124", UserRole.USER))
             .build();
 
+
     @BeforeEach
     void setup() {
         challengeService = new ChallengeService(
-                challengeRepository, keywordRepository,
-                hashTagRepository, userRepository);
+                challengeRepository, hashTagRepository,
+                challengeHashTagRepository, userRepository);
     }
 
     @Test

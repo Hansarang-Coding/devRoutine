@@ -2,8 +2,8 @@ package com.likelion.devroutine.auth.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.domain.UserRole;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.domain.UserRole;
 import com.likelion.devroutine.auth.exception.OAuth2RegistrationException;
 import lombok.Builder;
 import lombok.Getter;
