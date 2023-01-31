@@ -1,9 +1,9 @@
 package com.likelion.devroutine.participant.dto;
 
-import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.participant.domain.Participant;
+import com.likelion.devroutine.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

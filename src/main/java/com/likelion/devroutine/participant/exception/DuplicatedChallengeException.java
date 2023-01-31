@@ -1,4 +1,4 @@
-package com.likelion.devroutine.challenge.exception;
+package com.likelion.devroutine.participant.exception;
 
 import com.likelion.devroutine.exception.ConflictException;
 

@@ -1,8 +1,5 @@
 package com.likelion.devroutine.participant.service;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.exception.UserNotFoundException;
-import com.likelion.devroutine.auth.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
@@ -11,10 +8,13 @@ import com.likelion.devroutine.participant.domain.Participant;
 import com.likelion.devroutine.participant.dto.ParticipateChallengeResponse;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
-import com.likelion.devroutine.challenge.exception.DuplicatedChallengeException;
+import com.likelion.devroutine.participant.exception.DuplicatedChallengeException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipantNotFoundException;
 import com.likelion.devroutine.participant.repository.ParticipantRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
+import com.likelion.devroutine.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
