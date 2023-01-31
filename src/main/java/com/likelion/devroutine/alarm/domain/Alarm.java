@@ -1,6 +1,7 @@
 package com.likelion.devroutine.alarm.domain;
 
 import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,11 +22,16 @@ public class Alarm {
 
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
+
     private String message;
+
     private Long challenge_id;
     private Long comment_id;
     private Long like_id;
-    private Long user_id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @CreatedDate
     private LocalDateTime createdAt;
