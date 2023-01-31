@@ -24,13 +24,13 @@ public class ParticipantRestController {
         return ResponseEntity.ok().body(participationResponse);
     }
 
-    @DeleteMapping("/{challengeId}/userchallenge")
+    @DeleteMapping("/{challengeId}/participant")
     public ResponseEntity<ParticipationResponse> cancelChallenge(Authentication authentication, @PathVariable Long challengeId){
         ParticipationResponse participationResponse=participantService.cancelChallenge(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(participationResponse);
     }
 
-    @GetMapping("/{challengeId}/userchallenge")
+    @GetMapping("/{challengeId}/participant")
     public ResponseEntity<ParticipateChallengeResponse> findByParticipateChallenge(Authentication authentication, @PathVariable Long challengeId){
         ParticipateChallengeResponse participateChallengeResponse=participantService.findByParticipateChallenge(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(participateChallengeResponse);
