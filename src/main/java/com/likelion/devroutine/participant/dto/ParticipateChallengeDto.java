@@ -24,14 +24,14 @@ public class ParticipateChallengeDto {
     private List<User> participants;
     private List<ChallengeHashTagResponse> challengeHashTag;
 
-   public static ParticipateChallengeDto toResponse(Participant participant, List<ChallengeHashTagResponse> challengeHashTags, List<User> participantNames) {
+   public static ParticipateChallengeDto toResponse(Participant participant, List<ChallengeHashTagResponse> challengeHashTags, List<User> participants) {
         return ParticipateChallengeDto.builder()
                 .id(participant.getId())
                 .title(participant.getChallenge().getTitle())
                 .description(participant.getChallenge().getDescription())
                 .authenticationType(participant.getChallenge().getAuthenticationType())
                 .vigibility(participant.getChallenge().getVigibility()? "공개" : "비공개")
-                .participants(participantNames)
+                .participants(participants)
                 .challengeHashTag(challengeHashTags)
                 .build();
     }

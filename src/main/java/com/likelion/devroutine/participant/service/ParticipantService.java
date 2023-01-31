@@ -65,9 +65,9 @@ public class ParticipantService {
         Challenge challenge=getChallenge(challengeId);
         Participant participant=getParticipant(user, challenge);
         List<Participant> participants=participantRepository.findAllByChallenge(challenge);
-        return ParticipateChallengeDto.toResponse(participant, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getParticipantName(participants));
+        return ParticipateChallengeDto.toResponse(participant, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getChallengeParticipants(participants));
     }
-    public List<User> getParticipantName(List<Participant> participants){
+    public List<User> getChallengeParticipants(List<Participant> participants){
         return participants.stream().map(participant -> participant.getUser())
                 .collect(Collectors.toList());
     }
