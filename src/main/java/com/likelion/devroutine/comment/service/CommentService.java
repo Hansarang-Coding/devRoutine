@@ -1,5 +1,8 @@
 package com.likelion.devroutine.comment.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
@@ -28,13 +31,17 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final AlarmRepository alarmRepository;
+
+    //private final Certification certification;
 
     @Transactional
     public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String name) {
         //Certification certification = findCertification(CertificationId)
         User user = getUser(name);
 
-        //id들
+        //댓글작성
+        //saveNewCommentAlarm(certificationId, name);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certificationId, user));
         return CommentCreateResponse.of(savedComment);
     }
@@ -59,6 +66,17 @@ public class CommentService {
         Comment comment = getCommentByAuthorizedUser(commentId, name);
         comment.updateComment(request.getComment());
         return CommentUpdateResponse.of(comment);
+    }
+
+
+    private void newCommentAlarm(Long certificationId, String name) {
+        //certification은 글쓴이 / 댓글작성자는 name
+        Long commentUserId = getUser(name).getId();
+
+        //글쓴이
+        //User WriterUser = getCertification(certificationId).getUser();
+        alarmRepository.save(Alarm.createAlarm(certificationId, fromUserId,
+                AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), AlarmType.NEW_COMMENT_ON_POST, writerUser));
     }
 
 

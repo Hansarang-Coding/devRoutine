@@ -15,21 +15,5 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class AlarmResponse {
-    private Long id;
-    private AlarmType alarmType;
-    private Long fromUserId;
-    private Long targetId;
-    private String message;
-    private LocalDateTime createdAt;
 
-    public static Page<AlarmResponse> of(Page<Alarm> alarms) {
-        return alarms.map(alarm -> AlarmResponse.builder()
-                .id(alarm.getId())
-                .alarmType(alarm.getAlarmType())
-                .fromUserId(alarm.getFromUserId())
-                .targetId(alarm.getTargetId())
-                .text(alarm.getText())
-                .createdAt(alarm.getCreatedAt())
-                .build());
-    }
 }
