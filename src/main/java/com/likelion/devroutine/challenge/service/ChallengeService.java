@@ -16,6 +16,8 @@ import com.likelion.devroutine.hashtag.domain.HashTag;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
+import com.likelion.devroutine.participant.domain.Participant;
+import com.likelion.devroutine.participant.repository.ParticipantRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +35,18 @@ public class ChallengeService {
     private final HashTagRepository hashTagRepository;
     private final ChallengeHashTagRepository challengeHashTagRepository;
     private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
 
     public ChallengeService(
             ChallengeRepository challengeRepository,
             HashTagRepository hashTagRepository,
             ChallengeHashTagRepository challengeHashTagRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository, ParticipantRepository participantRepository) {
         this.challengeRepository = challengeRepository;
         this.hashTagRepository = hashTagRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
         this.userRepository = userRepository;
+        this.participantRepository = participantRepository;
     }
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
@@ -69,6 +73,7 @@ public class ChallengeService {
         Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user, dto));
         List<String> hashTags = extractHashTag(dto.getHashTag());
         saveNewHashTags(savedChallenge.getId(), hashTags);
+        participantRepository.save(Participant.createParticipant(user, savedChallenge));
         return ChallengeCreateResponse.toResponse(savedChallenge, hashTags);
     }
 
@@ -81,7 +86,7 @@ public class ChallengeService {
 
         //챌린지 시작 전인지 확인
         isProgressChallenge(challenge.getStartDate());
-
+        participantRepository.deleteAllByChallenge(challenge);
         challenge.deleteChallenge();
         return ChallengeResponse.builder()
                 .message(ResponseMessage.CHALLENGE_DELETE_SUCCESS.getMessage()).build();
@@ -156,6 +161,12 @@ public class ChallengeService {
     public boolean matchWriterAndUser(Challenge challenge, User user) {
         if (!user.getId().equals(challenge.getUser().getId())) {
             throw new InvalidPermissionException();
+        }
+        return true;
+    }
+    public boolean isParticipate(Long challengeId, String oauthId){
+        if(participantRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
+            return false;
         }
         return true;
     }
