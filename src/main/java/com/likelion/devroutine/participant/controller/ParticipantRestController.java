@@ -1,6 +1,6 @@
 package com.likelion.devroutine.participant.controller;
 
-import com.likelion.devroutine.participant.dto.ParticipateChallengeResponse;
+import com.likelion.devroutine.participant.dto.ParticipateChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.service.ParticipantService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +31,8 @@ public class ParticipantRestController {
     }
 
     @GetMapping("/{challengeId}/participant")
-    public ResponseEntity<ParticipateChallengeResponse> findByParticipateChallenge(Authentication authentication, @PathVariable Long challengeId){
-        ParticipateChallengeResponse participateChallengeResponse=participantService.findByParticipateChallenge(authentication.getName(), challengeId);
-        return ResponseEntity.ok().body(participateChallengeResponse);
+    public ResponseEntity<ParticipateChallengeDto> findByParticipateChallenge(Authentication authentication, @PathVariable Long challengeId){
+        ParticipateChallengeDto participateChallengeDto =participantService.findByParticipateChallenge(authentication.getName(), challengeId);
+        return ResponseEntity.ok().body(participateChallengeDto);
     }
 }

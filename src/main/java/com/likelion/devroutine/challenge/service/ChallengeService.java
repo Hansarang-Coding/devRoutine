@@ -164,4 +164,10 @@ public class ChallengeService {
         }
         return true;
     }
+    public boolean isParticipate(Long challengeId, String oauthId){
+        if(participantRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
+            return false;
+        }
+        return true;
+    }
 }

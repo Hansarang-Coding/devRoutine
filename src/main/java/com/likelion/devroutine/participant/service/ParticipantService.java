@@ -4,8 +4,10 @@ import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
+import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.participant.domain.Participant;
-import com.likelion.devroutine.participant.dto.ParticipateChallengeResponse;
+import com.likelion.devroutine.participant.dto.ParticipateChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.participant.exception.DuplicatedChallengeException;
@@ -20,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
@@ -56,12 +60,16 @@ public class ParticipantService {
                 .message(ResponseMessage.CHALLENGE_CANCEL_SUCCESS.getMessage())
                 .build();
     }
-    public ParticipateChallengeResponse findByParticipateChallenge(String oauthId, Long challengeId){
+    public ParticipateChallengeDto findByParticipateChallenge(String oauthId, Long challengeId){
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
         Participant participant=getParticipant(user, challenge);
         List<Participant> participants=participantRepository.findAllByChallenge(challenge);
-        return ParticipateChallengeResponse.toResponse(participant, participants);
+        return ParticipateChallengeDto.toResponse(participant, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getParticipantName(participants));
+    }
+    public List<User> getParticipantName(List<Participant> participants){
+        return participants.stream().map(participant -> participant.getUser())
+                .collect(Collectors.toList());
     }
     public Participant getParticipant(User user, Challenge challenge){
         return participantRepository.findByUserAndChallenge(user, challenge)

@@ -3,10 +3,13 @@ package com.likelion.devroutine.challenge.controller;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -30,13 +33,15 @@ public class ChallengeRestController {
         return ResponseEntity.ok().body(challengeDtos);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ChallengeDto> findByChallengeId(@PathVariable Long id){
-        // 로그인 되어있는지 확인
-        // 로그인된 유저가 참여중인 챌린지이면 /{chanllengeId}/challenges-detail/{id}로 리다이렉트
-
+    public ResponseEntity<ChallengeDto> findByChallengeId(Authentication authentication, @PathVariable Long id){
         //로그인 X 이거나 참여중이지 않은 챌린지 인경우
-        ChallengeDto challengeDto=challengeService.findByChallengeId(id);
-        return ResponseEntity.ok().body(challengeDto);
+        if(!authentication.isAuthenticated() || !challengeService.isParticipate(id, authentication.getName())){
+            ChallengeDto challengeDto=challengeService.findByChallengeId(id);
+            return ResponseEntity.ok().body(challengeDto);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/api/v1/challenges/"+String.valueOf(id)+"/participant"));
+        return new ResponseEntity(headers, HttpStatus.MOVED_PERMANENTLY);
     }
     @PostMapping
     public ResponseEntity<ChallengeCreateResponse> createChallenge(Authentication authentication, @RequestBody ChallengeCreateRequest dto){
