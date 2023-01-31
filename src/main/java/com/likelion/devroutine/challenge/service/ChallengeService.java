@@ -1,8 +1,8 @@
 package com.likelion.devroutine.challenge.service;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.exception.UserNotFoundException;
-import com.likelion.devroutine.auth.repository.UserRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
+import com.likelion.devroutine.user.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;

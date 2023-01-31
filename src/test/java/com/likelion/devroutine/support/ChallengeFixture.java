@@ -1,8 +1,8 @@
 package com.likelion.devroutine.support;
 
-import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
+import com.likelion.devroutine.user.domain.User;
 
 public class ChallengeFixture {
     public static Challenge getChallenge(User user){

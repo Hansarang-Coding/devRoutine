@@ -1,10 +1,10 @@
 package com.likelion.devroutine.auth.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.likelion.devroutine.auth.domain.User;
 import com.likelion.devroutine.auth.dto.OAuth2Attributes;
 import com.likelion.devroutine.auth.dto.SessionUser;
-import com.likelion.devroutine.auth.repository.UserRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
