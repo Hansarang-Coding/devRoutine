@@ -2,19 +2,15 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
+
 }
 
 group = 'com.likelion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-ext { //snippet 생성 위치 지정
-    snippetsDir = file('build/generated-snippets')
-}
 
 configurations {
-    asciidoctorExtensions
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -34,9 +30,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    //asciidoc, mockmvc
-    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    //springdoc
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
     //OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -63,45 +59,4 @@ dependencies {
 
     //validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-}
-
-asciidoctor.doFirst { //폴더 비우기
-    println("---------------- delete present asciidoctor.")
-    delete file('src/main/resources/static/docs')
-}
-
-//asciidoctor 작업 구성
-asciidoctor {
-    inputs.dir snippetsDir
-    //snippets 디렉토리를 input 디렉토리로 설정
-    //asciidoctor가 사용할 input 파일들의 위치가 사전에 정해준 snippetsDir에 존재
-    configurations 'asciidoctorExtensions'
-    dependsOn test //build 시 test 작업 이후에 asciidoctor 수행
-}
-
-asciidoctor.doLast { //결과 출력
-    println("---------------- asciidoctor is deleted!")
-}
-
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc") //build 시
-    into file("src/main/resources/static/docs") //html 생성
-}
-
-tasks.named('test') {
-    outputs.dir snippetsDir //snippet 디렉토리 출력으로 작업하도록 설정
-    useJUnitPlatform()
-}
-
-build { //의존작업 명시
-    dependsOn copyDocument
-}
-
-bootJar {
-    //boot 실행 시 asciidoctor.outputDir의 html 파일을 into 다음의 경로 아래로 복사
-    dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}") {
-        into "src/main/resources/static/docs"
-    }
 }
