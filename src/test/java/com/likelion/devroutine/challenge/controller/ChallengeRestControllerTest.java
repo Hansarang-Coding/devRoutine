@@ -47,7 +47,7 @@ class ChallengeRestControllerTest {
     MockHttpSession session;
 
     private final ChallengeCreateRequest challengeCreateRequest =
-            new ChallengeCreateRequest("title", "description", true, null, null, null);
+            new ChallengeCreateRequest("title", "description", true, null, "#test", null, null);
 
     @BeforeEach
     void setup(){
