@@ -1,6 +1,6 @@
 package com.likelion.devroutine.auth.dto;
 
-import com.likelion.devroutine.auth.domain.User;
+import com.likelion.devroutine.user.domain.User;
 import lombok.Getter;
 
 import java.io.Serializable;

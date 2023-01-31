@@ -1,4 +1,4 @@
-package com.likelion.devroutine.auth.exception;
+package com.likelion.devroutine.user.exception;
 
 import com.likelion.devroutine.exception.NotFoundException;
 

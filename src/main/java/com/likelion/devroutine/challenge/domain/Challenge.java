@@ -1,6 +1,6 @@
 package com.likelion.devroutine.challenge.domain;
 
-import com.likelion.devroutine.auth.domain.User;
+import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeModifiyRequest;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;

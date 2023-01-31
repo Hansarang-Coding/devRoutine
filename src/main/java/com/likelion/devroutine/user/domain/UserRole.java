@@ -1,4 +1,4 @@
-package com.likelion.devroutine.auth.domain;
+package com.likelion.devroutine.user.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

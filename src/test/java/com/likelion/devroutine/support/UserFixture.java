@@ -1,7 +1,7 @@
 package com.likelion.devroutine.support;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.domain.UserRole;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.domain.UserRole;
 
 public class UserFixture {
     public static User getUser(){

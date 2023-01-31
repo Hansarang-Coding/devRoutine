@@ -1,22 +1,23 @@
 package com.likelion.devroutine.challenge.service;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.exception.UserNotFoundException;
-import com.likelion.devroutine.auth.domain.UserRole;
-import com.likelion.devroutine.auth.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.challenge.dto.*;
+import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
+import com.likelion.devroutine.challenge.dto.ChallengeDto;
+import com.likelion.devroutine.challenge.dto.ChallengeModifiyRequest;
+import com.likelion.devroutine.challenge.dto.ChallengeResponse;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
-import com.likelion.devroutine.exception.CustomException;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
+import com.likelion.devroutine.hashtag.repository.HashTagRepository;
 import com.likelion.devroutine.support.ChallengeFixture;
 import com.likelion.devroutine.support.UserFixture;
-import com.likelion.devroutine.hashtag.repository.HashTagRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
+import com.likelion.devroutine.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,12 +26,8 @@ import org.mockito.Mockito;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class ChallengeServiceTest {
