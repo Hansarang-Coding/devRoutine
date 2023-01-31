@@ -29,3 +29,21 @@ jwt:
   token:
     secret: hello
     expireTimeMs: 3600000
+
+
+# Swagger (springdoc-openapi-ui)
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html                              # swagger-ui.html을 기본 경로로 설정
+    operations-sorter: method                           # method, alpha
+    display-request-duration: true                      # 요청 시간 표시
+    # filter: true
+    # tags-sorter: alpha
+    # oauth2-redirect-url: /swagger-ui/oauth2-redirect.html
+
+  api-docs:
+    path: /api-docs                                     # API 문서 경로 (Json 형태)
+  paths-to-match: /api/**                               # Swagger 문서에 표시할 경로
+  show-actuator: true                                   # Actuator API 문서 표시
+  default-produces-media-type: application/json         # 기본 응답 타입
+  default-consumes-media-type: application/json         # 기본 요청 타입

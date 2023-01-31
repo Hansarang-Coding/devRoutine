@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -17,15 +19,16 @@ public class ChallengeCreateResponse {
     private String description;
     private String vigibility;
     private AuthenticationType authenticationType;
-    //해시태그 추가
+    private List<String> hashTags;
 
-    public static ChallengeCreateResponse toResponse(Challenge challenge) {
+    public static ChallengeCreateResponse toResponse(Challenge challenge, List<String> hashTags) {
         return ChallengeCreateResponse.builder()
                 .challengeId(challenge.getId())
                 .title(challenge.getTitle())
                 .description(challenge.getDescription())
                 .vigibility(challenge.getVigibility()?"공개":"비공개")
                 .authenticationType(challenge.getAuthenticationType())
+                .hashTags(hashTags)
                 .build();
     }
 }
