@@ -1,4 +1,4 @@
-package com.likelion.devroutine.challenge.dto;
+package com.likelion.devroutine.participant.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

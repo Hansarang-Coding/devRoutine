@@ -1,6 +1,7 @@
-package com.likelion.devroutine.challenge.domain;
+package com.likelion.devroutine.participant.domain;
 
 import com.likelion.devroutine.auth.domain.User;
+import com.likelion.devroutine.challenge.domain.Challenge;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserChallenge {
+public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,8 +26,8 @@ public class UserChallenge {
     @JoinColumn(name="challenge_id")
     private Challenge challenge;
 
-    public static UserChallenge createUserChallenge(User user, Challenge challenge){
-        return UserChallenge.builder()
+    public static Participant createParticipant(User user, Challenge challenge){
+        return Participant.builder()
                 .user(user)
                 .challenge(challenge)
                 .build();
