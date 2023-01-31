@@ -1,6 +1,6 @@
 package com.likelion.devroutine.comment.domain;
 
-import com.likelion.devroutine.auth.domain.User;
+import com.likelion.devroutine.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

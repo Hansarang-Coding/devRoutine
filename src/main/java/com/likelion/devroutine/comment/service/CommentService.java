@@ -1,7 +1,5 @@
 package com.likelion.devroutine.comment.service;
 
-import com.likelion.devroutine.auth.domain.User;
-import com.likelion.devroutine.auth.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
 import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
@@ -12,6 +10,8 @@ import com.likelion.devroutine.comment.exception.CommentNotFoundException;
 import com.likelion.devroutine.comment.exception.UserNotFoundException;
 import com.likelion.devroutine.comment.exception.UserUnauthorizedException;
 import com.likelion.devroutine.comment.repository.CommentRepository;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
