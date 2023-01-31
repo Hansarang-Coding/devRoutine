@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Participant {
+public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,8 +26,8 @@ public class Participant {
     @JoinColumn(name="challenge_id")
     private Challenge challenge;
 
-    public static Participant createParticipant(User user, Challenge challenge){
-        return Participant.builder()
+    public static Participation createParticipant(User user, Challenge challenge){
+        return Participation.builder()
                 .user(user)
                 .challenge(challenge)
                 .build();

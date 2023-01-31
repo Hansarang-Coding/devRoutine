@@ -5,15 +5,14 @@ import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
-import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
-import com.likelion.devroutine.participant.domain.Participant;
-import com.likelion.devroutine.participant.dto.ParticipateChallengeDto;
+import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
-import com.likelion.devroutine.participant.exception.DuplicatedChallengeException;
+import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
-import com.likelion.devroutine.participant.exception.ParticipantNotFoundException;
-import com.likelion.devroutine.participant.repository.ParticipantRepository;
+import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
+import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
@@ -26,13 +25,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class ParticipantService {
-    private final ParticipantRepository participantRepository;
+public class ParticipationService {
+    private final ParticipationRepository participationRepository;
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
 
-    public ParticipantService(ParticipantRepository participantRepository, UserRepository userRepository, ChallengeRepository challengeRepository) {
-        this.participantRepository = participantRepository;
+    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository) {
+        this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
     }
@@ -41,9 +40,9 @@ public class ParticipantService {
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
         validateParticipate(user, challenge);
-        Participant savedParticipant=participantRepository.save(Participant.createParticipant(user, challenge));
+        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
         return ParticipationResponse.builder()
-                .challengeId(savedParticipant.getChallenge().getId())
+                .challengeId(savedParticipation.getChallenge().getId())
                 .message(ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
                 .build();
     }
@@ -52,28 +51,28 @@ public class ParticipantService {
     public ParticipationResponse cancelChallenge(String oauthId, Long challengeId) {
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
-        Participant participant=getParticipant(user, challenge);
+        Participation participation =getParticipant(user, challenge);
         isProgressChallenge(challenge.getStartDate());
-        participantRepository.delete(participant);
+        participationRepository.delete(participation);
         return ParticipationResponse.builder()
                 .challengeId(challenge.getId())
                 .message(ResponseMessage.CHALLENGE_CANCEL_SUCCESS.getMessage())
                 .build();
     }
-    public ParticipateChallengeDto findByParticipateChallenge(String oauthId, Long challengeId){
+    public ParticipationChallengeDto findByParticipateChallenge(String oauthId, Long challengeId){
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
-        Participant participant=getParticipant(user, challenge);
-        List<Participant> participants=participantRepository.findAllByChallenge(challenge);
-        return ParticipateChallengeDto.toResponse(participant, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getChallengeParticipants(participants));
+        Participation participation =getParticipant(user, challenge);
+        List<Participation> participations = participationRepository.findAllByChallenge(challenge);
+        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getChallengeParticipants(participations));
     }
-    public List<User> getChallengeParticipants(List<Participant> participants){
-        return participants.stream().map(participant -> participant.getUser())
+    public List<User> getChallengeParticipants(List<Participation> participations){
+        return participations.stream().map(participant -> participant.getUser())
                 .collect(Collectors.toList());
     }
-    public Participant getParticipant(User user, Challenge challenge){
-        return participantRepository.findByUserAndChallenge(user, challenge)
-                .orElseThrow(()-> new ParticipantNotFoundException());
+    public Participation getParticipant(User user, Challenge challenge){
+        return participationRepository.findByUserAndChallenge(user, challenge)
+                .orElseThrow(()-> new ParticipationNotFoundException());
     }
 
     public User getUser(String oauthId) {
@@ -89,9 +88,9 @@ public class ParticipantService {
     }
 
     public boolean validateDuplicateParticipate(User user, Challenge challenge){
-        participantRepository.findByUserAndChallenge(user, challenge)
+        participationRepository.findByUserAndChallenge(user, challenge)
                 .ifPresent(participant->{
-                    throw new DuplicatedChallengeException();
+                    throw new DuplicatedParticipationException();
                 });
         return true;
     }

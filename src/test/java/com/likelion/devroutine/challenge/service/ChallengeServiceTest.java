@@ -13,7 +13,7 @@ import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
-import com.likelion.devroutine.participant.repository.ParticipantRepository;
+import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.support.ChallengeFixture;
 import com.likelion.devroutine.support.UserFixture;
 import com.likelion.devroutine.user.domain.User;
@@ -37,7 +37,7 @@ class ChallengeServiceTest {
     private ChallengeHashTagRepository challengeHashTagRepository = mock(ChallengeHashTagRepository.class);
     private HashTagRepository hashTagRepository = mock(HashTagRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
-    private ParticipantRepository participantRepository=mock(ParticipantRepository.class);
+    private ParticipationRepository participationRepository =mock(ParticipationRepository.class);
     
     private User userFixture;
     private User mockUser;
@@ -53,7 +53,7 @@ class ChallengeServiceTest {
     void setup() {
         challengeService = new ChallengeService(
                 challengeRepository, hashTagRepository,
-                challengeHashTagRepository, userRepository, participantRepository);
+                challengeHashTagRepository, userRepository, participationRepository);
         userFixture = UserFixture.getUser();
         challengeFixture = ChallengeFixture.getChallenge(userFixture);
         mockUser = mock(User.class);

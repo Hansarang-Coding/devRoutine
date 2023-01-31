@@ -40,7 +40,7 @@ public class ChallengeRestController {
             return ResponseEntity.ok().body(challengeDto);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/api/v1/challenges/"+String.valueOf(id)+"/participant"));
+        headers.setLocation(URI.create("/api/v1/challenges/"+String.valueOf(id)+"/participation"));
         return new ResponseEntity(headers, HttpStatus.MOVED_PERMANENTLY);
     }
     @PostMapping

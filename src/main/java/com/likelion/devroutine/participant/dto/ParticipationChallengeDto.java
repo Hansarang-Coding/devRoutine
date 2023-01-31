@@ -2,7 +2,7 @@ package com.likelion.devroutine.participant.dto;
 
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
-import com.likelion.devroutine.participant.domain.Participant;
+import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipateChallengeDto {
+public class ParticipationChallengeDto {
     private Long id;
     private String title;
     private String description;
@@ -24,13 +24,13 @@ public class ParticipateChallengeDto {
     private List<User> participants;
     private List<ChallengeHashTagResponse> challengeHashTag;
 
-   public static ParticipateChallengeDto toResponse(Participant participant, List<ChallengeHashTagResponse> challengeHashTags, List<User> participants) {
-        return ParticipateChallengeDto.builder()
-                .id(participant.getId())
-                .title(participant.getChallenge().getTitle())
-                .description(participant.getChallenge().getDescription())
-                .authenticationType(participant.getChallenge().getAuthenticationType())
-                .vigibility(participant.getChallenge().getVigibility()? "공개" : "비공개")
+   public static ParticipationChallengeDto toResponse(Participation participation, List<ChallengeHashTagResponse> challengeHashTags, List<User> participants) {
+        return ParticipationChallengeDto.builder()
+                .id(participation.getId())
+                .title(participation.getChallenge().getTitle())
+                .description(participation.getChallenge().getDescription())
+                .authenticationType(participation.getChallenge().getAuthenticationType())
+                .vigibility(participation.getChallenge().getVigibility()? "공개" : "비공개")
                 .participants(participants)
                 .challengeHashTag(challengeHashTags)
                 .build();
