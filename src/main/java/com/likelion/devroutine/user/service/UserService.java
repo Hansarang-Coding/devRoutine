@@ -7,7 +7,10 @@ import com.likelion.devroutine.follow.exception.AlreadyFollowingException;
 import com.likelion.devroutine.follow.exception.FollowNotPermittedException;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
 import com.likelion.devroutine.follow.repository.FollowRepository;
+import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.dto.MyPageResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class UserService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final ParticipationRepository participationRepository;
 
     @Transactional
     public FollowCreateResponse follow(Long followerId, String oauthId) {
@@ -87,5 +91,17 @@ public class UserService {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException();
         }
+    }
+
+    public MyPageResponse getProfile(String oauthId) {
+        User user = findUserByOauthId(oauthId);
+        List<Participation> participations = findParticipations(user.getId());
+        Long followers = followRepository.countFollowers(user.getId());
+        Long following = followRepository.countFollowing(user.getId());
+        return MyPageResponse.of(user, followers, following, participations);
+    }
+
+    private List<Participation> findParticipations(Long userId) {
+        return participationRepository.findAllByUserId(userId);
     }
 }
