@@ -16,4 +16,25 @@ import java.time.LocalDateTime;
 @Builder
 public class AlarmResponse {
 
+    private Long id;
+    private AlarmType alarmType;
+    private String message;
+
+    //알림을 보낸 사람
+    private Long userId;
+
+
+    private LocalDateTime createdAt;
+
+    public static Page<AlarmResponse> of(Page<Alarm> alarms) {
+        return alarms.map(alarm -> AlarmResponse.builder()
+                .id(alarm.getId())
+                .alarmType(alarm.getAlarmType())
+                .message(alarm.getMessage())
+                .userId(alarm.getUser().getId())
+                .createdAt(alarm.getCreatedAt())
+                .build());
+    }
+
+
 }

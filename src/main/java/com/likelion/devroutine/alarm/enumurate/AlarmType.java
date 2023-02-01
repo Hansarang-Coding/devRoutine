@@ -9,7 +9,7 @@ public enum AlarmType {
     NEW_CHALLENGE_INVITE("new challenge invite"),
     NEW_COMMENT_ON_CERTIFICATION("new comment"),
     NEW_LIKE_ON_CERTIFICATION("new like"),
-    NEW_FOLLOWER_("new follower");
+    NEW_FOLLOW("new follow");
 
 
     private final String message;
