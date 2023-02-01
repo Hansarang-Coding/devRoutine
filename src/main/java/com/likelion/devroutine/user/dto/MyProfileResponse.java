@@ -38,6 +38,7 @@ public class MyProfileResponse {
         return participations.stream()
                 .filter(participation -> participation.getChallenge().getUser().getId().equals(userId))
                 .map(participation -> ChallengeResponse.builder()
+                        .id(participation.getChallenge().getId())
                         .message(participation.getChallenge().getTitle())
                         .build())
                 .collect(Collectors.toList());
@@ -46,6 +47,7 @@ public class MyProfileResponse {
     private static List<ChallengeResponse> extractchallenges(List<Participation> participations) {
         return participations.stream()
                 .map(participation -> ChallengeResponse.builder()
+                        .id(participation.getChallenge().getId())
                         .message(participation.getChallenge().getTitle())
                         .build())
                 .collect(Collectors.toList());
