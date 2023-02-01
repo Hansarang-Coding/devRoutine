@@ -7,14 +7,18 @@ import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowerResponse;
-import com.likelion.devroutine.follow.dto.FollowingResponse;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
 import com.likelion.devroutine.follow.repository.FollowRepository;
 import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.dto.InviteAcceptResponse;
 import com.likelion.devroutine.invite.dto.InviteResponse;
 import com.likelion.devroutine.invite.enumerate.ResponseMessage;
+import com.likelion.devroutine.invite.exception.BadRequestInviteAcceptException;
+import com.likelion.devroutine.invite.exception.InviteNotFoundException;
 import com.likelion.devroutine.invite.repository.InviteRepository;
+import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
+import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
@@ -31,21 +35,16 @@ public class InviteService {
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
     private final FollowRepository followRepository;
+    private final ParticipationRepository participationRepository;
 
-    public InviteService(InviteRepository inviteRepository, UserRepository userRepository, ChallengeRepository challengeRepository, FollowRepository followRepository) {
+    public InviteService(InviteRepository inviteRepository, UserRepository userRepository, ChallengeRepository challengeRepository, FollowRepository followRepository, ParticipationRepository participationRepository) {
         this.inviteRepository = inviteRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.followRepository = followRepository;
+        this.participationRepository = participationRepository;
     }
 
-    public List<FollowerResponse> getFollowList(String oauthId, Long challengeId) {
-        User user = getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(user, challenge);
-        List<Follow> followers=followRepository.findByFollowerId(user.getId());
-        return FollowerResponse.of(followers);
-    }
     @Transactional
     public InviteResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
         User inviter=getUser(inviterOauthId);
@@ -62,6 +61,35 @@ public class InviteService {
                 .inviteeId(savedInvite.getInviteeId())
                 .message(ResponseMessage.INVITE_SUCCESS.getMessage())
                 .build();
+    }
+
+    @Transactional
+    public InviteAcceptResponse acceptInvite(String oauthId, Long inviteId) {
+        User user=getUser(oauthId);
+        Invite invite=getInvite(inviteId);
+        validateInvitee(invite, user);
+        Challenge challenge=getChallenge(invite.getChallengeId());
+        validateParticipate(user, challenge);
+        Participation savedParticipation=participationRepository.save(Participation.createParticipant(user, challenge));
+        return InviteAcceptResponse.builder()
+                .challengeId(savedParticipation.getChallenge().getId())
+                .message(ResponseMessage.INVITE_ACCEPT.getMessage())
+                .build();
+    }
+
+    private boolean validateInvitee(Invite invite, User user) {
+        if(invite.getInviteeId().equals(user.getId())){
+            return true;
+        }
+        throw new BadRequestInviteAcceptException();
+    }
+
+    public List<FollowerResponse> getFollowList(String oauthId, Long challengeId) {
+        User user = getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        matchWriterAndUser(user, challenge);
+        List<Follow> followers=followRepository.findByFollowerId(user.getId());
+        return FollowerResponse.of(followers);
     }
 
     //invitee가 inviter를 팔로우하고 있는지 확인하는 함수
@@ -86,9 +114,26 @@ public class InviteService {
         return userRepository.findByOauthId(oauthId)
                 .orElseThrow(()->new UserNotFoundException());
     }
+
+    public Invite getInvite(Long inviteId){
+        return inviteRepository.findById(inviteId)
+                .orElseThrow(()-> new InviteNotFoundException());
+    }
     public boolean isProgressChallenge(LocalDate startDate) {
         if (LocalDate.now().isAfter(startDate))
             throw new InProgressingChallengeException();
         return false;
+    }
+    public boolean validateParticipate(User user, Challenge challenge){
+        isProgressChallenge(challenge.getStartDate());
+        validateDuplicateParticipate(user, challenge);
+        return true;
+    }
+    public boolean validateDuplicateParticipate(User user, Challenge challenge){
+        participationRepository.findByUserAndChallenge(user, challenge)
+                .ifPresent(participant->{
+                    throw new DuplicatedParticipationException();
+                });
+        return true;
     }
 }
