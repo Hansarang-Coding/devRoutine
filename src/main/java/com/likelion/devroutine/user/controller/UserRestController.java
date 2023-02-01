@@ -3,7 +3,7 @@ package com.likelion.devroutine.user.controller;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
 import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
-import com.likelion.devroutine.user.dto.MyPageResponse;
+import com.likelion.devroutine.user.dto.MyProfileResponse;
 import com.likelion.devroutine.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +48,8 @@ public class UserRestController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<MyPageResponse> getProfile(Authentication authentication) {
-        MyPageResponse myPage = userService.getProfile(authentication.getName());
-        return ResponseEntity.ok().body(myPage);
+    public ResponseEntity<MyProfileResponse> getProfile(Authentication authentication) {
+        MyProfileResponse profile = userService.getProfile(authentication.getName());
+        return ResponseEntity.ok().body(profile);
     }
 }

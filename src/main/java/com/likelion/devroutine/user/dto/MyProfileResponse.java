@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @Getter
-public class MyPageResponse {
+public class MyProfileResponse {
     private String nickName;
     private String profileImageUrl;
     private Long followerCount;
@@ -21,10 +21,10 @@ public class MyPageResponse {
     private List<ChallengeResponse> challenges; //참가중인 챌린지
     private List<ChallengeResponse> authorizedChallenges; //개설한 챌린지
 
-    public static MyPageResponse of(User user, Long followerCount, Long followingCount, List<Participation> participations) {
+    public static MyProfileResponse of(User user, Long followerCount, Long followingCount, List<Participation> participations) {
         List<ChallengeResponse> challenges = extractchallenges(participations);
         List<ChallengeResponse> authorizedChallenges = extractchallenges(participations, user.getId());
-        return MyPageResponse.builder()
+        return MyProfileResponse.builder()
                 .nickName(user.getName())
                 .profileImageUrl(user.getPicture())
                 .followerCount(followerCount)
