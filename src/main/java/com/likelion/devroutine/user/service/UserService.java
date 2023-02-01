@@ -1,5 +1,8 @@
 package com.likelion.devroutine.user.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
@@ -25,6 +28,8 @@ public class UserService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
+    private final AlarmRepository alarmRepository;
+
     @Transactional
     public FollowCreateResponse follow(Long followerId, String oauthId) {
         User followingUser = findUserByOauthId(oauthId);
@@ -33,6 +38,9 @@ public class UserService {
         validateSelfFollow(follower.getId(), followingUser.getId());
         Follow follow = Follow.createFollow(follower, followingUser);
         followRepository.save(follow);
+
+        //알람
+        followAlarm(follower,followingUser.getId());
         return FollowCreateResponse.of(followingUser.getName(), follower.getName());
     }
 
@@ -68,6 +76,12 @@ public class UserService {
         return FollowingResponse.of(followers);
     }
 
+    //알림 기능
+    private void followAlarm(User followerUser, Long followingUser) {
+        alarmRepository.save(Alarm.createAlarm(followingUser,
+                AlarmType.NEW_FOLLOW, AlarmType.NEW_FOLLOW.getMessage(), followerUser));
+    }
+
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -88,4 +102,6 @@ public class UserService {
             throw new UserNotFoundException();
         }
     }
+
+
 }

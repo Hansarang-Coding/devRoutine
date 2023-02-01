@@ -3,15 +3,12 @@ package com.likelion.devroutine.comment.service;
 import com.likelion.devroutine.alarm.domain.Alarm;
 import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
-import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.comment.domain.Comment;
 import com.likelion.devroutine.comment.dto.*;
 import com.likelion.devroutine.comment.exception.CommentNotFoundException;
-import com.likelion.devroutine.comment.exception.UserNotFoundException;
-import com.likelion.devroutine.comment.exception.UserUnauthorizedException;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
+import com.likelion.devroutine.user.exception.UserUnauthorizedException;
 import com.likelion.devroutine.comment.repository.CommentRepository;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.repository.UserRepository;
@@ -21,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.cert.Certificate;
 import java.util.Objects;
 
 @Service
@@ -41,7 +37,7 @@ public class CommentService {
         User user = getUser(name);
 
         //댓글작성
-        //saveNewCommentAlarm(certificationId, name);
+        //commentAlarm(certificationId, name);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certificationId, user));
         return CommentCreateResponse.of(savedComment);
     }
@@ -68,15 +64,16 @@ public class CommentService {
         return CommentUpdateResponse.of(comment);
     }
 
-
-    private void newCommentAlarm(Long certificationId, String name) {
+    //알람 엔티티 추가 메서드
+    private void commentAlarm(Long certificationWriteId, String commentWriteName) {
         //certification은 글쓴이 / 댓글작성자는 name
-        Long commentUserId = getUser(name).getId();
+        Long commentWriteNameId = getUser(commentWriteName).getId();
 
         //글쓴이
-        //User WriterUser = getCertification(certificationId).getUser();
-        alarmRepository.save(Alarm.createAlarm(certificationId, fromUserId,
-                AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), AlarmType.NEW_COMMENT_ON_POST, writerUser));
+        //User certificationUser = getCertification(certificationWriteId).getUser();
+
+//        alarmRepository.save(Alarm.commentAlarm( commentWriteNameId,
+//                AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), AlarmType.NEW_COMMENT_ON_CERTIFICATION, certificationUser));
     }
 
 
