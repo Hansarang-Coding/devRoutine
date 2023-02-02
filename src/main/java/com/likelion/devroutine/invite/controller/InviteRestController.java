@@ -4,6 +4,8 @@ import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
 import com.likelion.devroutine.invite.dto.InviteAcceptResponse;
 import com.likelion.devroutine.invite.dto.InviteResponse;
+import com.likelion.devroutine.invite.dto.InviteeResponse;
+import com.likelion.devroutine.invite.dto.InviterResponse;
 import com.likelion.devroutine.invite.service.InviteService;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,7 @@ public class InviteRestController {
 
     @GetMapping("/challenges/{challengeId}/invites")
     public ResponseEntity<List<FollowerResponse>> getFollowList(Authentication authentication, @PathVariable Long challengeId){
-        List<FollowerResponse> followerResponses = inviteService.getFollowList(authentication.getName(), challengeId);
+        List<FollowerResponse> followerResponses = inviteService.findFollowers(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(followerResponses);
     }
     @PostMapping("/challenges/{challengeId}/invites/{userId}")
@@ -41,5 +43,17 @@ public class InviteRestController {
     public ResponseEntity<InviteAcceptResponse> acceptInvite(Authentication authentication, @PathVariable Long id){
         InviteAcceptResponse inviteAcceptResponse=inviteService.acceptInvite(authentication.getName(), id);
         return ResponseEntity.ok().body(inviteAcceptResponse);
+    }
+
+    @GetMapping("/invitees") //로그인한 유저=invitee
+    public ResponseEntity<List<InviterResponse>> findInviters(Authentication authentication){
+        List<InviterResponse> inviterResponses=inviteService.findInviters(authentication.getName());
+        return ResponseEntity.ok().body(inviterResponses);
+    }
+
+    @GetMapping("/inviters") //로그인한 유저=inviter
+    public ResponseEntity<List<InviteeResponse>> findInvitees(Authentication authentication){
+        List<InviteeResponse> inviteeResponses=inviteService.findInvitees(authentication.getName());
+        return ResponseEntity.ok().body(inviteeResponses);
     }
 }
