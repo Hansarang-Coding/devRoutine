@@ -12,6 +12,8 @@ import com.likelion.devroutine.follow.repository.FollowRepository;
 import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.dto.InviteAcceptResponse;
 import com.likelion.devroutine.invite.dto.InviteResponse;
+import com.likelion.devroutine.invite.dto.InviteeResponse;
+import com.likelion.devroutine.invite.dto.InviterResponse;
 import com.likelion.devroutine.invite.enumerate.ResponseMessage;
 import com.likelion.devroutine.invite.exception.BadRequestInviteAcceptException;
 import com.likelion.devroutine.invite.exception.InviteNotFoundException;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,6 +48,13 @@ public class InviteService {
         this.participationRepository = participationRepository;
     }
 
+    public List<FollowerResponse> findFollowers(String oauthId, Long challengeId) {
+        User user = getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        matchWriterAndUser(user, challenge);
+        List<Follow> followers=followRepository.findByFollowerId(user.getId());
+        return FollowerResponse.of(followers);
+    }
     @Transactional
     public InviteResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
         User inviter=getUser(inviterOauthId);
@@ -77,19 +87,24 @@ public class InviteService {
                 .build();
     }
 
+    public List<InviterResponse> findInviters(String oauthId) {
+        User user=getUser(oauthId);
+        List<Challenge> invites=inviteRepository.findInviterByInviteeId(user.getId());
+
+        return InviterResponse.toList(invites);
+    }
+
+    public List<InviteeResponse> findInvitees(String oauthId) {
+        User user=getUser(oauthId);
+        List<InviteeResponse> inviteeResponses=inviteRepository.findInviteeByInviterId(user.getId());
+
+        return inviteeResponses;
+    }
     private boolean validateInvitee(Invite invite, User user) {
         if(invite.getInviteeId().equals(user.getId())){
             return true;
         }
         throw new BadRequestInviteAcceptException();
-    }
-
-    public List<FollowerResponse> getFollowList(String oauthId, Long challengeId) {
-        User user = getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(user, challenge);
-        List<Follow> followers=followRepository.findByFollowerId(user.getId());
-        return FollowerResponse.of(followers);
     }
 
     //invitee가 inviter를 팔로우하고 있는지 확인하는 함수
