@@ -10,10 +10,7 @@ import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
 import com.likelion.devroutine.follow.repository.FollowRepository;
 import com.likelion.devroutine.invite.domain.Invite;
-import com.likelion.devroutine.invite.dto.InviteAcceptResponse;
-import com.likelion.devroutine.invite.dto.InviteResponse;
-import com.likelion.devroutine.invite.dto.InviteeResponse;
-import com.likelion.devroutine.invite.dto.InviterResponse;
+import com.likelion.devroutine.invite.dto.*;
 import com.likelion.devroutine.invite.enumerate.ResponseMessage;
 import com.likelion.devroutine.invite.exception.BadRequestInviteAcceptException;
 import com.likelion.devroutine.invite.exception.InviteNotFoundException;
@@ -29,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,7 +52,7 @@ public class InviteService {
         return FollowerResponse.of(followers);
     }
     @Transactional
-    public InviteResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
+    public InviteCreateResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
         User inviter=getUser(inviterOauthId);
         User invitee=userRepository.findById(inviteeId)
                 .orElseThrow(()->new UserNotFoundException());
@@ -65,7 +61,7 @@ public class InviteService {
         matchWriterAndUser(inviter, challenge);
         isProgressChallenge(challenge.getStartDate());
         Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
-        return InviteResponse.builder()
+        return InviteCreateResponse.builder()
                 .inviterId(savedInvite.getInviterId())
                 .challengeId(savedInvite.getChallengeId())
                 .inviteeId(savedInvite.getInviteeId())
@@ -74,14 +70,14 @@ public class InviteService {
     }
 
     @Transactional
-    public InviteAcceptResponse acceptInvite(String oauthId, Long inviteId) {
+    public InviteResponse acceptInvite(String oauthId, Long inviteId) {
         User user=getUser(oauthId);
         Invite invite=getInvite(inviteId);
         validateInvitee(invite, user);
         Challenge challenge=getChallenge(invite.getChallengeId());
         validateParticipate(user, challenge);
         Participation savedParticipation=participationRepository.save(Participation.createParticipant(user, challenge));
-        return InviteAcceptResponse.builder()
+        return InviteResponse.builder()
                 .challengeId(savedParticipation.getChallenge().getId())
                 .message(ResponseMessage.INVITE_ACCEPT.getMessage())
                 .build();
@@ -100,6 +96,30 @@ public class InviteService {
 
         return inviteeResponses;
     }
+    @Transactional
+    public InviteResponse rejectInvite(String oauthId, Long challengeId) {
+        User user=getUser(oauthId);
+        List<Invite> invites=inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, user.getId());
+        if(invites.isEmpty()){
+            throw new InviteNotFoundException();
+        }
+        invites.forEach(invite->invite.deleteInvite());
+        return InviteResponse.builder()
+                .challengeId(challengeId)
+                .message(ResponseMessage.INVITE_REJECT.getMessage())
+                .build();
+    }
+
+    @Transactional
+    public InviteCancelResponse cancelInvite(String oauthId, Long inviteId) {
+        User user=getUser(oauthId);
+        Invite invite=getInvite(inviteId);
+        invite.deleteInvite();
+        return InviteCancelResponse.builder()
+                .message(ResponseMessage.INVITE_CANCEL.getMessage())
+                .build();
+    }
+
     private boolean validateInvitee(Invite invite, User user) {
         if(invite.getInviteeId().equals(user.getId())){
             return true;
