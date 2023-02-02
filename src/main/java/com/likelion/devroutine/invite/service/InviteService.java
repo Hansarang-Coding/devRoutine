@@ -77,6 +77,7 @@ public class InviteService {
         Challenge challenge=getChallenge(invite.getChallengeId());
         validateParticipate(user, challenge);
         Participation savedParticipation=participationRepository.save(Participation.createParticipant(user, challenge));
+        invite.deleteInvite();
         return InviteResponse.builder()
                 .challengeId(savedParticipation.getChallenge().getId())
                 .message(ResponseMessage.INVITE_ACCEPT.getMessage())
