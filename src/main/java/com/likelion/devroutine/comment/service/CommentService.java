@@ -32,9 +32,9 @@ public class CommentService {
     //private final Certification certification;
 
     @Transactional
-    public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String name) {
+    public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String oauthId) {
         //Certification certification = findCertification(CertificationId)
-        User user = getUser(name);
+        User user = getOauthId(oauthId);
 
         //댓글작성
         //commentAlarm(certificationId, name);
@@ -67,7 +67,8 @@ public class CommentService {
     //알람 엔티티 추가 메서드
     private void commentAlarm(Long certificationWriteId, String commentWriteName) {
         //certification은 글쓴이 / 댓글작성자는 name
-        Long commentWriteNameId = getUser(commentWriteName).getId();
+        User oauthUser = getOauthId(commentWriteName);
+        Long commentWriteNameId = oauthUser.getId();
 
         //글쓴이
         //User certificationUser = getCertification(certificationWriteId).getUser();
@@ -84,9 +85,9 @@ public class CommentService {
 
 
 
-    private User getUser(String name) {
-        return userRepository.findByName(name).orElseThrow(() ->
-                new UserNotFoundException());
+    private User getOauthId(String OauthId) {
+        return userRepository.findByOauthId(OauthId)
+                .orElseThrow(()-> new UserNotFoundException());
     }
 
 
@@ -95,8 +96,9 @@ public class CommentService {
 //            throw new CertificationNotFoundException()
 //    }
 //}
+
     private Comment getCommentByAuthorizedUser(Long commentId, String userName) {
-        User findUser = getUser(userName);
+        User findUser = getOauthId(userName);
         Comment comment = getComment(commentId);
         if (Objects.equals(comment.getUser().getId(), findUser.getId()))
             return comment;
@@ -106,6 +108,11 @@ public class CommentService {
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(() ->
                 new CommentNotFoundException());
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 
