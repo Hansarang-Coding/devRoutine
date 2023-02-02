@@ -1,14 +1,14 @@
 package com.likelion.devroutine.invite.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
 @AllArgsConstructor
-public class InviteAcceptResponse {
-    private Long challengeId;
+@NoArgsConstructor
+public class InviteCancelResponse {
     private String message;
 }
