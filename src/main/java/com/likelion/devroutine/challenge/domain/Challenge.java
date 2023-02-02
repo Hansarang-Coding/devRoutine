@@ -38,9 +38,7 @@ public class Challenge {
     @Enumerated(EnumType.STRING)
     private AuthenticationType authenticationType;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private User user;
+    private Long userId;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -60,13 +58,13 @@ public class Challenge {
     public boolean getVigibility(){
         return this.vigibility;
     }
-    public static Challenge createChallenge(User user, ChallengeCreateRequest dto) {
+    public static Challenge createChallenge(Long userId, ChallengeCreateRequest dto) {
         return Challenge.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .vigibility(dto.getVigibility())
                 .authenticationType(dto.getAuthenticationType())
-                .user(user)
+                .userId(userId)
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .build();
