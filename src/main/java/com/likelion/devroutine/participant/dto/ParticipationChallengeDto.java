@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ParticipationChallengeDto {
     private Long id;
+    private Long challengeId;
     private String title;
     private String description;
     private String vigibility;
@@ -28,6 +29,7 @@ public class ParticipationChallengeDto {
    public static ParticipationChallengeDto toResponse(Participation participation, List<ChallengeHashTagResponse> challengeHashTags, List<UserResponse> participants) {
         return ParticipationChallengeDto.builder()
                 .id(participation.getId())
+                .challengeId(participation.getChallenge().getId())
                 .title(participation.getChallenge().getTitle())
                 .description(participation.getChallenge().getDescription())
                 .authenticationType(participation.getChallenge().getAuthenticationType())
