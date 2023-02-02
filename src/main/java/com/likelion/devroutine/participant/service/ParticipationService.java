@@ -14,6 +14,7 @@ import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
 import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class ParticipationService {
         Challenge challenge=getChallenge(challengeId);
         Participation participation =getParticipant(user, challenge);
         List<Participation> participations = participationRepository.findAllByChallenge(challenge);
-        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), getChallengeParticipants(participations));
+        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), UserResponse.toList(getChallengeParticipants(participations)));
     }
     public List<User> getChallengeParticipants(List<Participation> participations){
         return participations.stream().map(participant -> participant.getUser())
