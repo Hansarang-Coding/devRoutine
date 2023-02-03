@@ -1,6 +1,6 @@
 package com.likelion.devroutine.certification.domain;
 
-import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.participant.domain.Participation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,8 +25,8 @@ public class Certification {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id")
-    private Challenge challenge;
+    @JoinColumn(name = "participation_id")
+    private Participation participation;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -36,11 +36,11 @@ public class Certification {
 
     private LocalDateTime deletedAt;
 
-    public static Certification createCertification(String imageUrl, String description, Challenge challenge) {
+    public static Certification createCertification(String imageUrl, String description, Participation participation) {
         return Certification.builder()
                 .imageUrl(imageUrl)
                 .description(description)
-                .challenge(challenge)
+                .participation(participation)
                 .build();
     }
 }
