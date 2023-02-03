@@ -8,5 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ChallengeResponse {
+    private Long id;
     private String message;
 }
