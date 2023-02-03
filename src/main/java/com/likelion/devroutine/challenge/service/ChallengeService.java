@@ -70,7 +70,7 @@ public class ChallengeService {
     @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
         User user = getUser(oauthId);
-        Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user, dto));
+        Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user.getId(), dto));
         List<String> hashTags = extractHashTag(dto.getHashTag());
         saveNewHashTags(savedChallenge.getId(), hashTags);
         participationRepository.save(Participation.createParticipant(user, savedChallenge));
@@ -159,7 +159,7 @@ public class ChallengeService {
     }
 
     public boolean matchWriterAndUser(Challenge challenge, User user) {
-        if (!user.getId().equals(challenge.getUser().getId())) {
+        if (!user.getId().equals(challenge.getUserId())) {
             throw new InvalidPermissionException();
         }
         return true;
