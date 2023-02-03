@@ -1,27 +1,24 @@
 package com.likelion.devroutine.certification.dto;
 
-import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.certification.domain.Certification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
 @Getter
 public class CertificationResponse {
-    private String title;
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String imageUrl;
 
-    public static CertificationResponse of(Participation participation){
-        return CertificationResponse.builder()
-                .title(participation.getChallenge().getTitle())
-                .description(participation.getChallenge().getDescription())
-                .startDate(participation.getChallenge().getStartDate())
-                .endDate(participation.getChallenge().getEndDate())
-                .build();
+    public static List<CertificationResponse> of(List<Certification> certifications){
+        return certifications.stream()
+                .map(certification -> CertificationResponse.builder()
+                        .imageUrl(certification.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
