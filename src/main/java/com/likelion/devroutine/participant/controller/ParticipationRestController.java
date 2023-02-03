@@ -1,5 +1,6 @@
 package com.likelion.devroutine.participant.controller;
 
+import com.likelion.devroutine.participant.dto.ParticipantCertificationResponse;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.service.ParticipationService;
@@ -35,4 +36,8 @@ public class ParticipationRestController {
         ParticipationChallengeDto participationChallengeDto = participationService.findByParticipateChallenge(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(participationChallengeDto);
     }
+/*    @GetMapping("/{challengeId}/certification")
+    public ResponseEntity<List<ParticipantCertificationResponse>> findAllParticipantCertifications(Authentication authentication, @PathVariable Long challengeId){
+
+    }*/
 }

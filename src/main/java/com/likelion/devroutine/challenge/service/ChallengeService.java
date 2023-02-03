@@ -1,5 +1,8 @@
 package com.likelion.devroutine.challenge.service;
 
+import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.invite.domain.Invite;
+import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
@@ -9,7 +12,6 @@ import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
-import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
@@ -36,17 +38,19 @@ public class ChallengeService {
     private final ChallengeHashTagRepository challengeHashTagRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+    private final InviteRepository inviteRepository;
 
     public ChallengeService(
             ChallengeRepository challengeRepository,
             HashTagRepository hashTagRepository,
             ChallengeHashTagRepository challengeHashTagRepository,
-            UserRepository userRepository, ParticipationRepository participationRepository) {
+            UserRepository userRepository, ParticipationRepository participationRepository, InviteRepository inviteRepository) {
         this.challengeRepository = challengeRepository;
         this.hashTagRepository = hashTagRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
         this.userRepository = userRepository;
         this.participationRepository = participationRepository;
+        this.inviteRepository = inviteRepository;
     }
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
@@ -63,8 +67,28 @@ public class ChallengeService {
 
     public ChallengeDto findByChallengeId(Long challengeId) {
         Challenge challenge = getChallenge(challengeId);
-        isVigibility(challenge);
+        if(!challenge.getVigibility()) throw new InaccessibleChallengeException();
         return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
+    }
+    public ChallengeDto findByChallengeId(Long challengeId, String oauthId){
+        Challenge challenge = getChallenge(challengeId);
+        isViewable(challenge, oauthId);
+        return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
+    }
+
+    private boolean isViewable(Challenge challenge, String oauthId) {
+        //공개 챌린지이거나 초대받은 경우
+        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
+            return true;
+        }
+        throw new InaccessibleChallengeException();
+    }
+
+    private boolean isPresentInvite(Long challengeId, String oauthId) {
+        if(oauthId!=null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
+            return true;
+        }
+        return false;
     }
 
     @Transactional
@@ -143,7 +167,7 @@ public class ChallengeService {
 
     public boolean isVigibility(Challenge challenge) {
         if (challenge.getVigibility()) return true;
-        else throw new InaccessibleChallengeException();
+        return false;
     }
 
     public boolean isProgressChallenge(LocalDate startDate) {

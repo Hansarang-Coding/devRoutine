@@ -1,5 +1,7 @@
 package com.likelion.devroutine.challenge.controller;
 
+import com.likelion.devroutine.auth.config.LoginUser;
+import com.likelion.devroutine.auth.dto.SessionUser;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +35,12 @@ public class ChallengeRestController {
         return ResponseEntity.ok().body(challengeDtos);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ChallengeDto> findByChallengeId(Authentication authentication, @PathVariable Long id){
+    public ResponseEntity<ChallengeDto> findByChallengeId(Authentication authentication, @PathVariable Long id, @LoginUser SessionUser sessionUser){
         //로그인 X 이거나 참여중이지 않은 챌린지 인경우
-        if(!authentication.isAuthenticated() || !challengeService.isParticipate(id, authentication.getName())){
-            ChallengeDto challengeDto=challengeService.findByChallengeId(id);
+        if(sessionUser==null || sessionUser.getName()==null || !challengeService.isParticipate(id, authentication.getName())){
+            ChallengeDto challengeDto;
+            if(sessionUser==null || sessionUser.getName()==null) challengeDto=challengeService.findByChallengeId(id);
+            else challengeDto=challengeService.findByChallengeId(id, authentication.getName());
             return ResponseEntity.ok().body(challengeDto);
         }
         HttpHeaders headers = new HttpHeaders();
