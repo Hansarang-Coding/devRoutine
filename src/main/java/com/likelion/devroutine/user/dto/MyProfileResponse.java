@@ -36,7 +36,7 @@ public class MyProfileResponse {
 
     private static List<ChallengeResponse> extractchallenges(List<Participation> participations, Long userId) {
         return participations.stream()
-                .filter(participation -> participation.getChallenge().getUser().getId().equals(userId))
+                .filter(participation -> participation.getChallenge().getUserId().equals(userId))
                 .map(participation -> ChallengeResponse.builder()
                         .id(participation.getChallenge().getId())
                         .message(participation.getChallenge().getTitle())

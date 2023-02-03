@@ -135,7 +135,7 @@ public class InviteService {
     }
 
     private boolean matchWriterAndUser(User user, Challenge challenge) {
-        if(!user.getId().equals(challenge.getUser().getId())){
+        if(!user.getId().equals(challenge.getUserId())){
             throw new InvalidPermissionException();
         }
         return true;
