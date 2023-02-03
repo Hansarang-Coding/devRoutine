@@ -2,6 +2,7 @@ package com.likelion.devroutine.user.service;
 
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
+import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
 import com.likelion.devroutine.follow.exception.AlreadyFollowingException;
 import com.likelion.devroutine.follow.exception.FollowNotPermittedException;
@@ -62,10 +63,10 @@ public class UserService {
         return FollowingResponse.of(followings);
     }
 
-    public List<FollowingResponse> findFollowers(Long userId) {
+    public List<FollowerResponse> findFollowers(Long userId) {
         validateUserExists(userId);
         List<Follow> followers = followRepository.findByFollowerId(userId);
-        return FollowingResponse.of(followers);
+        return FollowerResponse.of(followers);
     }
 
     private User findUser(Long userId) {
