@@ -17,7 +17,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public List<Challenge> findSearchTitleSortById(Long cursorId, String keyword, Pageable pageable) {
         return queryFactory.selectFrom(challenge)
-                .where(cursorId(cursorId), challenge.title.contains(keyword))
+                .where(cursorId(cursorId), challenge.title.contains(keyword), challenge.vigibility.eq(true))
                 .orderBy(challenge.id.desc())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -27,7 +27,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public List<Challenge> findAllSortById(Long cursorId, Pageable pageable) {
         return queryFactory.selectFrom(challenge)
-                .where(cursorId(cursorId))
+                .where(cursorId(cursorId), challenge.vigibility.eq(true))
                 .orderBy(challenge.id.desc())
                 .limit(pageable.getPageSize())
                 .fetch();
