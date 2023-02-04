@@ -1,5 +1,7 @@
 package com.likelion.devroutine.challenge.service;
 
+import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
@@ -9,7 +11,6 @@ import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
-import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,29 +38,29 @@ public class ChallengeService {
     private final ChallengeHashTagRepository challengeHashTagRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+    private final InviteRepository inviteRepository;
 
     public ChallengeService(
             ChallengeRepository challengeRepository,
             HashTagRepository hashTagRepository,
             ChallengeHashTagRepository challengeHashTagRepository,
-            UserRepository userRepository, ParticipationRepository participationRepository) {
+            UserRepository userRepository, ParticipationRepository participationRepository, InviteRepository inviteRepository) {
         this.challengeRepository = challengeRepository;
         this.hashTagRepository = hashTagRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
         this.userRepository = userRepository;
         this.participationRepository = participationRepository;
+        this.inviteRepository = inviteRepository;
     }
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
         List<Challenge> challenges = challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
-        List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
-        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
+        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
     }
 
     public List<ChallengeDto> findAllChallengeTitle(Long challengeId, int size, String keyword) {
         List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
-        List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
-        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
+        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
     }
 
     public ChallengeDto findByChallengeId(Long challengeId) {
@@ -119,6 +121,14 @@ public class ChallengeService {
             challengeHashTagRepository.save(ChallengeHashTag.create(challenge, savedHashTag));
         }
     }
+    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
+        return challenges
+                .stream()
+                .collect(Collectors.toMap(
+                        challenge-> challenge.getId(),
+                        challenge->ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
+                ));
+    }
 
     private List<ChallengeHashTag> getHashTags(Long challengeId) {
         return challengeHashTagRepository.findByChallengeId(challengeId);
@@ -169,5 +179,10 @@ public class ChallengeService {
             return false;
         }
         return true;
+    }
+
+    public List<ChallengeHashTagResponse> getRandomHashTag(){
+        List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
+        return ChallengeHashTagResponse.of(challengeHashTags);
     }
 }
