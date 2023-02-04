@@ -25,11 +25,6 @@ public class InviteRestController {
         List<FollowerResponse> followerResponses = inviteService.findFollowers(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(followerResponses);
     }
-    @PostMapping("/challenges/{challengeId}/invites/{userId}")
-    public ResponseEntity<InviteCreateResponse> inviteUser(Authentication authentication, @PathVariable Long challengeId, @PathVariable Long userId){
-        InviteCreateResponse inviteCreateResponse =inviteService.inviteUser(authentication.getName(), challengeId, userId);
-        return ResponseEntity.ok().body(inviteCreateResponse);
-    }
     @PostMapping("/invites/{id}")
     public ResponseEntity<InviteResponse> acceptInvite(Authentication authentication, @PathVariable Long id){
         InviteResponse inviteResponse =inviteService.acceptInvite(authentication.getName(), id);
