@@ -27,7 +27,7 @@ public class CertificationController {
     public String getCertificationForm(@PathVariable("participationId") Long participationId,
                                        Model model, Authentication authentication) {
         model.addAttribute("participation", certificationService
-                .findParticipationFormInfo(participationId, authentication.getName()));
+                .findCertificationFormInfo(participationId, authentication.getName()));
         return "certification/form";
     }
 
