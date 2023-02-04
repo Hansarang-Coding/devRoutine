@@ -20,7 +20,7 @@ public class Certification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String imageUrl;
+    private String uploadImageUrl;
 
     private String description;
 
@@ -36,9 +36,9 @@ public class Certification {
 
     private LocalDateTime deletedAt;
 
-    public static Certification createCertification(String imageUrl, String description, Participation participation) {
+    public static Certification createCertification(String uploadImageUrl, String description, Participation participation) {
         return Certification.builder()
-                .imageUrl(imageUrl)
+                .uploadImageUrl(uploadImageUrl)
                 .description(description)
                 .participation(participation)
                 .build();
