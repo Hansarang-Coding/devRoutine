@@ -20,12 +20,6 @@ public class ParticipationRestController {
         this.participationService = participationService;
     }
 
-    @PostMapping("/{challengeId}")
-    public ResponseEntity<ParticipationResponse> participateChallenge(Authentication authentication, @PathVariable Long challengeId){
-        ParticipationResponse participationResponse= participationService.participateChallenge(authentication.getName(), challengeId);
-        return ResponseEntity.ok().body(participationResponse);
-    }
-
     @DeleteMapping("/{challengeId}/participation")
     public ResponseEntity<ParticipationResponse> cancelChallenge(Authentication authentication, @PathVariable Long challengeId){
         ParticipationResponse participationResponse= participationService.cancelChallenge(authentication.getName(), challengeId);

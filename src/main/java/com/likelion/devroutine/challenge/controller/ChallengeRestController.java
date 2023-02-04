@@ -4,6 +4,7 @@ import com.likelion.devroutine.auth.config.LoginUser;
 import com.likelion.devroutine.auth.dto.SessionUser;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
+import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -61,5 +62,11 @@ public class ChallengeRestController {
     public ResponseEntity<ChallengeResponse> modifyChallenge(Authentication authentication, @PathVariable Long id, @RequestBody ChallengeModifiyRequest dto){
         ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), id, dto);
         return ResponseEntity.ok().body(challengeResponse);
+    }
+
+    @PostMapping("/{challengeId}")
+    public ResponseEntity<ParticipationResponse> participateChallenge(Authentication authentication, @PathVariable Long challengeId){
+        ParticipationResponse participationResponse= challengeService.participateChallenge(authentication.getName(), challengeId);
+        return ResponseEntity.ok().body(participationResponse);
     }
 }

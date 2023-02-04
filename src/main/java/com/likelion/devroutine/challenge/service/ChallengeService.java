@@ -4,6 +4,8 @@ import com.likelion.devroutine.challenge.exception.InaccessibleChallengeExceptio
 import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.participant.dto.ParticipationResponse;
+import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
@@ -76,19 +78,16 @@ public class ChallengeService {
         return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
     }
 
-    private boolean isViewable(Challenge challenge, String oauthId) {
-        //공개 챌린지이거나 초대받은 경우
-        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
-            return true;
-        }
-        throw new InaccessibleChallengeException();
-    }
-
-    private boolean isPresentInvite(Long challengeId, String oauthId) {
-        if(oauthId!=null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
-            return true;
-        }
-        return false;
+    @Transactional
+    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
+        User user=getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        validateParticipate(user, challenge);
+        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
+        return ParticipationResponse.builder()
+                .challengeId(savedParticipation.getChallenge().getId())
+                .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
+                .build();
     }
 
     @Transactional
@@ -165,11 +164,6 @@ public class ChallengeService {
         return challenge;
     }
 
-    public boolean isVigibility(Challenge challenge) {
-        if (challenge.getVigibility()) return true;
-        return false;
-    }
-
     public boolean isProgressChallenge(LocalDate startDate) {
         if (LocalDate.now().isAfter(startDate))
             throw new InProgressingChallengeException();
@@ -188,10 +182,40 @@ public class ChallengeService {
         }
         return true;
     }
-    public boolean isParticipate(Long challengeId, String oauthId){
-        if(participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
+    public boolean isParticipate(Long challengeId, String oauthId) {
+        if (participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()) {
             return false;
         }
+        return true;
+    }
+
+    private boolean isViewable(Challenge challenge, String oauthId) {
+        //공개 챌린지이거나 초대받은 경우
+        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
+            return true;
+        }
+        throw new InaccessibleChallengeException();
+    }
+
+    private boolean isPresentInvite(Long challengeId, String oauthId) {
+        if(oauthId!=null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validateDuplicateParticipate(User user, Challenge challenge) {
+        participationRepository.findByUserAndChallenge(user, challenge)
+                .ifPresent(participant -> {
+                    throw new DuplicatedParticipationException();
+                });
+        return true;
+    }
+
+    public boolean validateParticipate(User user, Challenge challenge){
+        isViewable(challenge, user.getOauthId());
+        isProgressChallenge(challenge.getStartDate());
+        validateDuplicateParticipate(user, challenge);
         return true;
     }
 }

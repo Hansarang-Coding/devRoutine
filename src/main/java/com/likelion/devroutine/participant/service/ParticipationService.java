@@ -48,17 +48,6 @@ public class ParticipationService {
         this.inviteRepository = inviteRepository;
         this.followRepository = followRepository;
     }
-    @Transactional
-    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
-        User user=getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        validateParticipate(user, challenge);
-        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
-        return ParticipationResponse.builder()
-                .challengeId(savedParticipation.getChallenge().getId())
-                .message(ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
-                .build();
-    }
 
     @Transactional
     public ParticipationResponse cancelChallenge(String oauthId, Long challengeId) {
@@ -121,20 +110,6 @@ public class ParticipationService {
         return challenge;
     }
 
-    public boolean validateDuplicateParticipate(User user, Challenge challenge){
-        participationRepository.findByUserAndChallenge(user, challenge)
-                .ifPresent(participant->{
-                    throw new DuplicatedParticipationException();
-                });
-        return true;
-    }
-
-    public boolean validateParticipate(User user, Challenge challenge){
-        isViewable(challenge, user);
-        isProgressChallenge(challenge.getStartDate());
-        validateDuplicateParticipate(user, challenge);
-        return true;
-    }
     public boolean isViewable(Challenge challenge, User user){
         if(challenge.getVigibility() || !inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), user.getId()).isEmpty()){
             return true;
