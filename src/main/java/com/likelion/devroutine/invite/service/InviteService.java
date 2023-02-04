@@ -51,23 +51,6 @@ public class InviteService {
         List<Follow> followers=followRepository.findByFollowerId(user.getId());
         return FollowerResponse.of(followers);
     }
-    @Transactional
-    public InviteCreateResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
-        User inviter=getUser(inviterOauthId);
-        User invitee=userRepository.findById(inviteeId)
-                .orElseThrow(()->new UserNotFoundException());
-        validateFollower(inviter, invitee);
-        Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(inviter, challenge);
-        isProgressChallenge(challenge.getStartDate());
-        Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
-        return InviteCreateResponse.builder()
-                .inviterId(savedInvite.getInviterId())
-                .challengeId(savedInvite.getChallengeId())
-                .inviteeId(savedInvite.getInviteeId())
-                .message(ResponseMessage.INVITE_SUCCESS.getMessage())
-                .build();
-    }
 
     @Transactional
     public InviteResponse acceptInvite(String oauthId, Long inviteId) {
@@ -126,12 +109,6 @@ public class InviteService {
             return true;
         }
         throw new BadRequestInviteAcceptException();
-    }
-
-    //invitee가 inviter를 팔로우하고 있는지 확인하는 함수
-    private void validateFollower(User inviter, User invitee) {
-        Follow follow=followRepository.findByFollowerIdAndFollowingId(inviter.getId(), invitee.getId())
-                .orElseThrow(()->new FollowingNotFoundException());
     }
 
     private boolean matchWriterAndUser(User user, Challenge challenge) {
