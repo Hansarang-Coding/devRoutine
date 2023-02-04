@@ -1,10 +1,13 @@
 package com.likelion.devroutine.participant.service;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
+import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +34,13 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
     private final UserRepository userRepository;
     private final ChallengeRepository challengeRepository;
+    private final ChallengeHashTagRepository challengeHashTagRepository;
 
-    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository) {
+    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository, ChallengeHashTagRepository challengeHashTagRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
+        this.challengeHashTagRepository = challengeHashTagRepository;
     }
     @Transactional
     public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
@@ -112,5 +118,26 @@ public class ParticipationService {
         if (LocalDate.now().isAfter(startDate))
             throw new InProgressingChallengeException();
         return false;
+    }
+
+    public List<ChallengeDto> findAllParticipateChallenge(String oauthId){
+        User user=getUser(oauthId);
+        List<Participation> participations=participationRepository.findAllByUserId(user.getId());
+        List<Challenge> participateChallenges=participations.stream()
+                .filter(participation -> challengeRepository.findById(participation.getChallenge().getId()).isPresent())
+                .map(participation -> challengeRepository.findById(participation.getChallenge().getId()).get())
+                .collect(Collectors.toList());
+        return ChallengeDto.toList(participateChallenges, getChallengeHashTagResponse(participateChallenges));
+    }
+    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
+        return challenges
+                .stream()
+                .collect(Collectors.toMap(
+                        challenge-> challenge.getId(),
+                        challenge->ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
+                ));
+    }
+    private List<ChallengeHashTag> getHashTags(Long challengeId) {
+        return challengeHashTagRepository.findByChallengeId(challengeId);
     }
 }
