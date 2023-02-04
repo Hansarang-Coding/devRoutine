@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 public class CertificationFormResponse {
+    private Long id;
     private String title;
     private String description;
     private LocalDate startDate;
@@ -18,6 +19,7 @@ public class CertificationFormResponse {
 
     public static CertificationFormResponse of(Participation participation){
         return CertificationFormResponse.builder()
+                .id(participation.getId())
                 .title(participation.getChallenge().getTitle())
                 .description(participation.getChallenge().getDescription())
                 .startDate(participation.getChallenge().getStartDate())

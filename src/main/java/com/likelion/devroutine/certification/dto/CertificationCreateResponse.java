@@ -11,13 +11,13 @@ import lombok.Getter;
 public class CertificationCreateResponse {
     private Long challengeId;
     private String description;
-    private String imageUrl;
+    private String uploadImageUrl;
 
     public static CertificationCreateResponse of(Certification savedCertification) {
         return CertificationCreateResponse.builder()
                 .challengeId(savedCertification.getParticipation().getChallenge().getId())
                 .description(savedCertification.getParticipation().getChallenge().getDescription())
-                .imageUrl(savedCertification.getImageUrl())
+                .uploadImageUrl(savedCertification.getUploadImageUrl())
                 .build();
     }
 
