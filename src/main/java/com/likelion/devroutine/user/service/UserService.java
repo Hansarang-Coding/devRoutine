@@ -94,8 +94,9 @@ public class UserService {
         }
     }
 
-    public MyProfileResponse getProfile(String oauthId) {
-        User user = findUserByOauthId(oauthId);
+    public MyProfileResponse getProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
         List<Participation> participations = findParticipations(user.getId());
         Long followers = followRepository.countFollowers(user.getId());
         Long following = followRepository.countFollowing(user.getId());
