@@ -43,6 +43,8 @@ dependencies {
     // spring에서 redis를 session storage로 사용하기 위한 의존성
     implementation 'org.springframework.session:spring-session-data-redis'
 
+    //Amazon S3
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
 
 
     //template Engine
