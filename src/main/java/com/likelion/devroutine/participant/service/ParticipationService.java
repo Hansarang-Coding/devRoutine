@@ -47,7 +47,8 @@ public class ParticipationService {
     private final FollowRepository followRepository;
     private final ChallengeHashTagRepository challengeHashTagRepository;
 
-    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository, InviteRepository inviteRepository, FollowRepository followRepository) {
+    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository
+            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
@@ -147,10 +148,11 @@ public class ParticipationService {
     }
 
     private boolean matchWriterAndUser(User user, Challenge challenge) {
-        if(!user.getId().equals(challenge.getUserId())){
+        if (!user.getId().equals(challenge.getUserId())) {
             throw new InvalidPermissionException();
         }
         return true;
+    }
 
     public List<ChallengeDto> findAllParticipateChallenge(String oauthId){
         User user=getUser(oauthId);

@@ -1,6 +1,6 @@
 package com.likelion.devroutine.participant.controller;
 
-<<<<<<< src/main/java/com/likelion/devroutine/participant/controller/ParticipationRestController.java
+import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.invite.dto.InviteCreateResponse;
 import com.likelion.devroutine.participant.dto.ParticipantCertificationResponse;
 import com.likelion.devroutine.challenge.dto.ChallengeDto;
