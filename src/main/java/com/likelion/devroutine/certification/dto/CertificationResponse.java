@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public class CertificationResponse {
+    private Long certificationId;
     private String uploadImageUrl;
 
     public static List<CertificationResponse> of(List<Certification> certifications){
         return certifications.stream()
                 .map(certification -> CertificationResponse.builder()
+                        .certificationId(certification.getId())
                         .uploadImageUrl(certification.getUploadImageUrl())
                         .build())
                 .collect(Collectors.toList());
