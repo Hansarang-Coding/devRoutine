@@ -47,9 +47,9 @@ public class UserRestController {
         return ResponseEntity.ok().body(followers);
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<MyProfileResponse> getProfile(Authentication authentication) {
-        MyProfileResponse profile = userService.getProfile(authentication.getName());
+    @GetMapping("/{userId}")
+    public ResponseEntity<MyProfileResponse> getProfile(@PathVariable Long userId) {
+        MyProfileResponse profile = userService.getProfile(userId);
         return ResponseEntity.ok().body(profile);
     }
 }

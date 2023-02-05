@@ -1,5 +1,8 @@
 package com.likelion.devroutine.participant.controller;
 
+<<<<<<< src/main/java/com/likelion/devroutine/participant/controller/ParticipationRestController.java
+import com.likelion.devroutine.invite.dto.InviteCreateResponse;
+import com.likelion.devroutine.participant.dto.ParticipantCertificationResponse;
 import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
@@ -21,12 +24,6 @@ public class ParticipationRestController {
         this.participationService = participationService;
     }
 
-    @PostMapping("/{challengeId}")
-    public ResponseEntity<ParticipationResponse> participateChallenge(Authentication authentication, @PathVariable Long challengeId){
-        ParticipationResponse participationResponse= participationService.participateChallenge(authentication.getName(), challengeId);
-        return ResponseEntity.ok().body(participationResponse);
-    }
-
     @DeleteMapping("/{challengeId}/participation")
     public ResponseEntity<ParticipationResponse> cancelChallenge(Authentication authentication, @PathVariable Long challengeId){
         ParticipationResponse participationResponse= participationService.cancelChallenge(authentication.getName(), challengeId);
@@ -39,9 +36,20 @@ public class ParticipationRestController {
         return ResponseEntity.ok().body(participationChallengeDto);
     }
 
-    @GetMapping("/certification")
-    public ResponseEntity<List<ChallengeDto>> findAllParticipateChallenge(Authentication authentication){
-        List<ChallengeDto> challengeDtos=participationService.findAllParticipateChallenge(authentication.getName());
-        return ResponseEntity.ok().body(challengeDtos);
+    @PostMapping("/{challengeId}/invite/{userId}")
+    public ResponseEntity<InviteCreateResponse> inviteUser(Authentication authentication, @PathVariable Long challengeId, @PathVariable Long userId){
+        InviteCreateResponse inviteCreateResponse =participationService.inviteUser(authentication.getName(), challengeId, userId);
+        return ResponseEntity.ok().body(inviteCreateResponse);
     }
+
+    @GetMapping("/{challengeId}/followers")
+    public ResponseEntity<List<FollowerResponse>> getFollowList(Authentication authentication, @PathVariable Long challengeId){
+        List<FollowerResponse> followerResponses = participationService.findFollowers(authentication.getName(), challengeId);
+        return ResponseEntity.ok().body(followerResponses);
+    }
+
+/*    @GetMapping("/{challengeId}/certification")
+    public ResponseEntity<List<ParticipantCertificationResponse>> findAllParticipantCertifications(Authentication authentication, @PathVariable Long challengeId){
+
+    }*/
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/invites")
 @Slf4j
 public class InviteRestController {
     private final InviteService inviteService;
@@ -20,42 +20,32 @@ public class InviteRestController {
         this.inviteService = inviteService;
     }
 
-    @GetMapping("/challenges/{challengeId}/invites")
+    @GetMapping("/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowList(Authentication authentication, @PathVariable Long challengeId){
         List<FollowerResponse> followerResponses = inviteService.findFollowers(authentication.getName(), challengeId);
         return ResponseEntity.ok().body(followerResponses);
     }
-    @PostMapping("/challenges/{challengeId}/invites/{userId}")
-    public ResponseEntity<InviteCreateResponse> inviteUser(Authentication authentication, @PathVariable Long challengeId, @PathVariable Long userId){
-        InviteCreateResponse inviteCreateResponse =inviteService.inviteUser(authentication.getName(), challengeId, userId);
-        return ResponseEntity.ok().body(inviteCreateResponse);
-    }
-    @PostMapping("/invites/{id}")
-    public ResponseEntity<InviteResponse> acceptInvite(Authentication authentication, @PathVariable Long id){
-        InviteResponse inviteResponse =inviteService.acceptInvite(authentication.getName(), id);
+    @PostMapping("/{inviteId}")
+    public ResponseEntity<InviteResponse> acceptInvite(Authentication authentication, @PathVariable Long inviteId){
+        InviteResponse inviteResponse =inviteService.acceptInvite(authentication.getName(), inviteId);
         return ResponseEntity.ok().body(inviteResponse);
     }
 
-    @GetMapping("/invitees") //로그인한 유저=invitee
-    public ResponseEntity<List<InviterResponse>> findInviters(Authentication authentication){
-        List<InviterResponse> inviterResponses=inviteService.findInviters(authentication.getName());
-        return ResponseEntity.ok().body(inviterResponses);
+    @GetMapping("")
+    public ResponseEntity<InviteReadResponse> findAllInvite(Authentication authentication){
+        InviteReadResponse inviteReadResponses=inviteService.findAllInvite(authentication.getName());
+        return ResponseEntity.ok().body(inviteReadResponses);
     }
 
-    @GetMapping("/inviters") //로그인한 유저=inviter
-    public ResponseEntity<List<InviteeResponse>> findInvitees(Authentication authentication){
-        List<InviteeResponse> inviteeResponses=inviteService.findInvitees(authentication.getName());
-        return ResponseEntity.ok().body(inviteeResponses);
-    }
-
-    @DeleteMapping("/challenges/{challengeId}/reject")
-    public ResponseEntity<InviteResponse> rejectInvite(Authentication authentication, @PathVariable Long challengeId){
-        InviteResponse inviteResponse =inviteService.rejectInvite(authentication.getName(), challengeId);
-        return ResponseEntity.ok().body(inviteResponse);
+    //로직 좀 수정하기
+    @DeleteMapping("/{inviteId}/reject")
+    public ResponseEntity<InviteCancelResponse> rejectInvite(Authentication authentication, @PathVariable Long inviteId){
+        InviteCancelResponse inviteRejectResponse =inviteService.rejectInvite(authentication.getName(), inviteId);
+        return ResponseEntity.ok().body(inviteRejectResponse);
 
     }
 
-    @DeleteMapping("/invites/{inviteId}/cancel")
+    @DeleteMapping("/{inviteId}/cancel")
     public ResponseEntity<InviteCancelResponse> cancelInvite(Authentication authentication, @PathVariable Long inviteId){
         InviteCancelResponse inviteCancelResponse=inviteService.cancelInvite(authentication.getName(), inviteId);
         return ResponseEntity.ok().body(inviteCancelResponse);
