@@ -67,29 +67,23 @@ public class InviteService {
                 .build();
     }
 
-    public List<InviterResponse> findInviters(String oauthId) {
-        User user=getUser(oauthId);
-        List<Challenge> invites=inviteRepository.findInviterByInviteeId(user.getId());
-
-        return InviterResponse.toList(invites);
-    }
-
-    public List<InviteeResponse> findInvitees(String oauthId) {
+    public InviteReadResponse findAllInvite(String oauthId) {
         User user=getUser(oauthId);
         List<InviteeResponse> inviteeResponses=inviteRepository.findInviteeByInviterId(user.getId());
-
-        return inviteeResponses;
+        List<InviterResponse> inviterResponses=inviteRepository.findInviterByInviteeId(user.getId());
+        return InviteReadResponse.builder()
+                .inviteeResponses(inviteeResponses)
+                .inviterResponse(inviterResponses)
+                .build();
     }
     @Transactional
-    public InviteResponse rejectInvite(String oauthId, Long challengeId) {
+    public InviteCancelResponse rejectInvite(String oauthId, Long inviteId) {
         User user=getUser(oauthId);
-        List<Invite> invites=inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, user.getId());
-        if(invites.isEmpty()){
-            throw new InviteNotFoundException();
-        }
-        invites.forEach(invite->invite.deleteInvite());
-        return InviteResponse.builder()
-                .challengeId(challengeId)
+        Invite invite=inviteRepository.findById(inviteId)
+                .orElseThrow(InviteNotFoundException::new);
+
+        invite.deleteInvite();
+        return InviteCancelResponse.builder()
                 .message(ResponseMessage.INVITE_REJECT.getMessage())
                 .build();
     }
