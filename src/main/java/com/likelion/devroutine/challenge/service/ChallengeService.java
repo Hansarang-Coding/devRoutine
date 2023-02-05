@@ -1,7 +1,6 @@
 package com.likelion.devroutine.challenge.service;
 
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
-import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
@@ -29,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,14 +57,12 @@ public class ChallengeService {
 
     public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
         List<Challenge> challenges = challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
-        List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
-        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
+        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
     }
 
     public List<ChallengeDto> findAllChallengeTitle(Long challengeId, int size, String keyword) {
         List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
-        List<ChallengeHashTag> challengeHashTags = getHashTags(challengeId);
-        return ChallengeDto.toList(challenges, ChallengeHashTagResponse.of(challengeHashTags));
+        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
     }
 
     public ChallengeDto findByChallengeId(Long challengeId) {
@@ -141,6 +139,14 @@ public class ChallengeService {
                     .orElseGet(() -> hashTagRepository.save(HashTag.createHashTag(hashTagContents)));
             challengeHashTagRepository.save(ChallengeHashTag.create(challenge, savedHashTag));
         }
+    }
+    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
+        return challenges
+                .stream()
+                .collect(Collectors.toMap(
+                        challenge-> challenge.getId(),
+                        challenge->ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
+                ));
     }
 
     private List<ChallengeHashTag> getHashTags(Long challengeId) {

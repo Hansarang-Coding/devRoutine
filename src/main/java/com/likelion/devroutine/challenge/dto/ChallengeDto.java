@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Builder
@@ -24,16 +25,15 @@ public class ChallengeDto {
     private Long fromUserId;
     private List<ChallengeHashTagResponse> challengeHashTag;
 
-    public static List<ChallengeDto> toList(List<Challenge> challenges, List<ChallengeHashTagResponse> challengeHashTags) {
+    public static List<ChallengeDto> toList(List<Challenge> challenges, Map<Long, List<ChallengeHashTagResponse>> challengeHashTags) {
         return challenges.stream()
-                .filter(entity -> entity.getVigibility())
                 .map(challenge -> ChallengeDto.builder()
                         .id(challenge.getId())
                         .title(challenge.getTitle())
                         .description(challenge.getDescription())
                         .authenticationType(challenge.getAuthenticationType())
                         .fromUserId(challenge.getUserId())
-                        .challengeHashTag(challengeHashTags)
+                        .challengeHashTag(challengeHashTags.get(challenge.getId()))
                         .vigibility(challenge.getVigibility() ? "공개" : "비공개")
                         .build())
                 .collect(Collectors.toList());

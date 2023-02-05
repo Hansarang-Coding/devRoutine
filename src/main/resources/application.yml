@@ -1,35 +1,35 @@
 server.port: 8080
-
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456
 
+  profiles:
+    include:
+      - aws
+      - credential
 # Redis 설정
   data:
     redis:
       host: localhost
       port: 1234
-
   session:
     storage-type: redis
-
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
   jpa:
     database: mysql
     show-sql: true
     hibernate:
       ddl-auto: update
 
-jwt:
-  token:
-    secret: hello
-    expireTimeMs: 3600000
-
+servlet:
+  multipart:
+    enabled: true
+    max-file-size: 50MB
+    max-request-size: 50MB
 
 # Swagger (springdoc-openapi-ui)
 springdoc:

@@ -1,12 +1,9 @@
-package com.likelion.devroutine.comment.domain;
+package com.likelion.devroutine.likes.domain;
 
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,51 +14,35 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "likes")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Comment {
+public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_id")
     private Certification certification;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name ="user_id")
     private User user;
 
+    @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
-    private LocalDateTime deletedAt;
-
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
-    public static Comment createComment(String comment, Certification certification, User user) {
-        return Comment.builder()
-                .comment(comment)
-                .certification(certification)
+    public static Like createLike(User user, Certification certification) {
+        return Like.builder()
                 .user(user)
+                .certification(certification)
                 .build();
     }
-
-    public void deleteComment() {
-        this.setDeletedAt(LocalDateTime.now());
-    }
-
-    public void updateComment(String comment) {
-        this.comment = comment;
-    }
-
 
 }
