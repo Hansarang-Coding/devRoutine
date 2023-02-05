@@ -1,5 +1,6 @@
 package com.likelion.devroutine.participant.dto;
 
+import com.likelion.devroutine.certification.dto.CertificationResponse;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
 import com.likelion.devroutine.participant.domain.Participation;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -23,10 +25,10 @@ public class ParticipationChallengeDto {
     private String description;
     private String vigibility;
     private AuthenticationType authenticationType;
-    private List<UserResponse> participants;
+    private Map<String, List<CertificationResponse>> certificationResponses;
     private List<ChallengeHashTagResponse> challengeHashTag;
 
-   public static ParticipationChallengeDto toResponse(Participation participation, List<ChallengeHashTagResponse> challengeHashTags, List<UserResponse> participants) {
+   public static ParticipationChallengeDto toResponse(Participation participation, List<ChallengeHashTagResponse> challengeHashTags, Map<String, List<CertificationResponse>> certificationResponses) {
         return ParticipationChallengeDto.builder()
                 .id(participation.getId())
                 .challengeId(participation.getChallenge().getId())
@@ -34,7 +36,7 @@ public class ParticipationChallengeDto {
                 .description(participation.getChallenge().getDescription())
                 .authenticationType(participation.getChallenge().getAuthenticationType())
                 .vigibility(participation.getChallenge().getVigibility()? "공개" : "비공개")
-                .participants(participants)
+                .certificationResponses(certificationResponses)
                 .challengeHashTag(challengeHashTags)
                 .build();
     }

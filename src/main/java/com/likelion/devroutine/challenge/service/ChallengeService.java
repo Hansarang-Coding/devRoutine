@@ -1,6 +1,7 @@
 package com.likelion.devroutine.challenge.service;
 
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
@@ -77,18 +78,6 @@ public class ChallengeService {
     }
 
     @Transactional
-    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
-        User user=getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        validateParticipate(user, challenge);
-        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
-        return ParticipationResponse.builder()
-                .challengeId(savedParticipation.getChallenge().getId())
-                .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
-                .build();
-    }
-
-    @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
         User user = getUser(oauthId);
         Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user.getId(), dto));
@@ -105,7 +94,6 @@ public class ChallengeService {
 
         matchWriterAndUser(challenge, user);
 
-        //챌린지 시작 전인지 확인
         isProgressChallenge(challenge.getStartDate());
         participationRepository.deleteAllByChallenge(challenge);
         challenge.deleteChallenge();
@@ -126,6 +114,18 @@ public class ChallengeService {
                 .message(ResponseMessage.CHALLENGE_MODIFY_SUCCESS.getMessage()).build();
     }
 
+    @Transactional
+    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
+        User user=getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        validateParticipate(user, challenge);
+        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
+        return ParticipationResponse.builder()
+                .challengeId(savedParticipation.getChallenge().getId())
+                .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
+                .build();
+    }
+
     private void removeChallengeHashTag(Challenge challenge) {
         List<ChallengeHashTag> challengeHashTags = challenge.getChallengeHashTags();
         challengeHashTagRepository.deleteAll(challengeHashTags);
@@ -140,6 +140,7 @@ public class ChallengeService {
             challengeHashTagRepository.save(ChallengeHashTag.create(challenge, savedHashTag));
         }
     }
+
     private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
         return challenges
                 .stream()
@@ -188,8 +189,8 @@ public class ChallengeService {
         }
         return true;
     }
-    public boolean isParticipate(Long challengeId, String oauthId) {
-        if (participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()) {
+    public boolean isParticipate(Long challengeId, String oauthId){
+        if(participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
             return false;
         }
         return true;
@@ -223,5 +224,10 @@ public class ChallengeService {
         isProgressChallenge(challenge.getStartDate());
         validateDuplicateParticipate(user, challenge);
         return true;
+    }
+
+    public List<ChallengeHashTagResponse> getRandomHashTag(){
+        List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
+        return ChallengeHashTagResponse.of(challengeHashTags);
     }
 }
