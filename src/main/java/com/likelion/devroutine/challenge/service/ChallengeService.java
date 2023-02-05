@@ -1,5 +1,7 @@
 package com.likelion.devroutine.challenge.service;
 
+import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
+import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
@@ -12,7 +14,6 @@ import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
-import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
@@ -93,7 +94,6 @@ public class ChallengeService {
 
         matchWriterAndUser(challenge, user);
 
-        //챌린지 시작 전인지 확인
         isProgressChallenge(challenge.getStartDate());
         participationRepository.deleteAllByChallenge(challenge);
         challenge.deleteChallenge();
@@ -140,6 +140,7 @@ public class ChallengeService {
             challengeHashTagRepository.save(ChallengeHashTag.create(challenge, savedHashTag));
         }
     }
+
     private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
         return challenges
                 .stream()
@@ -170,11 +171,6 @@ public class ChallengeService {
         return challenge;
     }
 
-    public boolean isVigibility(Challenge challenge) {
-        if (challenge.getVigibility()) return true;
-        return false;
-    }
-
     public boolean isProgressChallenge(LocalDate startDate) {
         if (LocalDate.now().isAfter(startDate))
             throw new InProgressingChallengeException();
@@ -193,14 +189,15 @@ public class ChallengeService {
         }
         return true;
     }
-
     public boolean isParticipate(Long challengeId, String oauthId){
         if(participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
             return false;
         }
         return true;
     }
+
     private boolean isViewable(Challenge challenge, String oauthId) {
+        //공개 챌린지이거나 초대받은 경우
         if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
             return true;
         }
