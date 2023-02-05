@@ -1,5 +1,8 @@
 package com.likelion.devroutine.participant.service;
 
+import com.likelion.devroutine.certification.domain.Certification;
+import com.likelion.devroutine.certification.dto.CertificationResponse;
+import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
 import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
@@ -20,7 +23,6 @@ import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
-import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
 import com.likelion.devroutine.participant.exception.RejectCancelException;
@@ -46,15 +48,17 @@ public class ParticipationService {
     private final InviteRepository inviteRepository;
     private final FollowRepository followRepository;
     private final ChallengeHashTagRepository challengeHashTagRepository;
+    private final CertificationRepository certificationRepository;
 
     public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository
-            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository) {
+            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.inviteRepository = inviteRepository;
         this.followRepository = followRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
+        this.certificationRepository = certificationRepository;
     }
 
     @Transactional
@@ -104,12 +108,15 @@ public class ParticipationService {
         Challenge challenge=getChallenge(challengeId);
         Participation participation =getParticipant(user, challenge);
         List<Participation> participations = participationRepository.findAllByChallenge(challenge);
-        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), UserResponse.toList(getChallengeParticipants(participations)));
+        Map<String, List<CertificationResponse>> certificationResponses=getCertification(participations);
+        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), certificationResponses);
     }
-
-    public List<User> getChallengeParticipants(List<Participation> participations){
-        return participations.stream().map(participant -> participant.getUser())
-                .collect(Collectors.toList());
+    public Map<String, List<CertificationResponse>> getCertification(List<Participation> participations){
+        return participations.stream()
+                .collect(Collectors.toMap(
+                        participation -> participation.getUser().getName(),
+                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getId()))
+                ));
     }
 
     public Participation getParticipant(User user, Challenge challenge){
