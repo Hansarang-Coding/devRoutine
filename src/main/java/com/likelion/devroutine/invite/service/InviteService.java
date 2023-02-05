@@ -44,14 +44,6 @@ public class InviteService {
         this.participationRepository = participationRepository;
     }
 
-    public List<FollowerResponse> findFollowers(String oauthId, Long challengeId) {
-        User user = getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(user, challenge);
-        List<Follow> followers=followRepository.findByFollowerId(user.getId());
-        return FollowerResponse.of(followers);
-    }
-
     @Transactional
     public InviteResponse acceptInvite(String oauthId, Long inviteId) {
         User user=getUser(oauthId);
