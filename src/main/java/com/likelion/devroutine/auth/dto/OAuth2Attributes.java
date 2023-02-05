@@ -2,13 +2,12 @@ package com.likelion.devroutine.auth.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.likelion.devroutine.auth.exception.OAuth2RegistrationException;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.domain.UserRole;
-import com.likelion.devroutine.auth.exception.OAuth2RegistrationException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
@@ -50,8 +49,7 @@ public class OAuth2Attributes {
     }
 
     private static OAuth2Attributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
-        String nickName = ObjectUtils.isEmpty(attributes.get("name")) ? "login" : "name";
-        String userName = String.valueOf(attributes.get(nickName));
+        String userName = String.valueOf(attributes.get("login"));
         String email = String.valueOf(attributes.get("email"));
         String picture = String.valueOf(attributes.get("avatar_url"));
         String oauthId = String.valueOf(attributes.get("id"));
