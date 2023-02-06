@@ -78,6 +78,18 @@ public class ChallengeService {
     }
 
     @Transactional
+    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
+        User user=getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        validateParticipate(user, challenge);
+        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
+        return ParticipationResponse.builder()
+                .challengeId(savedParticipation.getChallenge().getId())
+                .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
+                .build();
+    }
+
+    @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
         User user = getUser(oauthId);
         Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user.getId(), dto));
@@ -189,8 +201,8 @@ public class ChallengeService {
         }
         return true;
     }
-    public boolean isParticipate(Long challengeId, String oauthId){
-        if(participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()){
+    public boolean isParticipate(Long challengeId, String oauthId) {
+        if (participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()) {
             return false;
         }
         return true;

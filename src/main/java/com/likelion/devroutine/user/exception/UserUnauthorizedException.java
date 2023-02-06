@@ -1,4 +1,4 @@
-package com.likelion.devroutine.comment.exception;
+package com.likelion.devroutine.user.exception;
 
 import com.likelion.devroutine.exception.UnauthorizedException;
 
