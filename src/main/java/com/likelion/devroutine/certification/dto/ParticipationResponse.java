@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @Getter
-public class CertificationListResponse {
+public class ParticipationResponse {
     private Long id;
     private String title;
     private String description;
 
-    public static List<CertificationListResponse> of(List<Participation> participations) {
+    public static List<ParticipationResponse> of(List<Participation> participations) {
         return participations.stream()
-                .map(participation -> CertificationListResponse.builder()
+                .map(participation -> ParticipationResponse.builder()
                         .id(participation.getId())
                         .title(participation.getChallenge().getTitle())
                         .description(participation.getChallenge().getDescription())
