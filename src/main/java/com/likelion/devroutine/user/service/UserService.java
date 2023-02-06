@@ -1,13 +1,7 @@
 package com.likelion.devroutine.user.service;
 
-import com.likelion.devroutine.alarm.domain.Alarm;
-import com.likelion.devroutine.alarm.dto.AlarmResponse;
-import com.likelion.devroutine.alarm.enumurate.AlarmType;
-import com.likelion.devroutine.alarm.repository.AlarmRepository;
-import com.likelion.devroutine.alarm.repository.EmitterRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
-import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.dto.FollowingResponse;
 import com.likelion.devroutine.follow.exception.AlreadyFollowingException;
 import com.likelion.devroutine.follow.exception.FollowNotPermittedException;
@@ -19,10 +13,8 @@ import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Transactional(readOnly = true)
@@ -33,9 +25,6 @@ public class UserService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
-    private final AlarmRepository alarmRepository;
-    //private final EmitterRepository emitterRepository;
-
     @Transactional
     public FollowCreateResponse follow(Long followerId, String oauthId) {
         User followingUser = findUserByOauthId(oauthId);
@@ -44,9 +33,6 @@ public class UserService {
         validateSelfFollow(follower.getId(), followingUser.getId());
         Follow follow = Follow.createFollow(follower, followingUser);
         followRepository.save(follow);
-
-        //알람
-        followAlarm(follower,followingUser.getId());
         return FollowCreateResponse.of(followingUser.getName(), follower.getName());
     }
 
@@ -76,28 +62,10 @@ public class UserService {
         return FollowingResponse.of(followings);
     }
 
-    public List<FollowerResponse> findFollowers(Long userId) {
+    public List<FollowingResponse> findFollowers(Long userId) {
         validateUserExists(userId);
         List<Follow> followers = followRepository.findByFollowerId(userId);
-        return FollowerResponse.of(followers);
-    }
-
-    //알림 기능
-    private void followAlarm(User followerUser, Long followingUser) {
-        Alarm savedAlarm = alarmRepository.save(Alarm.createAlarm(followingUser,
-                AlarmType.NEW_FOLLOW, AlarmType.NEW_FOLLOW.getMessage(), followerUser));
-
-//        String receiverId = String.valueOf(followerUser.getId());
-//        String eventId = receiverId + "_" + System.currentTimeMillis();
-//
-//        Map<String, SseEmitter> emitters = emitterRepository.findAllEmitterStartWithByUserId(receiverId);
-//        emitters.forEach(
-//                (key, emitter) -> {
-//                    emitterRepository.saveEventCache(key, savedAlarm);
-//                    //sendNotification(emitter, eventId, key, AlarmResponse.toList());
-//                }
-//        );
-
+        return FollowingResponse.of(followers);
     }
 
     private User findUser(Long userId) {
@@ -120,25 +88,4 @@ public class UserService {
             throw new UserNotFoundException();
         }
     }
-
-
-
-//    private void send( receiver, AlarmType alarmTypeType, String content, String url) {
-//
-//
-//        Notification notification = notificationRepository.save(createNotification(receiver, notificationType, content, url));
-//
-//        String receiverId = String.valueOf(receiver.getId());
-//        String eventId = receiverId + "_" + System.currentTimeMillis();
-//        Map<String, SseEmitter> emitters = emitterRepository.findAllEmitterStartWithByMemberId(receiverId);
-//        emitters.forEach(
-//                (key, emitter) -> {
-//                    emitterRepository.saveEventCache(key, notification);
-//                    sendNotification(emitter, eventId, key, NotificationResponseDto.create(notification));
-//                }
-//        );
-//    }
-
-
-
 }
