@@ -24,7 +24,7 @@ public class Alarm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long targetId;
+    private Long fromId;
 
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
@@ -40,9 +40,9 @@ public class Alarm {
     private LocalDateTime createdAt;
 
     public static Alarm createAlarm(
-            Long targetId,AlarmType alarmType, String message, User user) {
+            Long fromId,AlarmType alarmType, String message, User user) {
         return Alarm.builder()
-                .targetId(targetId)
+                .fromId(fromId)
                 .alarmType(alarmType)
                 .message(message)
                 .user(user)

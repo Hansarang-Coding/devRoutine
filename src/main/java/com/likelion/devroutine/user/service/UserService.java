@@ -1,5 +1,7 @@
 package com.likelion.devroutine.user.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
@@ -40,6 +42,7 @@ public class UserService {
         validateSelfFollow(follower.getId(), followingUser.getId());
         Follow follow = Follow.createFollow(follower, followingUser);
         followRepository.save(follow);
+        saveFollowAlarm(follower, followingUser.getId());
         return FollowCreateResponse.of(followingUser.getName(), follower.getName());
     }
 
@@ -107,6 +110,11 @@ public class UserService {
 
     private List<Participation> findParticipations(Long userId) {
         return participationRepository.findAllByUserId(userId);
+    }
+
+    public void saveFollowAlarm(User user, Long oauthId) {
+        alarmRepository.save(Alarm.createAlarm(oauthId,
+                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
     }
 
 

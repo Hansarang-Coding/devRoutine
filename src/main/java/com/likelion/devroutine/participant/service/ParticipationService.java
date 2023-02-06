@@ -1,5 +1,8 @@
 package com.likelion.devroutine.participant.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.CertificationResponse;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
@@ -50,8 +53,10 @@ public class ParticipationService {
     private final ChallengeHashTagRepository challengeHashTagRepository;
     private final CertificationRepository certificationRepository;
 
+    private final AlarmRepository alarmRepository;
+
     public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository
-            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository) {
+            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository, AlarmRepository alarmRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
@@ -59,6 +64,7 @@ public class ParticipationService {
         this.followRepository = followRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
         this.certificationRepository = certificationRepository;
+        this.alarmRepository = alarmRepository;
     }
 
     @Transactional
@@ -87,6 +93,7 @@ public class ParticipationService {
         matchWriterAndUser(inviter, challenge);
         isProgressChallenge(challenge.getStartDate());
         Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
+        saveInviteAlarm(invitee,inviter.getId());
         return InviteCreateResponse.builder()
                 .inviterId(savedInvite.getInviterId())
                 .challengeId(savedInvite.getChallengeId())
@@ -182,5 +189,10 @@ public class ParticipationService {
 
     private List<ChallengeHashTag> getHashTags(Long challengeId) {
         return challengeHashTagRepository.findByChallengeId(challengeId);
+    }
+
+    public void saveInviteAlarm(User user, Long inviterId) {
+        alarmRepository.save(Alarm.createAlarm(inviterId,
+                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
     }
 }
