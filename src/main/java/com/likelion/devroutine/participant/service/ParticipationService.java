@@ -1,14 +1,21 @@
 package com.likelion.devroutine.participant.service;
 
+import com.likelion.devroutine.certification.domain.Certification;
+import com.likelion.devroutine.certification.dto.CertificationResponse;
+import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.dto.ChallengeDto;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.follow.domain.Follow;
+import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
 import com.likelion.devroutine.follow.repository.FollowRepository;
+import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
 import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
+import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.dto.InviteCreateResponse;
 import com.likelion.devroutine.invite.repository.InviteRepository;
@@ -16,7 +23,6 @@ import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
-import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
 import com.likelion.devroutine.participant.exception.RejectCancelException;
@@ -30,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,13 +47,18 @@ public class ParticipationService {
     private final ChallengeRepository challengeRepository;
     private final InviteRepository inviteRepository;
     private final FollowRepository followRepository;
+    private final ChallengeHashTagRepository challengeHashTagRepository;
+    private final CertificationRepository certificationRepository;
 
-    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository, InviteRepository inviteRepository, FollowRepository followRepository) {
+    public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository
+            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.inviteRepository = inviteRepository;
         this.followRepository = followRepository;
+        this.challengeHashTagRepository = challengeHashTagRepository;
+        this.certificationRepository = certificationRepository;
     }
 
     @Transactional
@@ -64,6 +76,7 @@ public class ParticipationService {
                 .message(ResponseMessage.CHALLENGE_CANCEL_SUCCESS.getMessage())
                 .build();
     }
+
     @Transactional
     public InviteCreateResponse inviteUser(String inviterOauthId, Long challengeId, Long inviteeId) {
         User inviter=getUser(inviterOauthId);
@@ -81,18 +94,31 @@ public class ParticipationService {
                 .message(com.likelion.devroutine.invite.enumerate.ResponseMessage.INVITE_SUCCESS.getMessage())
                 .build();
     }
+
+    public List<FollowerResponse> findFollowers(String oauthId, Long challengeId) {
+        User user = getUser(oauthId);
+        Challenge challenge=getChallenge(challengeId);
+        matchWriterAndUser(user, challenge);
+        List<Follow> followers=followRepository.findByFollowerId(user.getId());
+        return FollowerResponse.of(followers);
+    }
+
     public ParticipationChallengeDto findByParticipateChallenge(String oauthId, Long challengeId){
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
         Participation participation =getParticipant(user, challenge);
         List<Participation> participations = participationRepository.findAllByChallenge(challenge);
-        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), UserResponse.toList(getChallengeParticipants(participations)));
+        Map<String, List<CertificationResponse>> certificationResponses=getCertification(participations);
+        return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), certificationResponses);
+    }
+    public Map<String, List<CertificationResponse>> getCertification(List<Participation> participations){
+        return participations.stream()
+                .collect(Collectors.toMap(
+                        participation -> participation.getUser().getName(),
+                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getId()))
+                ));
     }
 
-    public List<User> getChallengeParticipants(List<Participation> participations){
-        return participations.stream().map(participant -> participant.getUser())
-                .collect(Collectors.toList());
-    }
     public Participation getParticipant(User user, Challenge challenge){
         return participationRepository.findByUserAndChallenge(user, challenge)
                 .orElseThrow(()-> new ParticipationNotFoundException());
@@ -123,16 +149,38 @@ public class ParticipationService {
         return false;
     }
 
-    //invitee가 inviter를 팔로우하고 있는지 확인하는 함수
     private void validateFollower(User inviter, User invitee) {
         Follow follow=followRepository.findByFollowerIdAndFollowingId(inviter.getId(), invitee.getId())
                 .orElseThrow(()->new FollowingNotFoundException());
     }
 
     private boolean matchWriterAndUser(User user, Challenge challenge) {
-        if(!user.getId().equals(challenge.getUserId())){
+        if (!user.getId().equals(challenge.getUserId())) {
             throw new InvalidPermissionException();
         }
         return true;
+    }
+
+    public List<ChallengeDto> findAllParticipateChallenge(String oauthId){
+        User user=getUser(oauthId);
+        List<Participation> participations=participationRepository.findAllByUserId(user.getId());
+        List<Challenge> participateChallenges=participations.stream()
+                .filter(participation -> challengeRepository.findById(participation.getChallenge().getId()).isPresent())
+                .map(participation -> challengeRepository.findById(participation.getChallenge().getId()).get())
+                .collect(Collectors.toList());
+        return ChallengeDto.toList(participateChallenges, getChallengeHashTagResponse(participateChallenges));
+    }
+
+    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
+        return challenges
+                .stream()
+                .collect(Collectors.toMap(
+                        challenge-> challenge.getId(),
+                        challenge->ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
+                ));
+    }
+
+    private List<ChallengeHashTag> getHashTags(Long challengeId) {
+        return challengeHashTagRepository.findByChallengeId(challengeId);
     }
 }
