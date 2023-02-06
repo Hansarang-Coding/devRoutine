@@ -1,5 +1,6 @@
 package com.likelion.devroutine.user.service;
 
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowCreateResponse;
 import com.likelion.devroutine.follow.dto.FollowerResponse;
@@ -28,6 +29,8 @@ public class UserService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public FollowCreateResponse follow(Long followerId, String oauthId) {
