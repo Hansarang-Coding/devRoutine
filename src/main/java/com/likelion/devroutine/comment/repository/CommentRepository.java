@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByCertificationId(Long certificationId, Pageable pageable);
 
-    @Query("SELECT cc.participation FROM Comment c INNER JOIN c.certification cc ON cc.id = :id")
+    @Query("SELECT p.user FROM Comment c INNER JOIN c.certification cc INNER JOIN " +
+            "cc.participation p ON c.certification.id = :id")
     User findUserByCommentParam(@Param("id") Long id);
 
 }
