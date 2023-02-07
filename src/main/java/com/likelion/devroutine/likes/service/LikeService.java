@@ -36,7 +36,7 @@ public class LikeService {
         } else {
             Like like = Like.createLike(getUser(oauthId), getCertification(certificationId));
             likeRepository.save(like);
-            saveLikeAlarm(certificationId,like.getUser().getId());
+            saveLikeAlarm(certificationId,like.getUser().getId());;
         }
         return "좋아요 생성 성공";
     }

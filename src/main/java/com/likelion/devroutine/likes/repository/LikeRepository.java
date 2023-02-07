@@ -16,7 +16,8 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     boolean existsByCertificationIdAndUserId(Long certificationId, Long userId);
 
-    @Query("SELECT c.participation FROM Like l INNER JOIN l.certification c ON l.id = :id")
+    @Query("SELECT p.user FROM Like l INNER JOIN l.certification c INNER JOIN " +
+            "c.participation p ON l.certification.id = :id")
     User findUserByLikeParam(@Param("id") Long id);
 
 }
