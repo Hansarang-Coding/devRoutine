@@ -68,26 +68,16 @@ public class ChallengeService {
 
     public ChallengeDto findByChallengeId(Long challengeId) {
         Challenge challenge = getChallenge(challengeId);
-        if(!challenge.getVigibility()) throw new InaccessibleChallengeException();
+        if (!challenge.getVigibility()) throw new InaccessibleChallengeException();
         return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
     }
-    public ChallengeDto findByChallengeId(Long challengeId, String oauthId){
+
+    public ChallengeDto findByChallengeId(Long challengeId, String oauthId) {
         Challenge challenge = getChallenge(challengeId);
         isViewable(challenge, oauthId);
         return ChallengeDto.toDto(challenge, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()));
     }
 
-    @Transactional
-    public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
-        User user=getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
-        validateParticipate(user, challenge);
-        Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
-        return ParticipationResponse.builder()
-                .challengeId(savedParticipation.getChallenge().getId())
-                .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
-                .build();
-    }
 
     @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
@@ -128,8 +118,8 @@ public class ChallengeService {
 
     @Transactional
     public ParticipationResponse participateChallenge(String oauthId, Long challengeId) {
-        User user=getUser(oauthId);
-        Challenge challenge=getChallenge(challengeId);
+        User user = getUser(oauthId);
+        Challenge challenge = getChallenge(challengeId);
         validateParticipate(user, challenge);
         Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
         return ParticipationResponse.builder()
@@ -153,12 +143,12 @@ public class ChallengeService {
         }
     }
 
-    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){
+    private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges) {
         return challenges
                 .stream()
                 .collect(Collectors.toMap(
-                        challenge-> challenge.getId(),
-                        challenge->ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
+                        challenge -> challenge.getId(),
+                        challenge -> ChallengeHashTagResponse.of(getHashTags(challenge.getId()))
                 ));
     }
 
@@ -201,6 +191,7 @@ public class ChallengeService {
         }
         return true;
     }
+
     public boolean isParticipate(Long challengeId, String oauthId) {
         if (participationRepository.findByUserAndChallenge(getUser(oauthId), getChallenge(challengeId)).isEmpty()) {
             return false;
@@ -210,14 +201,14 @@ public class ChallengeService {
 
     private boolean isViewable(Challenge challenge, String oauthId) {
         //공개 챌린지이거나 초대받은 경우
-        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
+        if (challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)) {
             return true;
         }
         throw new InaccessibleChallengeException();
     }
 
     private boolean isPresentInvite(Long challengeId, String oauthId) {
-        if(oauthId!=null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
+        if (oauthId != null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()) {
             return true;
         }
         return false;
@@ -231,14 +222,14 @@ public class ChallengeService {
         return true;
     }
 
-    public boolean validateParticipate(User user, Challenge challenge){
+    public boolean validateParticipate(User user, Challenge challenge) {
         isViewable(challenge, user.getOauthId());
         isProgressChallenge(challenge.getStartDate());
         validateDuplicateParticipate(user, challenge);
         return true;
     }
 
-    public List<ChallengeHashTagResponse> getRandomHashTag(){
+    public List<ChallengeHashTagResponse> getRandomHashTag() {
         List<ChallengeHashTag> challengeHashTags = challengeHashTagRepository.findHashTagsByRandom();
         return ChallengeHashTagResponse.of(challengeHashTags);
     }
