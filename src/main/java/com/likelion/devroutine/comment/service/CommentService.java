@@ -1,5 +1,8 @@
 package com.likelion.devroutine.comment.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
@@ -29,11 +32,14 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CertificationRepository certificationRepository;
 
+    private final AlarmRepository alarmRepository;
+
     @Transactional
     public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String oauthId) {
         Certification certification = findCertification(certificationId);
         User user = getUser(oauthId);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certification, user));
+        saveCommentAlarm(certificationId, user);
         return CommentCreateResponse.of(savedComment);
     }
 
@@ -85,6 +91,12 @@ public class CommentService {
     private Comment getComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
+    }
+
+    public void saveCommentAlarm(Long certificationId, User fromUser) {
+        User user = commentRepository.findUserByCommentParam(certificationId);
+        alarmRepository.save(Alarm.createAlarm(fromUser.getId(),
+                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
     }
 
 }

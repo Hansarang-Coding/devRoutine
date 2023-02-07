@@ -1,9 +1,13 @@
 package com.likelion.devroutine.likes.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.dto.AlarmResponse;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.likes.domain.Like;
-import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
+import com.likelion.devroutine.comment.exception.CertificationNotFoundException;
 import com.likelion.devroutine.likes.exception.LikeNotFoundException;
 import com.likelion.devroutine.likes.repository.LikeRepository;
 import com.likelion.devroutine.user.domain.User;
@@ -13,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -21,6 +27,8 @@ public class LikeService {
     private final UserRepository userRepository;
     private final CertificationRepository certificationRepository;
 
+    private final AlarmRepository alarmRepository;
+
     @Transactional
     public String doLikes(Long certificationId, String oauthId) {
         if (isAlreadyPressedLike(certificationId, oauthId)) {
@@ -28,6 +36,7 @@ public class LikeService {
         } else {
             Like like = Like.createLike(getUser(oauthId), getCertification(certificationId));
             likeRepository.save(like);
+            saveLikeAlarm(certificationId,like.getUser().getId());
         }
         return "좋아요 생성 성공";
     }
@@ -63,6 +72,12 @@ public class LikeService {
     public Certification getCertification(Long id) {
         return certificationRepository.findById(id)
                 .orElseThrow(CertificationNotFoundException::new);
+    }
+
+    public void saveLikeAlarm(Long certificationId, Long fromId) {
+        User user = likeRepository.findUserByLikeParam(certificationId);
+        alarmRepository.save(Alarm.createAlarm( fromId,
+                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
     }
 
 }

@@ -114,7 +114,7 @@ public class UserService {
 
     public void saveFollowAlarm(User user, Long oauthId) {
         alarmRepository.save(Alarm.createAlarm(oauthId,
-                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+                AlarmType.NEW_FOLLOW,AlarmType.NEW_FOLLOW.getMessage(), user));
     }
 
 

@@ -193,6 +193,6 @@ public class ParticipationService {
 
     public void saveInviteAlarm(User user, Long inviterId) {
         alarmRepository.save(Alarm.createAlarm(inviterId,
-                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+                AlarmType.NEW_CHALLENGE_INVITE,AlarmType.NEW_CHALLENGE_INVITE.getMessage(), user));
     }
 }
