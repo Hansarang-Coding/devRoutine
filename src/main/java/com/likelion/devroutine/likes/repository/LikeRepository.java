@@ -4,6 +4,8 @@ import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.likes.domain.Like;
 import com.likelion.devroutine.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -13,4 +15,8 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Integer countByCertification(Certification certification);
 
     boolean existsByCertificationIdAndUserId(Long certificationId, Long userId);
+
+    @Query("SELECT c.participation FROM Like l INNER JOIN l.certification c ON c.id = :id")
+    User findUserByLikeParam(@Param("id") Long id);
+
 }
