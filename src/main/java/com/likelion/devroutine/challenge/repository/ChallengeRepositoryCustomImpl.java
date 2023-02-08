@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.likelion.devroutine.challenge.domain.QChallenge.challenge;
@@ -17,7 +18,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public List<Challenge> findSearchTitleSortById(String keyword) {
         return queryFactory.selectFrom(challenge)
-                .where(challenge.title.contains(keyword), challenge.vigibility.eq(true))
+                .where(challenge.title.contains(keyword), challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
                 .orderBy(challenge.id.desc())
                 .fetch();
 
@@ -26,7 +27,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public List<Challenge> findAllSortById() {
         return queryFactory.selectFrom(challenge)
-                .where( challenge.vigibility.eq(true))
+                .where( challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
                 .orderBy(challenge.id.desc())
                 .fetch();
     }

@@ -2,15 +2,13 @@ package com.likelion.devroutine.challenge.controller;
 
 import com.likelion.devroutine.auth.config.LoginUser;
 import com.likelion.devroutine.auth.dto.SessionUser;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
-import com.likelion.devroutine.challenge.dto.ChallengeDto;
-import com.likelion.devroutine.challenge.dto.ChallengeResponse;
+import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.participant.service.ParticipationService;
+import com.likelion.devroutine.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -45,18 +43,15 @@ public class ChallengeController {
     }
 
     @GetMapping("/new")
-    public String createChallenge(Authentication authentication, Model model, ChallengeCreateRequest requestDto){
-        model.addAttribute("requestDto", requestDto);
+    public String createChallenge(Authentication authentication){
         return "challenges/new";
     }
 
-    @PostMapping
-    public String challenges(Authentication authentication, @ModelAttribute("requestDto") ChallengeCreateRequest challengeCreateRequest){
-        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(authentication.getName(), challengeCreateRequest);
-        log.info(challengeCreateRequest.getAuthenticationType().toString());
-        log.info(challengeCreateRequest.getHashTag());
-        log.info(challengeCreateRequest.getStartDate().toString());
-        return "redirect:/challenges"+challengeCreateResponse.getChallengeId();
+    @PostMapping("/new")
+    public String saveChallenges(Authentication authentication, ChallengeCreateRequest requestDto){
+        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(authentication.getName(), requestDto);
+
+        return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
     }
 
     @GetMapping("/{challengeId}")
@@ -66,10 +61,16 @@ public class ChallengeController {
             if(sessionUser==null || sessionUser.getName()==null) challengeDto=challengeService.findByChallengeId(challengeId);
             else challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
             model.addAttribute("challenge", challengeDto);
+            log.info("참여중이지 않은 상세조회");
             return "challenges/detail";
         }
-        ParticipationChallengeDto participationChallengeDto = participationService.findByParticipateChallenge(authentication.getName(), challengeId);
-        model.addAttribute("challenge", participationChallengeDto);
+        log.info("참여중인 챌린지"+sessionUser.getName());
+        ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
+        ParticipationChallengeDto dto=participationService.findByParticipateChallenge(authentication.getName(), challengeId);
+        log.info("챌린지 인증 방식 : "+dto.getAuthenticationType());
+        model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
+        model.addAttribute("challenge", challengeDto);
+        model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
         return "participations/detail";
     }
 
@@ -78,5 +79,26 @@ public class ChallengeController {
         log.info("챌린지 참여 컨트롤러 시작");
         ParticipationResponse participationResponse=challengeService.participateChallenge(authentication.getName(), challengeId);
         return "redirect:/";
+    }
+
+    @GetMapping("/{challengeId}/edit")
+    public String editChallengeForm(@PathVariable Long challengeId, Authentication authentication, Model model){
+        ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
+        model.addAttribute("challenge", challengeDto);
+        return "challenges/edit";
+    }
+
+    @PostMapping("/{challengeId}/edit")
+    public String updateChallenge(@PathVariable Long challengeId, Authentication authentication, Model model, ChallengeModifiyRequest challengeModifiyRequest){
+        log.info("title : "+challengeModifiyRequest.getTitle());
+        log.info("hashtag : "+challengeModifiyRequest.getHashtag());
+        ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
+        return "redirect:/challenges/"+String.valueOf(challengeId);
+    }
+
+    @GetMapping("/{challengeId}/delete")
+    public String deleteChallenge(@PathVariable Long challengeId, Authentication authentication){
+        ChallengeResponse challengeResponse=challengeService.deleteChallenge(authentication.getName(), challengeId);
+        return "redirect:/challenges";
     }
 }

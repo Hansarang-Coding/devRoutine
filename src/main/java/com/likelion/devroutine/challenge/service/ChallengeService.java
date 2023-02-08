@@ -8,6 +8,7 @@ import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.exception.DuplicatedParticipationException;
 import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
@@ -23,6 +24,7 @@ import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
 import com.likelion.devroutine.participant.repository.ParticipationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
@@ -90,6 +93,7 @@ public class ChallengeService {
 
     @Transactional
     public ChallengeCreateResponse createChallenge(String oauthId, ChallengeCreateRequest dto) {
+        log.info(oauthId);
         User user = getUser(oauthId);
         Challenge savedChallenge = challengeRepository.save(Challenge.createChallenge(user.getId(), dto));
         List<String> hashTags = extractHashTag(dto.getHashTag());
@@ -209,7 +213,7 @@ public class ChallengeService {
 
     private boolean isViewable(Challenge challenge, String oauthId) {
         //공개 챌린지이거나 초대받은 경우
-        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId)){
+        if(challenge.getVigibility() || isPresentInvite(challenge.getId(), oauthId) || isParticipate(challenge.getId(), oauthId)){
             return true;
         }
         throw new InaccessibleChallengeException();
@@ -240,5 +244,13 @@ public class ChallengeService {
     public List<HashTagResponse> getRandomHashTag(){
         List<HashTag> hashTags = hashTagRepository.findHashTagsByRandom();
         return HashTagResponse.of(hashTags);
+    }
+
+    public UserResponse getUserResponse(String oauthId) {
+        User user=getUser(oauthId);
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
     }
 }

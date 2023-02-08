@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>챌린지 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+<div style="margin-top: 20px; margin-right: 100px; margin-left: 100px; margin-bottom: 10px">
+    <form th:action="@{|/challenges/${challenge.getId()}/edit|}" method="post">
+        <fieldset>
+            <legend>챌린지 생성</legend>
+            <div class="form-group">
+                <label for="title" class="form-label mt-4">챌린지 제목</label>
+                <input type="text" class="form-control" id="title" aria-describedby="titleHelp" name="title" th:value="${challenge.getTitle()}"required>
+                <small id="titleHelp" class="form-text text-muted">챌린지 제목을 입력해주세요.</small>
+            </div>
+            <div class="form-group">
+                <label for="description" class="form-label mt-4">챌린지 설명</label>
+                <textarea class="form-control" id="description" rows="3" name="description" th:text="${challenge.getDescription() }" required></textarea>
+            </div>
+            <fieldset class="form-group">
+                <legend class="mt-4">인증 방식</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="GITHUB" id="github" name="authenticationType" th:checked="${challenge.getAuthenticationType().name().equals('GITHUB')}" onclick='getAuthentication(this)'>
+                    <label class="form-check-label" for="github">
+                        GITHUB
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="PICTURE" id="image" th:checked="${challenge.getAuthenticationType().name().equals('PICTURE')}" name="authenticationType" onclick='getAuthentication(this)'>
+                    <label class="form-check-label" for="image">
+                        이미지
+                    </label>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <label for="hashtag" class="form-label mt-4">해시 태그</label>
+                <input type="text" class="form-control" id="hashtag" name="hashtag" value=" "required>
+                <small id="hashTagHelp" class="form-text text-muted">EX)#알고리즘 #코딩테스트</small>
+            </div>
+            <fieldset class="form-group">
+                <legend class="mt-4">공개 범위</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="true" id="public" name="vigibility" th:checked="${challenge.getVigibility()}" onclick='getVigibility(this)'>
+                    <label class="form-check-label" for="public">
+                        공개
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="false" id="private" name="vigibility" th:checked="${challenge.getVigibility()}==false" onclick='getVigibility(this)'>
+                    <label class="form-check-label" for="private">
+                        비공개
+                    </label>
+                </div>
+            </fieldset>
+            <div style="text-align: right">
+                <button id="liveAlertBtn" type="submit" class="btn btn-outline-primary">등록</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+</body>
+<script>
+    function getAuthentication(element){
+        const checkboxes = document.getElementsByName("authenticationType");
+
+        checkboxes.forEach((cb)=>{
+            cb.checked=false;
+        })
+        element.checked=true;
+        console.log(checkboxes.values());
+    }
+
+    function getVigibility(element){
+        const checkboxes = document.getElementsByName("vigibility");
+
+        checkboxes.forEach((cb)=>{
+            cb.checked=false;
+        })
+        element.checked=true;
+        console.log(checkboxes.values());
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+        alertTrigger.addEventListener('click', () => {
+            alert('챌린지가 수정되었습니다!', 'success')
+        })
+    }
+</script>
+</html>
