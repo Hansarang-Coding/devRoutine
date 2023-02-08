@@ -24,7 +24,18 @@ public class ChallengeRestController {
     public ChallengeRestController(ChallengeService challengeService) {
         this.challengeService = challengeService;
     }
+
     @GetMapping
+    public ResponseEntity<List<ChallengeDto>> findAllChallengeList(@RequestParam(required = false) String keyword){
+        List<ChallengeDto> challengeDtos;
+        if(keyword==null) {
+            challengeDtos = challengeService.findAllChallenge();
+        }else{
+            challengeDtos=challengeService.findAllChallengeTitle(keyword);
+        }
+        return ResponseEntity.ok().body(challengeDtos);
+    }
+    /*@GetMapping
     public ResponseEntity<List<ChallengeDto>> findAllChallengeList(Long challengeId,
                                                                    @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String keyword){
         List<ChallengeDto> challengeDtos;
@@ -34,7 +45,7 @@ public class ChallengeRestController {
             challengeDtos=challengeService.findAllChallengeTitle(challengeId, size, keyword);
         }
         return ResponseEntity.ok().body(challengeDtos);
-    }
+    }*/
     @GetMapping("/{id}")
     public ResponseEntity<ChallengeDto> findByChallengeId(Authentication authentication, @PathVariable Long id, @LoginUser SessionUser sessionUser){
         //로그인 X 이거나 참여중이지 않은 챌린지 인경우

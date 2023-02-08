@@ -15,6 +15,23 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<Challenge> findSearchTitleSortById(String keyword) {
+        return queryFactory.selectFrom(challenge)
+                .where(challenge.title.contains(keyword), challenge.vigibility.eq(true))
+                .orderBy(challenge.id.desc())
+                .fetch();
+
+    }
+
+    @Override
+    public List<Challenge> findAllSortById() {
+        return queryFactory.selectFrom(challenge)
+                .where( challenge.vigibility.eq(true))
+                .orderBy(challenge.id.desc())
+                .fetch();
+    }
+
+    /*@Override
     public List<Challenge> findSearchTitleSortById(Long cursorId, String keyword, Pageable pageable) {
         return queryFactory.selectFrom(challenge)
                 .where(cursorId(cursorId), challenge.title.contains(keyword), challenge.vigibility.eq(true))
@@ -31,7 +48,7 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
                 .orderBy(challenge.id.desc())
                 .limit(pageable.getPageSize())
                 .fetch();
-    }
+    }*/
 
     /*
     첫페이지에 접근한 경우 Null

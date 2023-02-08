@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ public class ChallengeDto {
     private AuthenticationType authenticationType;
     private String vigibility;
     private Long fromUserId;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private List<ChallengeHashTagResponse> challengeHashTag;
 
     public static List<ChallengeDto> toList(List<Challenge> challenges, Map<Long, List<ChallengeHashTagResponse>> challengeHashTags) {
@@ -34,6 +37,8 @@ public class ChallengeDto {
                         .authenticationType(challenge.getAuthenticationType())
                         .fromUserId(challenge.getUserId())
                         .challengeHashTag(challengeHashTags.get(challenge.getId()))
+                        .startDate(challenge.getStartDate())
+                        .endDate(challenge.getEndDate())
                         .vigibility(challenge.getVigibility() ? "공개" : "비공개")
                         .build())
                 .collect(Collectors.toList());
@@ -47,6 +52,8 @@ public class ChallengeDto {
                 .authenticationType(challenge.getAuthenticationType())
                 .fromUserId(challenge.getUserId())
                 .challengeHashTag(challengeHashTag)
+                .startDate(challenge.getStartDate())
+                .endDate(challenge.getEndDate())
                 .vigibility(challenge.getVigibility() ? "공개" : "비공개")
                 .build();
     }

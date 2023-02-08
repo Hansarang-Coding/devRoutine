@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>전체 챌린지 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <form class="d-flex" style="margin-botton: 10px; margin-top:40px; margin-left: 300px; margin-right: 300px;" th:action="@{/challenges(keyword=${keyword})}" method="get">
+        <input name="keyword" class="form-control me-sm-2" type="search" placeholder="Search" th:value="${keyword}">
+        <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <form style="text-align: center; margin-top: 10px; margin-bottom: 20px">
+        <div class="btn-group">
+            <div th:each="hashtag : ${hashtags}">
+                <form th:action="@{/challenges(hashtag=${hashtag})}" method="get">
+                    <button name="hashtag" type="button" class="btn btn-outline-primary" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
+                </form>
+            </div>
+        </div>
+    </form>
+    <div style="text-align: right; margin-right:100px;">
+        <button type="button" class="btn btn-outline-secondary">
+            <a th:href="@{|/challenges/new|}">+ 챌린지</a>
+        </button>
+    </div>
+    <div th:each="challenge : ${challenges}">
+        <div class="card border-primary mb-3" style="margin-botton: 10px; margin-top:20px; margin-left:300px; margin-right:300px;">
+            <a th:href="@{|/challenges/${challenge.getId()}|}" style="margin-bottom: 10px">
+                <div class="card-body">
+                    <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
