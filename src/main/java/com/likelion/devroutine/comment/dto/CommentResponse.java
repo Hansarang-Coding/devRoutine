@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
@@ -23,14 +25,15 @@ public class CommentResponse {
 
     private LocalDateTime createdAt;
 
-    public static Page<CommentResponse> of(Page<Comment> comments) {
-        return comments.map(comment -> CommentResponse.builder()
+    public static List<CommentResponse> of(List<Comment> comments) {
+        return comments.stream().
+                map(comment -> CommentResponse.builder()
                 .id(comment.getId())
                 .comment(comment.getComment())
                 .userName(comment.getUser().getName())
-                //.certificationId(comment.getCertification().getId())
+                .certificationId(comment.getCertification().getId())
                 .createdAt(comment.getCreatedAt())
-                .build()
-        );
+                .build())
+                .collect(Collectors.toList());
     }
 }

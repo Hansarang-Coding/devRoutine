@@ -31,9 +31,8 @@ public class AlarmRestController {
 
 
     @GetMapping
-    public ResponseEntity<Page<AlarmResponse>> findAlarms(Authentication authentication,
-                                                          @PageableDefault(size=20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(alarmService.findAlarms(authentication.getName(), pageable));
+    public ResponseEntity<List<AlarmResponse>> findAlarms(Authentication authentication) {
+        return ResponseEntity.ok().body(alarmService.findAlarms(authentication.getName()));
                 //notificationService.subscribe(memberDetails.getId(), lastEventId);
     }
 

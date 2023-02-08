@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/certification")
@@ -33,10 +35,9 @@ public class CommentRestController {
     }
 
     @GetMapping("/{certificationId}/comments")
-    public ResponseEntity<Page<CommentResponse>> findAllComments(
-            @PathVariable("certificationId") Long certificationId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-        return ResponseEntity.ok().body(commentService.findAll(certificationId,pageable));
+    public ResponseEntity<List<CommentResponse>> findAllComments(
+            @PathVariable("certificationId") Long certificationId){
+        return ResponseEntity.ok().body(commentService.findAll(certificationId));
 
     }
 

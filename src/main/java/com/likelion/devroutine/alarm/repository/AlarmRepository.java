@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
-    Page<Alarm> findByUserId(Long userId, Pageable pageable);
+    List<Alarm> findByUserId(Long userId);
 
 
 }
