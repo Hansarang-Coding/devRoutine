@@ -48,7 +48,7 @@ dependencies {
 
     //template Engine
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE"
 
     //querydsl dependencies 추가(스프링부트 3.0 이상)
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
