@@ -10,15 +10,16 @@
         <input name="keyword" class="form-control me-sm-2" type="search" placeholder="Search" th:value="${keyword}">
         <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
     </form>
-    <form style="text-align: center; margin-top: 10px; margin-bottom: 20px">
+    <div style="text-align: center; margin-top: 10px; margin-bottom: 20px">
         <div class="btn-group">
             <div th:each="hashtag : ${hashtags}">
-                <form th:action="@{/challenges(keyword=${hashtag.getHashTag()})}" method="get">
-                    <button name="hashtag" type="button" class="btn btn-outline-primary" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
+                <form th:action="@{/challenges(keyword=${keyword})}" method="get">
+                    <input name="keyword" th:value="${hashtag.getHashTag()}" hidden>
+                    <button type="submit" class="btn btn-outline-primary" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
                 </form>
             </div>
         </div>
-    </form>
+    </div>
     <div style="text-align: right; margin-right:100px;">
         <button type="button" class="btn btn-outline-secondary">
             <a th:href="@{|/challenges/new|}">+ 챌린지</a>

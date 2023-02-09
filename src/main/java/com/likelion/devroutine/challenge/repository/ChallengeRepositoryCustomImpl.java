@@ -1,6 +1,9 @@
 package com.likelion.devroutine.challenge.repository;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.domain.QChallenge;
+import com.likelion.devroutine.hashtag.domain.QChallengeHashTag;
+import com.likelion.devroutine.hashtag.domain.QHashTag;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +20,13 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
 
     @Override
     public List<Challenge> findSearchTitleSortById(String keyword) {
+        QChallengeHashTag challengehashtag=QChallengeHashTag.challengeHashTag;
+        QChallenge challenge=QChallenge.challenge;
+        QHashTag hashTag= QHashTag.hashTag;
         return queryFactory.selectFrom(challenge)
-                .where(challenge.title.contains(keyword), challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
+                .leftJoin(challengehashtag).on(challengehashtag.challenge.id.eq(challenge.id))
+                .leftJoin(hashTag).on(challengehashtag.hashTag.id.eq(hashTag.id))
+                .where(challenge.title.contains(keyword).or(hashTag.contents.eq(keyword)), challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
                 .orderBy(challenge.id.desc())
                 .fetch();
 
