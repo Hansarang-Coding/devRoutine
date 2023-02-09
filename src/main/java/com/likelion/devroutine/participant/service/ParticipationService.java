@@ -121,11 +121,6 @@ public class ParticipationService {
         return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), certificationResponses);
     }
     public Map<String, List<CertificationResponse>> getCertification(List<ParticipationSortResponse> participations){
-        log.info(participations.get(0).getCount().toString());
-        log.info(participations.get(0).getUsername());
-        log.info(participations.get(0).getChallengeId().toString());
-        log.info(participations.get(0).getParticipationId().toString());
-
         return participations.stream()
                 .collect(Collectors.toMap(
                         participation -> participation.getUsername(),
