@@ -44,9 +44,9 @@ public class CommentService {
         return CommentCreateResponse.of(savedComment);
     }
 
-    public List<CommentResponse> findAll(Long certificationId) {
+    public List<CommentResponse> findAll(Long certificationId, Pageable pageable) {
         validateCertificationExists(certificationId);
-        return CommentResponse.of(commentRepository.findAllByCertificationId(certificationId));
+        return CommentResponse.of(commentRepository.findAllByCertificationId(certificationId, pageable));
     }
 
     @Transactional

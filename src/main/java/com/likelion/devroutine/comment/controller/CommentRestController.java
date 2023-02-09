@@ -36,8 +36,8 @@ public class CommentRestController {
 
     @GetMapping("/{certificationId}/comments")
     public ResponseEntity<List<CommentResponse>> findAllComments(
-            @PathVariable("certificationId") Long certificationId){
-        return ResponseEntity.ok().body(commentService.findAll(certificationId));
+            @PathVariable("certificationId") Long certificationId, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok().body(commentService.findAll(certificationId, pageable));
 
     }
 

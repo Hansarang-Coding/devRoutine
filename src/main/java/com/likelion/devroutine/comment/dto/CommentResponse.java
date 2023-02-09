@@ -23,7 +23,7 @@ public class CommentResponse {
     private String oauthId;
     private LocalDateTime createdAt;
 
-    public static List<CommentResponse> of(List<Comment> comments) {
+    public static List<CommentResponse> of(Page<Comment> comments) {
         return comments.stream().
                 map(comment -> CommentResponse.builder()
                 .id(comment.getId())

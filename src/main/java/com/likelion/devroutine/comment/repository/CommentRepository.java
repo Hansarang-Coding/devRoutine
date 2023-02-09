@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findAllByCertificationId(Long certificationId);
+    Page<Comment> findAllByCertificationId(Long certificationId, Pageable pageable);
 
     @Query("SELECT p.user FROM Comment c INNER JOIN c.certification cc INNER JOIN " +
             "cc.participation p ON c.certification.id = :id")
