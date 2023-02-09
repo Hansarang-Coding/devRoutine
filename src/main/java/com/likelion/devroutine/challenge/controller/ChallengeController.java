@@ -85,6 +85,7 @@ public class ChallengeController {
     public String editChallengeForm(@PathVariable Long challengeId, Authentication authentication, Model model){
         ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
         model.addAttribute("challenge", challengeDto);
+        model.addAttribute("hashtag", challengeService.getHashTagString(challengeDto.getChallengeHashTag()));
         return "challenges/edit";
     }
 
