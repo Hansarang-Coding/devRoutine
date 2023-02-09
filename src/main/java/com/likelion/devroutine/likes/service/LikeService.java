@@ -7,7 +7,8 @@ import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.likes.domain.Like;
-import com.likelion.devroutine.comment.exception.CertificationNotFoundException;
+import com.likelion.devroutine.likes.dto.LikeResponse;
+import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
 import com.likelion.devroutine.likes.exception.LikeNotFoundException;
 import com.likelion.devroutine.likes.repository.LikeRepository;
 import com.likelion.devroutine.user.domain.User;
@@ -23,6 +24,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class LikeService {
+
+    public static final String LIKE_SUCCESS_MESSAGE = "좋아요 생성 성공";
+    public static final String LIKE_RESET_MESSAGE = "좋아요 취소";
+
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final CertificationRepository certificationRepository;
@@ -30,15 +35,16 @@ public class LikeService {
     private final AlarmRepository alarmRepository;
 
     @Transactional
-    public String doLikes(Long certificationId, String oauthId) {
+    public LikeResponse doLikes(Long certificationId, String oauthId) {
         if (isAlreadyPressedLike(certificationId, oauthId)) {
             deleteLikes(certificationId, oauthId);
         } else {
             Like like = Like.createLike(getUser(oauthId), getCertification(certificationId));
             likeRepository.save(like);
-            saveLikeAlarm(certificationId,like.getUser().getId());;
+            saveLikeAlarm(certificationId,like.getUser().getId());
+            return LikeResponse.of(LIKE_SUCCESS_MESSAGE, like);
         }
-        return "좋아요 생성 성공";
+        return LikeResponse.of(LIKE_RESET_MESSAGE);
     }
 
     private boolean isAlreadyPressedLike(Long certificationId, String oauthId) {
@@ -52,11 +58,10 @@ public class LikeService {
     }
 
     @Transactional
-    public String deleteLikes(Long certificationId, String oauthId) {
+    public void deleteLikes(Long certificationId, String oauthId) {
         User user = getUser(oauthId);
         Certification certification = getCertification(certificationId);
         likeRepository.delete(getLike(user, certification));
-        return "좋아요가 취소되었습니다";
     }
 
     private Like getLike(User user, Certification certification) {

@@ -1,12 +1,12 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:fragment="menu">
+<nav class="navbar navbar-expand-md fixed-top" th:fragment="menu">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">devRoutine</a>
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
-                <a class="nav-link" href="/challenges">챌린지 리스트</a>
+                <a class="nav-link" href="/api/v1/challenges">챌린지 리스트</a>
             </li>
 
             <li class="nav-item">
@@ -21,7 +21,10 @@
         <a class="d-flex btn btn-success active" href="/oauth2/authorization/github"
            role="button" sec:authorize="isAnonymous()">로그인</a>
 
-        <span id="user" sec:authentication="name" sec:authorize="isAuthenticated()">님 안녕하세요.</span>
+        <div sec:authorize="isAuthenticated()" class="g-4">
+            <span id="user" sec:authentication="name"></span>
+            <b>님 안녕하세요!</b>
+        </div>
 
         <div sec:authorize="isAuthenticated()">
             <a class="d-flex btn btn-success active" href="/logout"

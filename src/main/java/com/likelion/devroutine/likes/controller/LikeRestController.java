@@ -1,5 +1,6 @@
 package com.likelion.devroutine.likes.controller;
 
+import com.likelion.devroutine.likes.dto.LikeResponse;
 import com.likelion.devroutine.likes.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ public class LikeRestController {
     private final LikeService likeService;
 
     @PostMapping("/{certificationId}/likes")
-    public ResponseEntity<String> doLikes(@PathVariable Long certificationId, Authentication authentication) {
-        String result = likeService.doLikes(certificationId, authentication.getName());
-        return ResponseEntity.ok().body(result);
+    public ResponseEntity<LikeResponse> doLike(@PathVariable Long certificationId, Authentication authentication) {
+        LikeResponse likeResponse = likeService.doLikes(certificationId, authentication.getName());
+        return ResponseEntity.ok().body(likeResponse);
     }
 
     @GetMapping("/{certificationId}/likes")
@@ -25,8 +26,8 @@ public class LikeRestController {
     }
 
     @DeleteMapping("/{certificationId}/likes")
-    public String deleteLikes(@PathVariable Long certificationId, Authentication authentication) {
+    public void deleteLike(@PathVariable Long certificationId, Authentication authentication) {
         String oauthId = authentication.getName();
-        return likeService.deleteLikes(certificationId, oauthId);
+        likeService.deleteLikes(certificationId, oauthId);
     }
 }

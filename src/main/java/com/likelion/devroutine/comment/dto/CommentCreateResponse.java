@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class CommentCreateResponse {
