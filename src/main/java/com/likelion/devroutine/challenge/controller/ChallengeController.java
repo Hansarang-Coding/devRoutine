@@ -9,6 +9,7 @@ import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.participant.service.ParticipationService;
 import com.likelion.devroutine.user.dto.UserResponse;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -49,9 +50,12 @@ public class ChallengeController {
 
     @PostMapping("/new")
     public String saveChallenges(Authentication authentication, ChallengeCreateRequest requestDto){
-        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(authentication.getName(), requestDto);
-
-        return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
+        try {
+            ChallengeCreateResponse challengeCreateResponse = challengeService.createChallenge(authentication.getName(), requestDto);
+            return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
+        }catch(UserNotFoundException e) {
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}")
@@ -64,13 +68,10 @@ public class ChallengeController {
             log.info("참여중이지 않은 상세조회");
             return "challenges/detail";
         }
-        log.info("참여중인 챌린지"+sessionUser.getName());
-        ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
-        ParticipationChallengeDto dto=participationService.findByParticipateChallenge(authentication.getName(), challengeId);
-        log.info("챌린지 인증 방식 : "+dto.getAuthenticationType());
         model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
-        model.addAttribute("challenge", challengeDto);
+        model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
         model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
+        model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
         return "participations/detail";
     }
 
@@ -78,7 +79,7 @@ public class ChallengeController {
     public String participateChallenge(@PathVariable Long challengeId, Authentication authentication){
         log.info("챌린지 참여 컨트롤러 시작");
         ParticipationResponse participationResponse=challengeService.participateChallenge(authentication.getName(), challengeId);
-        return "redirect:/";
+        return "redirect:/challenges/{challengeId}";
     }
 
     @GetMapping("/{challengeId}/edit")

@@ -8,6 +8,7 @@
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
     <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
+            <input type="text" hidden th:value="${participationChallenge.getId()}" id="challenge-id">
             <h1>[[${participationChallenge.getTitle()}]]</h1>
             <div class="btn-group" style="margin-left: 30px;">
                 <div th:each="hashtag: ${participationChallenge.getChallengeHashTag()}">
@@ -25,12 +26,27 @@
                     <form style="margin-right: 10px" th:action="@{|/challenges/${challenge.getId()}/edit|}" method="get">
                             <button class="btn btn-outline-primary" type="submit">수정</button>
                     </form>
-                    <form th:action="@{|/challenges/${challenge.getId()}/delete|}" method="get">
+                    <form style="margin-right:10px" th:action="@{|/challenges/${challenge.getId()}/delete|}" method="get">
                         <button class="btn btn-outline-danger" type="submit">삭제</button>
                     </form>
-                </div>
-                <div>
-                    <a> + 초대</a>
+                    <button class="btn btn-outline-success" id="invite" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">초대</button>
+                    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasRightLabel">초대 가능한 사람 목록</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div th:each="follower : ${followers}">
+                                <div class="btn-group" id="user" style="margin-bottom: 10px;">
+                                    <img th:src="${follower.getPicture()}" width="50px" style="margin-right: 10px" alt="profile_image">
+                                    <p style="margin-right: 120px">[[${follower.getName()}]]</p>
+                                    <input type="text" hidden th:value="${follower.getId()}" id="user-id">
+                                    <button type="button" id="invite-btn" class="btn btn-light">초대</button>
+                                </div>
+                                <hr style="border: solid 0.5px gray; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,6 +90,7 @@
         </div>
     </form>
 </body>
+<script type="text/javascript" th:src="@{/js/invite.js}"></script>
 </html>
 <style>
     h1{

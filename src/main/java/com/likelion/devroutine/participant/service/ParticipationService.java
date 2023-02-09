@@ -21,6 +21,7 @@ import com.likelion.devroutine.hashtag.dto.ChallengeHashTagResponse;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.invite.domain.Invite;
 import com.likelion.devroutine.invite.dto.InviteCreateResponse;
+import com.likelion.devroutine.invite.exception.DuplicatedInviteException;
 import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
@@ -92,8 +93,7 @@ public class ParticipationService {
                 .orElseThrow(()->new UserNotFoundException());
         validateFollower(inviter, invitee);
         Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(inviter, challenge);
-        isProgressChallenge(challenge.getStartDate());
+        validateInvite(challenge, inviter, invitee);
         Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
         saveInviteAlarm(invitee,inviter.getId());
         return InviteCreateResponse.builder()
@@ -104,11 +104,25 @@ public class ParticipationService {
                 .build();
     }
 
+    private void validateInvite(Challenge challenge, User inviter, User invitee) {
+        matchWriterAndUser(inviter, challenge);
+        isProgressChallenge(challenge.getStartDate());
+        isInviteChallenge(challenge, invitee);
+    }
+
+    private boolean isInviteChallenge(Challenge challenge, User invitee){
+        if(inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), invitee.getId()).isEmpty()){
+            return true;
+        }
+        throw new DuplicatedInviteException();
+    }
     public List<FollowerResponse> findFollowers(String oauthId, Long challengeId) {
         User user = getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
-        matchWriterAndUser(user, challenge);
         List<Follow> followers=followRepository.findByFollowerId(user.getId());
+        followers = followers.stream()
+                .filter(follow -> participationRepository.findByChallengeAndUser(challenge, follow.getFollowing()).isEmpty())
+                .collect(Collectors.toList());
         return FollowerResponse.of(followers);
     }
 
