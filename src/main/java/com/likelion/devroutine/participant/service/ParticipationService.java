@@ -1,5 +1,8 @@
 package com.likelion.devroutine.participant.service;
 
+import com.likelion.devroutine.alarm.domain.Alarm;
+import com.likelion.devroutine.alarm.enumurate.AlarmType;
+import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.CertificationResponse;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
@@ -22,6 +25,7 @@ import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
+import com.likelion.devroutine.participant.dto.ParticipationSortResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
@@ -31,15 +35,16 @@ import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class ParticipationService {
     private final ParticipationRepository participationRepository;
@@ -50,8 +55,10 @@ public class ParticipationService {
     private final ChallengeHashTagRepository challengeHashTagRepository;
     private final CertificationRepository certificationRepository;
 
+    private final AlarmRepository alarmRepository;
+
     public ParticipationService(ParticipationRepository participationRepository, UserRepository userRepository, ChallengeRepository challengeRepository
-            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository) {
+            , InviteRepository inviteRepository, FollowRepository followRepository, ChallengeHashTagRepository challengeHashTagRepository, CertificationRepository certificationRepository, AlarmRepository alarmRepository) {
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
@@ -59,6 +66,7 @@ public class ParticipationService {
         this.followRepository = followRepository;
         this.challengeHashTagRepository = challengeHashTagRepository;
         this.certificationRepository = certificationRepository;
+        this.alarmRepository = alarmRepository;
     }
 
     @Transactional
@@ -87,6 +95,7 @@ public class ParticipationService {
         matchWriterAndUser(inviter, challenge);
         isProgressChallenge(challenge.getStartDate());
         Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
+        saveInviteAlarm(invitee,inviter.getId());
         return InviteCreateResponse.builder()
                 .inviterId(savedInvite.getInviterId())
                 .challengeId(savedInvite.getChallengeId())
@@ -107,15 +116,15 @@ public class ParticipationService {
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
         Participation participation =getParticipant(user, challenge);
-        List<Participation> participations = participationRepository.findAllByChallenge(challenge);
+        List<ParticipationSortResponse> participations = participationRepository.findAllByChallengeOrderByCertificationCnt(challenge);
         Map<String, List<CertificationResponse>> certificationResponses=getCertification(participations);
         return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), certificationResponses);
     }
-    public Map<String, List<CertificationResponse>> getCertification(List<Participation> participations){
+    public Map<String, List<CertificationResponse>> getCertification(List<ParticipationSortResponse> participations){
         return participations.stream()
                 .collect(Collectors.toMap(
-                        participation -> participation.getUser().getName(),
-                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getId()))
+                        participation -> participation.getUsername(),
+                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getParticipationId()))
                 ));
     }
 
@@ -182,5 +191,10 @@ public class ParticipationService {
 
     private List<ChallengeHashTag> getHashTags(Long challengeId) {
         return challengeHashTagRepository.findByChallengeId(challengeId);
+    }
+
+    public void saveInviteAlarm(User user, Long inviterId) {
+        alarmRepository.save(Alarm.createAlarm(inviterId,
+                AlarmType.NEW_CHALLENGE_INVITE,AlarmType.NEW_CHALLENGE_INVITE.getMessage(), user));
     }
 }
