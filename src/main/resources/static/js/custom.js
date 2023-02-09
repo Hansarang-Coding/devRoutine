@@ -38,7 +38,7 @@ function updateLike(certificationId) {
         console.log(response)
         if (response.message === "좋아요 생성 성공") {
             $("#likeImg").attr("src", "/assets/like_click.png");
-            $("#like-cnt").text($("#like-cnt").val() + 1)
+            $("#like-cnt").text(parseInt($("#like-cnt").text()) + 1)
         } else if (response.message === "좋아요 취소") {
             $("#likeImg").attr("src", "/assets/like_empty.png");
             console.log($("#like-cnt").text())
