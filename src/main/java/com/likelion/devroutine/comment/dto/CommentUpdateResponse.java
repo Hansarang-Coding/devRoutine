@@ -29,7 +29,7 @@ public class CommentUpdateResponse {
                 .id(savedComment.getId())
                 .comment(savedComment.getComment())
                 .userName(savedComment.getUser().getName())
-                //.certificationId(savedComment.getCertification().getId())
+                .certificationId(savedComment.getCertification().getId())
                 .lastModifiedAt(savedComment.getModifiedAt())
                 .build();
     }

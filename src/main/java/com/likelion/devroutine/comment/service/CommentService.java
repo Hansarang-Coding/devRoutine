@@ -5,9 +5,9 @@ import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
-import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.comment.domain.Comment;
 import com.likelion.devroutine.comment.dto.*;
+import com.likelion.devroutine.comment.enumerate.ResponseMessage;
 import com.likelion.devroutine.comment.exception.CertificationNotFoundException;
 import com.likelion.devroutine.comment.exception.CommentNotFoundException;
 import com.likelion.devroutine.comment.repository.CommentRepository;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -37,15 +38,15 @@ public class CommentService {
     @Transactional
     public CommentCreateResponse createComment(Long certificationId, CommentRequest request, String oauthId) {
         Certification certification = findCertification(certificationId);
-        User user = getUser(oauthId);
+        User user = findUserByOauthId(oauthId);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certification, user));
         saveCommentAlarm(certificationId, user);
         return CommentCreateResponse.of(savedComment);
     }
 
-    public Page<CommentResponse> findAll(Long certificationId, Pageable pageable) {
+    public List<CommentResponse> findAll(Long certificationId) {
         validateCertificationExists(certificationId);
-        return CommentResponse.of(commentRepository.findAllByCertificationId(certificationId, pageable));
+        return CommentResponse.of(commentRepository.findAllByCertificationId(certificationId));
     }
 
     @Transactional
@@ -53,7 +54,7 @@ public class CommentService {
         validateCertificationExists(certificationId);
         Comment comment = getCommentByAuthorizedUser(commentId, oauthId);
         comment.deleteComment();
-        return CommentDeleteResponse.of(ResponseMessage.CHALLENGE_DELETE_SUCCESS.getMessage(), commentId);
+        return CommentDeleteResponse.of(ResponseMessage.COMMENT_DELETE_SUCCESS.getMessage(), commentId);
     }
 
     @Transactional
@@ -69,8 +70,8 @@ public class CommentService {
                 .orElseThrow(CertificationNotFoundException::new);
     }
 
-    private User getUser(String name) {
-        return userRepository.findByName(name)
+    private User findUserByOauthId(String OauthId) {
+        return userRepository.findByOauthId(OauthId)
                 .orElseThrow(UserNotFoundException::new);
     }
 
@@ -81,9 +82,9 @@ public class CommentService {
     }
 
     private Comment getCommentByAuthorizedUser(Long commentId, String oauthId) {
-        User findUser = getUser(oauthId);
+        User findUser = findUserByOauthId(oauthId);
         Comment comment = getComment(commentId);
-        if (Objects.equals(comment.getUser().getId(), findUser.getId()))
+        if (comment.getUser().getId().equals(findUser.getId()))
             return comment;
         else throw new UserUnauthorizedException();
     }

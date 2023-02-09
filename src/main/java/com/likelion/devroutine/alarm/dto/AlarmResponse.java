@@ -29,14 +29,16 @@ public class AlarmResponse {
 
     private LocalDateTime createdAt;
 
-    public static Page<AlarmResponse> of(Page<Alarm> alarms) {
-        return alarms.map(alarm -> AlarmResponse.builder()
+    public static List<AlarmResponse> of(List<Alarm> alarms) {
+        return alarms.stream()
+                .map(alarm -> AlarmResponse.builder()
                 .id(alarm.getId())
                 .alarmType(alarm.getAlarmType())
                 .message(alarm.getMessage())
                 .userId(alarm.getUser().getId())
                 .createdAt(alarm.getCreatedAt())
-                .build());
+                .build())
+                .collect(Collectors.toList());
     }
 //    public static List<AlarmResponse> toList(List<Alarm> alarms) {
 //        return alarms.stream()

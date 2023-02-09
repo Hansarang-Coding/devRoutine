@@ -29,10 +29,15 @@ public class AlarmService {
 
     private static final Long timeout = 1000 * 60L;
 
-    public Page<AlarmResponse> findAlarms(String name, Pageable pageable) {
-        User alarmUser= findUserByOauthId(name);
-        Page<Alarm> alarms = alarmRepository.findByUserId(alarmUser.getId(), pageable);
+    public List<AlarmResponse> findAlarms(String oauthId) {
+        User alarmUser= findUserByOauthId(oauthId);
+        List<Alarm> alarms = alarmRepository.findByUserId(alarmUser.getId());
         return AlarmResponse.of(alarms);
+    }
+
+    private User findUserByOauthId(String OauthId) {
+        return userRepository.findByOauthId(OauthId)
+                .orElseThrow(UserNotFoundException::new);
     }
 
 
@@ -84,11 +89,6 @@ public class AlarmService {
                 .forEach(entry -> sendNotification(emitter, entry.getKey(), emitterId, entry.getValue()));
     }
 
-
-    private User findUserByOauthId(String OauthId) {
-        return userRepository.findByOauthId(OauthId)
-                .orElseThrow(() -> new UserNotFoundException());
-    }
 
 
 
