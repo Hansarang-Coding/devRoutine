@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>챌린지 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
+        <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
+            <h1>[[${participationChallenge.getTitle()}]]</h1>
+            <div class="btn-group" style="margin-left: 30px;">
+                <div th:each="hashtag: ${participationChallenge.getChallengeHashTag()}">
+                    <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-muted" id="period">[[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+            </div>
+        </div>
+        <div style="text-align: right; margin-right: 20px">
+            <!-- 수정, 삭제, 초대 버튼 -->
+            <div id="edit" th:if="(${challenge.getFromUserId()} == ${user.getId()}) and ${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                <div class="btn-group" style="margin-bottom: 10px">
+                    <form style="margin-right: 10px" th:action="@{|/challenges/${challenge.getId()}/edit|}" method="get">
+                            <button class="btn btn-outline-primary" type="submit">수정</button>
+                    </form>
+                    <form th:action="@{|/challenges/${challenge.getId()}/delete|}" method="get">
+                        <button class="btn btn-outline-danger" type="submit">삭제</button>
+                    </form>
+                </div>
+                <div>
+                    <a> + 초대</a>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 20px; margin-bottom: 20px; margin-left:30px">
+            <p>[[${participationChallenge.getDescription()}]]</p>
+        </div>
+        <div th:if="${challenge.getAuthenticationType().name().equals('GITHUB')}" style="margin-left: 20px">
+            <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
+                <p class="username">[[${entry.getKey()}]]</p>
+                <div class="row row-cols-1 row-cols-md-3" >
+                    <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
+                    <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
+                        <div class="card-body">
+                            <p class="card-title" id="description">[[${certification.getDescription}]]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
+            <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
+                <p id="username">[[${entry.getKey()}]]</p>
+                <div class="row row-cols-1 row-cols-md-3" >
+                    <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
+                    <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
+                        <a th:href="@{|/certification/${certification.getCertificationId()}|}">
+                            <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
+                        </a>
+                        <div class="card-body">
+                            <p class="card-title description">[[${certification.getDescription}]]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 이미 진행중이면 버튼 안보여야함 -->
+    <form th:if="(${challenge.getFromUserId()} != ${user.getId()}) and ${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:action="@{|/challenges/${challenge.getId()}/cancel|}" method="get">
+        <div class="d-grid gap-2" style="margin-right: 100px; margin-left: 100px; margin-top: 20px">
+            <button class="btn btn-outline-primary" type="submit">참여취소 하기</button>
+        </div>
+    </form>
+</body>
+</html>
+<style>
+    h1{
+        margin-top: 10px;
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+    p{
+        margin-top: 10px;
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    #period{
+        margin-top: 10px;
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    #username{
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+    #description{
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+    #edit{
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+</style>

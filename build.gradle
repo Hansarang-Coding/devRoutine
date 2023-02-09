@@ -46,10 +46,9 @@ dependencies {
     //Amazon S3
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
 
-
     //template Engine
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-   //implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 
     //querydsl dependencies 추가(스프링부트 3.0 이상)
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -57,9 +56,6 @@ dependencies {
 
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
-    //타임리프
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     //validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'

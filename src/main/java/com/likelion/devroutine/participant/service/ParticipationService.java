@@ -25,6 +25,7 @@ import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
+import com.likelion.devroutine.participant.dto.ParticipationSortResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
@@ -34,15 +35,16 @@ import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class ParticipationService {
     private final ParticipationRepository participationRepository;
@@ -114,15 +116,15 @@ public class ParticipationService {
         User user=getUser(oauthId);
         Challenge challenge=getChallenge(challengeId);
         Participation participation =getParticipant(user, challenge);
-        List<Participation> participations = participationRepository.findAllByChallenge(challenge);
+        List<ParticipationSortResponse> participations = participationRepository.findAllByChallengeOrderByCertificationCnt(challenge);
         Map<String, List<CertificationResponse>> certificationResponses=getCertification(participations);
         return ParticipationChallengeDto.toResponse(participation, ChallengeHashTagResponse.of(challenge.getChallengeHashTags()), certificationResponses);
     }
-    public Map<String, List<CertificationResponse>> getCertification(List<Participation> participations){
+    public Map<String, List<CertificationResponse>> getCertification(List<ParticipationSortResponse> participations){
         return participations.stream()
                 .collect(Collectors.toMap(
-                        participation -> participation.getUser().getName(),
-                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getId()))
+                        participation -> participation.getUsername(),
+                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getParticipationId()))
                 ));
     }
 

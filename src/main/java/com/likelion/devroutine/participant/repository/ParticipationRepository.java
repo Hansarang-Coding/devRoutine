@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ParticipationRepository extends JpaRepository<Participation, Long> {
+public interface ParticipationRepository extends JpaRepository<Participation, Long>, ParticipationRepositoryCustom {
     Optional<Participation> findByUserAndChallenge(User user, Challenge challenge);
     List<Participation> findAllByChallenge(Challenge challenge);
     void deleteAllByChallenge(Challenge challenge);

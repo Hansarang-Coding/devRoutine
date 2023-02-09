@@ -3,6 +3,7 @@ package com.likelion.devroutine.certification.service;
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.*;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
+import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
 import com.likelion.devroutine.participant.repository.ParticipationRepository;
@@ -45,10 +46,10 @@ public class CertificationService {
                 .orElseThrow(ParticipationNotFoundException::new);
     }
 
-    public List<CertificationListResponse> findAllParticipationByUser(String oauthId) {
+    public List<ParticipationResponse> findAllParticipationByUser(String oauthId) {
         User user = findUser(oauthId);
         List<Participation> participations = participantRepository.findAllByUserId(user.getId());
-        return CertificationListResponse.of(participations);
+        return ParticipationResponse.of(participations);
     }
 
     private User findUser(String oauthId) {
@@ -59,5 +60,20 @@ public class CertificationService {
     public void validateUserExists(String oauthId) {
         if (!userRepository.existsByOauthId(oauthId))
             throw new UserNotFoundException();
+    }
+
+    public List<CertificationResponse> findCertifications() {
+        List<Certification> certifications = certificationRepository.findAllCertification();
+        return CertificationResponse.of(certifications);
+    }
+
+    public Certification findCertification(Long certificationId) {
+        return certificationRepository.findById(certificationId)
+                .orElseThrow(CertificationNotFoundException::new);
+    }
+
+    public CertificationDetailResponse findCertificationDetail(Long certificationId) {
+        Certification certification = findCertification(certificationId);
+        return CertificationDetailResponse.of(certification);
     }
 }
