@@ -7,31 +7,48 @@
 <body>
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
 
-<h3>참여중인 챌린지 인증하기</h3>
-<div class="row row-cols-1 row-cols-md-2 g-4 text-center gap-3">
+<div class="mt-6">
+    <h1 class="fw-bold">인증하기</h1>
+    <p class="text-muted">내가 참여하고 있는 챌린지에 인증해 보세요.</p>
+</div>
+
+<div class="row row-cols-1 g-4 text-center gap-3">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title fw-bold">원하는 챌린지를 추가해보세요!</h5>
+            <p class="card-text" style="text-decoration: underline;">
+                <a th:href="@{/api/v1/challenges}">챌린지 화면 바로 가기</a></p>
+        </div>
+    </div>
+
     <div class="card" th:each="p : ${participations}" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">[[${p.title}]]</h5>
             <p class="card-text">[[${p.description}]]</p>
-            <a th:href="@{/certification/post/{participationId}(participationId=${p.id})}" class="btn btn-primary">인증하기</a>
+            <a th:href="@{/certification/post/{participationId}(participationId=${p.id})}"
+               class="btn btn-success active" role="button">인증하기</a>
         </div>
     </div>
 </div>
-<h1 class="mt-3">인증 모음 글</h1>
-<div class="row row-cols-1 row-cols-md-3 g-4 gap-6">
-    <div class="card text-center" th:each="c : ${certifications}" style="width: 18rem;">
-        <h5 class="header">[[${c.challengeTitle}]]</h5>
-        <a th:href="@{/certification/{certificationId}(certificationId=${c.certificationId})}">
-            <img th:src="${c.uploadImageUrl}" class="card-img-top" alt="깃허브 인증">
-        </a>
-        <div class="card-body">
-            <h5 class="card-title">[[${c.name}]]</h5>
-            <p class="card-text">[[${c.createdDate}]]</p>
+
+<div class="mt-6">
+    <h1 class="fw-bold">인증 모음</h1>
+    <p class="text-muted">다른 사람이 남긴 인증 글을 확인해 보세요.</p>
+</div>
+
+<section class="container text-center mt-3">
+    <div class="row row-cols-1 row-cols-md-3 g-4 gap-6">
+        <div class="card text-center" th:each="c : ${certifications}" style="width: 18rem;">
+            <h5 class="card-header">[[${c.challengeTitle}]]</h5>
+            <a th:href="@{/certification/{certificationId}(certificationId=${c.certificationId})}">
+                <img th:src="${c.uploadImageUrl}" class="card-img-top" alt="깃허브 인증">
+            </a>
+            <div class="row card-body">
+                <h5 class="card-title col-5">[[${c.name}]]</h5>
+                <p class="card-text col-6">[[${c.createdDate}]]</p>
+            </div>
         </div>
     </div>
-</div>
+</section>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-        crossorigin="anonymous"></script>
 </html>
