@@ -63,8 +63,8 @@ public class CommentService {
                 .orElseThrow(CertificationNotFoundException::new);
     }
 
-    private User getUser(String name) {
-        return userRepository.findByName(name)
+    private User getUser(String oauthId) {
+        return userRepository.findByOauthId(oauthId)
                 .orElseThrow(UserNotFoundException::new);
     }
 

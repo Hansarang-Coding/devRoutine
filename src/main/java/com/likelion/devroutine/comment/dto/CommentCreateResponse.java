@@ -3,13 +3,13 @@ package com.likelion.devroutine.comment.dto;
 import com.likelion.devroutine.comment.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class CommentCreateResponse {
 
     private Long id;

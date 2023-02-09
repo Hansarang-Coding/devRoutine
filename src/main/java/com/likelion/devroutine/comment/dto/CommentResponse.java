@@ -18,9 +18,7 @@ public class CommentResponse {
     private Long id;
     private String comment;
     private String userName;
-    private Long certificationId;
-
-
+    private String oauthId;
     private LocalDateTime createdAt;
 
     public static Page<CommentResponse> of(Page<Comment> comments) {
@@ -28,7 +26,7 @@ public class CommentResponse {
                 .id(comment.getId())
                 .comment(comment.getComment())
                 .userName(comment.getUser().getName())
-                //.certificationId(comment.getCertification().getId())
+                .oauthId(comment.getUser().getOauthId())
                 .createdAt(comment.getCreatedAt())
                 .build()
         );
