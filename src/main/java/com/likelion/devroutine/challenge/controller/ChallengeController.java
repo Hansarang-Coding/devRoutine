@@ -31,16 +31,20 @@ public class ChallengeController {
     @GetMapping
     public String getChallenges(@RequestParam(required = false) String keyword, Model model,
                                 Authentication authentication){
-        List<ChallengeDto> challengeDtos;
-        if(keyword==null) {
-            challengeDtos = challengeService.findAllChallenge();
-        }else{
-            challengeDtos=challengeService.findAllChallengeTitle(keyword);
+        try {
+            List<ChallengeDto> challengeDtos;
+            if (keyword == null) {
+                challengeDtos = challengeService.findAllChallenge();
+            } else {
+                challengeDtos = challengeService.findAllChallengeTitle(keyword);
+            }
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("challenges", challengeDtos);
+            model.addAttribute("hashtags", challengeService.getRandomHashTag());
+            return "challenges/list";
+        }catch(Exception e){
+            return "error/error";
         }
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("challenges", challengeDtos);
-        model.addAttribute("hashtags", challengeService.getRandomHashTag());
-        return "challenges/list";
     }
 
     @GetMapping("/new")
@@ -77,9 +81,12 @@ public class ChallengeController {
 
     @PostMapping("/{challengeId}")
     public String participateChallenge(@PathVariable Long challengeId, Authentication authentication){
-        log.info("챌린지 참여 컨트롤러 시작");
-        ParticipationResponse participationResponse=challengeService.participateChallenge(authentication.getName(), challengeId);
-        return "redirect:/challenges/{challengeId}";
+        try {
+            ParticipationResponse participationResponse = challengeService.participateChallenge(authentication.getName(), challengeId);
+            return "redirect:/challenges/{challengeId}";
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}/edit")
@@ -92,15 +99,21 @@ public class ChallengeController {
 
     @PostMapping("/{challengeId}/edit")
     public String updateChallenge(@PathVariable Long challengeId, Authentication authentication, Model model, ChallengeModifiyRequest challengeModifiyRequest){
-        log.info("title : "+challengeModifiyRequest.getTitle());
-        log.info("hashtag : "+challengeModifiyRequest.getHashtag());
-        ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
-        return "redirect:/challenges/"+String.valueOf(challengeId);
+        try{
+            ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
+            return "redirect:/challenges/"+String.valueOf(challengeId);
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}/delete")
     public String deleteChallenge(@PathVariable Long challengeId, Authentication authentication){
-        ChallengeResponse challengeResponse=challengeService.deleteChallenge(authentication.getName(), challengeId);
-        return "redirect:/challenges";
+        try {
+            ChallengeResponse challengeResponse = challengeService.deleteChallenge(authentication.getName(), challengeId);
+            return "redirect:/challenges";
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 }

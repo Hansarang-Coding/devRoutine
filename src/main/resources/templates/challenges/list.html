@@ -16,7 +16,7 @@
             <div th:each="hashtag : ${hashtags}">
                 <form th:action="@{/challenges(keyword=${keyword})}" method="get">
                     <input name="keyword" th:value="${hashtag.getHashTag()}" hidden>
-                    <button type="submit" class="btn btn-outline-primary" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
+                    <button type="submit" class="btn btn-outline-success" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
                 </form>
             </div>
         </div>
