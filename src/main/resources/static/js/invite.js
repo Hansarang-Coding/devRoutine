@@ -5,6 +5,26 @@ $('#invite-btn').on("click", function () {
     inviteUser(userId, challengeId);
 });
 
+$('#more').on("click", function(){
+    let btnElement=document.getElementById('more');
+    console.log("more click");
+    console.log(btnElement);
+    moreEvent(btnElement);
+});
+
+function moreEvent(btnElement){
+    console.log("moreEvent");
+    if(btnElement.innerText=="더보기"){
+        document.getElementById("cert-list").style.display='none';
+        document.getElementById("cert-all").style.display='';
+        btnElement.innerText="숨기기";
+    }else{
+        document.getElementById("cert-all").style.display='none';
+        document.getElementById("cert-list").style.display='';
+        btnElement.innerText="더보기";
+    }
+}
+
 function inviteUser(userId, challengeId) {
     $.ajax({
         url: "/api/v1/challenges/"+challengeId+"/invite/"+userId,

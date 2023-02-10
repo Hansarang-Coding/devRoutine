@@ -69,14 +69,27 @@
         <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <p id="username">[[${entry.getKey()}]]</p>
-                <div class="row row-cols-1 row-cols-md-3" >
-                    <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
-                    <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
-                        <a th:href="@{|/certification/${certification.getCertificationId()}|}">
-                            <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
-                        </a>
-                        <div class="card-body">
-                            <p class="card-title description">[[${certification.getDescription}]]</p>
+                <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary" id="more" style="margin-bottom: 10px">더보기</button>
+                <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
+                <div th:unless="${entry.getValue().size()}==0">
+                    <div id="cert-list" class="row row-cols-1 row-cols-md-3">
+                        <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification, num: ${entry.getValue()}" th:if="${num.count}<=5">
+                            <a th:href="@{|/certification/${certification.getCertificationId()}|}">
+                                <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
+                            </a>
+                            <div class="card-body">
+                                <p class="card-title description">[[${certification.getDescription}]]</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="cert-all" class="row row-cols-1 row-cols-md-3" style="display: none;">
+                        <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
+                            <a th:href="@{|/certification/${certification.getCertificationId()}|}">
+                                <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
+                            </a>
+                            <div class="card-body">
+                                <p class="card-title description">[[${certification.getDescription}]]</p>
+                            </div>
                         </div>
                     </div>
                 </div>
