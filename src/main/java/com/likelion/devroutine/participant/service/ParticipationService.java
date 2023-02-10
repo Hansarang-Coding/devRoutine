@@ -138,7 +138,7 @@ public class ParticipationService {
         return participations.stream()
                 .collect(Collectors.toMap(
                         participation -> participation.getUsername(),
-                        participation -> CertificationResponse.of(certificationRepository.findByParticipationId(participation.getParticipationId()))
+                        participation -> CertificationResponse.of(certificationRepository.findByParticipationIdOrderByCreatedAtDesc(participation.getParticipationId()))
                 ));
     }
 
