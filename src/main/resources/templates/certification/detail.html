@@ -1,5 +1,5 @@
 <!DOCTYPE html>
- <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
 <head>
     <th:block th:replace="fragments/head :: frag-header"></th:block>
     <title>인증 | devroutine : 개발자 챌린지 서비스</title>
@@ -27,7 +27,9 @@
 
 <section>
     <div class="d-flex justify-content-center mt3-l">
-        <img id="likeImg" src="/assets/like_empty.png" width="30" height="30"/>
+        <img id="like-img" th:src= "${isPressed == true ?
+             '/assets/like_click.png' : '/assets/like_empty.png'}"
+             width="30" height="30"/>
         <div id="like-cnt" th:value="${likeCount}" th:text="${likeCount}"></div>
     </div>
 
