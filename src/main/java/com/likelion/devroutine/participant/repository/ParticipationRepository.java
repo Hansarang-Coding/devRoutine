@@ -17,4 +17,6 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     @Query("select p from Participation p join fetch p.challenge where p.user.id =:userId")
     List<Participation> findAllByUserId(@Param("userId") Long userId);
+
+    Optional<Participation> findByChallengeAndUser(Challenge challenge, User user);
 }

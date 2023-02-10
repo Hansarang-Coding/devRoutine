@@ -9,6 +9,7 @@ import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
 import com.likelion.devroutine.participant.service.ParticipationService;
 import com.likelion.devroutine.user.dto.UserResponse;
+import com.likelion.devroutine.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +31,20 @@ public class ChallengeController {
     @GetMapping
     public String getChallenges(@RequestParam(required = false) String keyword, Model model,
                                 Authentication authentication){
-        List<ChallengeDto> challengeDtos;
-        if(keyword==null) {
-            challengeDtos = challengeService.findAllChallenge();
-        }else{
-            challengeDtos=challengeService.findAllChallengeTitle(keyword);
+        try {
+            List<ChallengeDto> challengeDtos;
+            if (keyword == null) {
+                challengeDtos = challengeService.findAllChallenge();
+            } else {
+                challengeDtos = challengeService.findAllChallengeTitle(keyword);
+            }
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("challenges", challengeDtos);
+            model.addAttribute("hashtags", challengeService.getRandomHashTag());
+            return "challenges/list";
+        }catch(Exception e){
+            return "error/error";
         }
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("challenges", challengeDtos);
-        model.addAttribute("hashtags", challengeService.getRandomHashTag());
-        return "challenges/list";
     }
 
     @GetMapping("/new")
@@ -49,9 +54,12 @@ public class ChallengeController {
 
     @PostMapping("/new")
     public String saveChallenges(Authentication authentication, ChallengeCreateRequest requestDto){
-        ChallengeCreateResponse challengeCreateResponse=challengeService.createChallenge(authentication.getName(), requestDto);
-
-        return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
+        try {
+            ChallengeCreateResponse challengeCreateResponse = challengeService.createChallenge(authentication.getName(), requestDto);
+            return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
+        }catch(UserNotFoundException e) {
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}")
@@ -64,41 +72,48 @@ public class ChallengeController {
             log.info("참여중이지 않은 상세조회");
             return "challenges/detail";
         }
-        log.info("참여중인 챌린지"+sessionUser.getName());
-        ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
-        ParticipationChallengeDto dto=participationService.findByParticipateChallenge(authentication.getName(), challengeId);
-        log.info("챌린지 인증 방식 : "+dto.getAuthenticationType());
         model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
-        model.addAttribute("challenge", challengeDto);
+        model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
         model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
+        model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
         return "participations/detail";
     }
 
     @PostMapping("/{challengeId}")
     public String participateChallenge(@PathVariable Long challengeId, Authentication authentication){
-        log.info("챌린지 참여 컨트롤러 시작");
-        ParticipationResponse participationResponse=challengeService.participateChallenge(authentication.getName(), challengeId);
-        return "redirect:/";
+        try {
+            ParticipationResponse participationResponse = challengeService.participateChallenge(authentication.getName(), challengeId);
+            return "redirect:/challenges/{challengeId}";
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}/edit")
     public String editChallengeForm(@PathVariable Long challengeId, Authentication authentication, Model model){
         ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
         model.addAttribute("challenge", challengeDto);
+        model.addAttribute("hashtag", challengeService.getHashTagString(challengeDto.getChallengeHashTag()));
         return "challenges/edit";
     }
 
     @PostMapping("/{challengeId}/edit")
     public String updateChallenge(@PathVariable Long challengeId, Authentication authentication, Model model, ChallengeModifiyRequest challengeModifiyRequest){
-        log.info("title : "+challengeModifiyRequest.getTitle());
-        log.info("hashtag : "+challengeModifiyRequest.getHashtag());
-        ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
-        return "redirect:/challenges/"+String.valueOf(challengeId);
+        try{
+            ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
+            return "redirect:/challenges/"+String.valueOf(challengeId);
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 
     @GetMapping("/{challengeId}/delete")
     public String deleteChallenge(@PathVariable Long challengeId, Authentication authentication){
-        ChallengeResponse challengeResponse=challengeService.deleteChallenge(authentication.getName(), challengeId);
-        return "redirect:/challenges";
+        try {
+            ChallengeResponse challengeResponse = challengeService.deleteChallenge(authentication.getName(), challengeId);
+            return "redirect:/challenges";
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 }

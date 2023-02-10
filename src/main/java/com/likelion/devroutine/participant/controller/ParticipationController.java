@@ -19,7 +19,11 @@ public class ParticipationController {
 
     @GetMapping("/{challengeId}/cancel")
     public String cancelChallenge(@PathVariable Long challengeId, Authentication authentication){
-        ParticipationResponse participationResponse= participationService.cancelChallenge(authentication.getName(), challengeId);
-        return "redirect:/challenges/"+String.valueOf(challengeId);
+        try {
+            ParticipationResponse participationResponse = participationService.cancelChallenge(authentication.getName(), challengeId);
+            return "redirect:/challenges/" + String.valueOf(challengeId);
+        }catch(Exception e){
+            return "error/error";
+        }
     }
 }

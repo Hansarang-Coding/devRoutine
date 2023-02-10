@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <th:block th:replace="fragments/head :: frag-header"></th:block>
     <title>전체 챌린지 | devroutine : 개발자 챌린지 서비스</title>
@@ -15,12 +16,12 @@
             <div th:each="hashtag : ${hashtags}">
                 <form th:action="@{/challenges(keyword=${keyword})}" method="get">
                     <input name="keyword" th:value="${hashtag.getHashTag()}" hidden>
-                    <button type="submit" class="btn btn-outline-primary" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
+                    <button type="submit" class="btn btn-outline-success" style="margin-right: 30px;" th:text="${hashtag.getHashTag()}"></button>
                 </form>
             </div>
         </div>
     </div>
-    <div style="text-align: right; margin-right:100px;">
+    <div sec:authorize="isAuthenticated()" style="text-align: right; margin-right:100px;">
         <button type="button" class="btn btn-outline-secondary">
             <a th:href="@{|/challenges/new|}">+ 챌린지</a>
         </button>

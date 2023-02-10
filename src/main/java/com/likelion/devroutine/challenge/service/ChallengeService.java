@@ -253,4 +253,10 @@ public class ChallengeService {
                 .name(user.getName())
                 .build();
     }
+
+    public String getHashTagString(List<ChallengeHashTagResponse> challengeHashTags) {
+        return challengeHashTags.stream()
+                .map(hashtag -> "#"+hashtag.getHashTag())
+                .collect(Collectors.joining());
+    }
 }
