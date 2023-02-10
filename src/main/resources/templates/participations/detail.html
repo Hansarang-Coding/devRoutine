@@ -68,8 +68,10 @@
         </div>
         <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
-                <p id="username">[[${entry.getKey()}]]</p>
-                <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary" id="more" style="margin-bottom: 10px">더보기</button>
+                <div class="row">
+                    <p class="col-md-auto" id="username">[[${entry.getKey()}]]</p>
+                    <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto" id="more" style=" margin-bottom: 10px">더보기</button>
+                </div>
                 <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
                 <div th:unless="${entry.getValue().size()}==0">
                     <div id="cert-list" class="row row-cols-1 row-cols-md-3">
@@ -132,5 +134,10 @@
     #edit{
         margin-top: 10px;
         margin-bottom: 20px;
+    }
+    #more{
+        font-size: 12px;
+        width: 70px;
+        height: 30px
     }
 </style>
