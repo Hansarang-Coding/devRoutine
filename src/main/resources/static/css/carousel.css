@@ -257,3 +257,8 @@ html > body {
     font-size: 2rem;
     padding: .2rem;
 }
+
+/* collapse */
+.collapse.show {
+    visibility: visible;
+}
