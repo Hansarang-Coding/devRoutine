@@ -1,7 +1,6 @@
 package com.likelion.devroutine.likes.service;
 
 import com.likelion.devroutine.alarm.domain.Alarm;
-import com.likelion.devroutine.alarm.dto.AlarmResponse;
 import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
@@ -18,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -31,7 +28,6 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final CertificationRepository certificationRepository;
-
     private final AlarmRepository alarmRepository;
 
     @Transactional
@@ -41,13 +37,13 @@ public class LikeService {
         } else {
             Like like = Like.createLike(getUser(oauthId), getCertification(certificationId));
             likeRepository.save(like);
-            saveLikeAlarm(certificationId,like.getUser().getId());
+            saveLikeAlarm(certificationId, like.getUser().getId());
             return LikeResponse.of(LIKE_SUCCESS_MESSAGE, like);
         }
         return LikeResponse.of(LIKE_RESET_MESSAGE);
     }
 
-    private boolean isAlreadyPressedLike(Long certificationId, String oauthId) {
+    public boolean isAlreadyPressedLike(Long certificationId, String oauthId) {
         return likeRepository.existsByCertificationIdAndUserId(certificationId,
                 getUser(oauthId).getId());
     }
@@ -64,7 +60,7 @@ public class LikeService {
         likeRepository.delete(getLike(user, certification));
     }
 
-    private Like getLike(User user, Certification certification) {
+    public Like getLike(User user, Certification certification) {
         return likeRepository.findByCertificationAndUser(certification, user)
                 .orElseThrow(LikeNotFoundException::new);
     }
@@ -81,8 +77,8 @@ public class LikeService {
 
     public void saveLikeAlarm(Long certificationId, Long fromId) {
         User user = likeRepository.findUserByLikeParam(certificationId);
-        alarmRepository.save(Alarm.createAlarm( fromId,
-                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+        alarmRepository.save(Alarm.createAlarm(fromId,
+                AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
     }
 
 }
