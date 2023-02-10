@@ -1,6 +1,7 @@
 package com.likelion.devroutine.follow.repository;
 
 import com.likelion.devroutine.follow.domain.Follow;
+import com.likelion.devroutine.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +23,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT count(f) FROM Follow f where f.following.id = :followingId")
     Long countFollowing(@Param("followingId") Long followingUserId);
+
+    @Query("SELECT ff FROM Follow f INNER JOIN f.follower ff ON f.following.id = :id")
+    List<User> findByFollowerUserId(@Param("id") Long userId);
 }

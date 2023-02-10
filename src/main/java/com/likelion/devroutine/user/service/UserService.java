@@ -99,13 +99,19 @@ public class UserService {
         }
     }
 
-    public MyProfileResponse getProfile(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+    public MyProfileResponse getProfile(String oauthId) {
+        User user = findUserByOauthId(oauthId);
+
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(UserNotFoundException::new);
         List<Participation> participations = findParticipations(user.getId());
         Long followers = followRepository.countFollowers(user.getId());
         Long following = followRepository.countFollowing(user.getId());
-        return MyProfileResponse.of(user, followers, following, participations);
+
+//        List<Follow> byFollowingList = followRepository.findByFollowingId(user.getId());
+        List<User> byFollowingList= followRepository.findByFollowerUserId(user.getId());
+        System.out.println(byFollowingList.get(1));
+        return MyProfileResponse.of(user, followers, following, participations, byFollowingList);
     }
 
     private List<Participation> findParticipations(Long userId) {
