@@ -1,6 +1,7 @@
 package com.likelion.devroutine.user.dto;
 
 import com.likelion.devroutine.challenge.dto.ChallengeResponse;
+import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,10 @@ public class MyProfileResponse {
     private List<ChallengeResponse> challenges; //참가중인 챌린지
     private List<ChallengeResponse> authorizedChallenges; //개설한 챌린지
 
-    public static MyProfileResponse of(User user, Long followerCount, Long followingCount, List<Participation> participations) {
+    private List<User> byFollowingList;
+
+    public static MyProfileResponse of(User user, Long followerCount, Long followingCount, List<Participation> participations
+    ,List<User> byFollowingList) {
         List<ChallengeResponse> challenges = extractchallenges(participations);
         List<ChallengeResponse> authorizedChallenges = extractchallenges(participations, user.getId());
         return MyProfileResponse.builder()
@@ -31,6 +35,7 @@ public class MyProfileResponse {
                 .followingCount(followingCount)
                 .challenges(challenges)
                 .authorizedChallenges(authorizedChallenges)
+                .byFollowingList(byFollowingList)
                 .build();
     }
 

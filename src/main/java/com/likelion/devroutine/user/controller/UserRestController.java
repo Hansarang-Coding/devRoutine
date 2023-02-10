@@ -48,7 +48,7 @@ public class UserRestController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<MyProfileResponse> getProfile(@PathVariable Long userId) {
+    public ResponseEntity<MyProfileResponse> getProfile(@PathVariable String userId) {
         MyProfileResponse profile = userService.getProfile(userId);
         return ResponseEntity.ok().body(profile);
     }
