@@ -72,19 +72,19 @@
 
                     <li id="username" th:text="${comment.userName}"
                         th:if="${#authentication.name} != ${comment.oauthId}"></li>
-
+i
                     <li id="createdAt" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></li>
                     <li id="comment" th:text="${comment.comment}"></li>
                 </ul>
                 <div class="text-right">
                     <button type="button" class="btn btn-dark"
-                                data-bs-toggle="collapse" th:attr="data-bs-target=|#collapse-comment${comment.id}|"
+                            data-bs-toggle="collapse" th:attr="data-bs-target=|#collapse-comment${comment.id}|"
                             aria-expanded="false" aria-controls="collapseExample"
                             th:if="${#authentication.name} == ${comment.oauthId}">수정
                     </button>
-                    <button id="comment-del-btn" type="submit" name="submit" value="delete"
+                    <buktton id="comment-del-btn" type="submit" name="submit" value="delete"
                                   class="btn btn-dark"
-                                  th:if="${#authentication.name} == ${comment.oauthId}">삭제</button>
+                                  th:if="${#authentication.name} == ${comment.oauthId}">삭제</buktton>
                 </div>
 
                 <div class="collapse" th:id="'collapse-comment'+${comment.id}"
@@ -95,8 +95,9 @@
                                 <label class="form-label mt-4" hidden>댓글 작성</label>
                                 <input type="text" class="form-control" id="comment-content-upt"
                                        placeholder="댓글을 입력해주세요">
+                                <input type="text" hidden th:value="${comment.id}" id="comment-id2">
                                 <input type="text" hidden th:value="${certificationId}" id="cert-id2">
-                                <button type="button" id="comment-btn2" class="btn btn-light">작성</button>
+                                <button type="button" id="comment-upt-btn" class="btn btn-light">작성</button>
                                 <div>
                                 </div>
                                 <br>

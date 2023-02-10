@@ -3,9 +3,10 @@ $('#comment-btn').on("click", function () {
     createComment(certificationId);
 });
 
-$('#comment-btn2').on("click", function () {
-    let certificationId = $("#cert-id").val();
-    let commentId = $("#comment-id").val();
+$('#comment-upt-btn').on("click", function () {
+    let certificationId = $("#cert-id2").val();
+    let commentId = $("#comment-id2").val();
+    console.log(commentId)
     updateComment(certificationId,commentId);
 });
 
@@ -38,7 +39,7 @@ function updateComment(certificationId, commentId) {
         comment: $("#comment-content-upt").val()
     };
     $.ajax({
-        url: "/api/v1/certification/" + certificationId + "/comments" + commentId,
+        url: "/api/v1/certification/" + certificationId + "/comments/" + commentId,
         type: "PUT",
         data: JSON.stringify(commentDto),
         contentType: "application/json; charset=utf-8",
