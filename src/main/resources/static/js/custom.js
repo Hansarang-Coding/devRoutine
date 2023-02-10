@@ -6,8 +6,13 @@ $('#comment-btn').on("click", function () {
 $('#comment-upt-btn').on("click", function () {
     let certificationId = $("#cert-id2").val();
     let commentId = $("#comment-id2").val();
-    console.log(commentId)
-    updateComment(certificationId,commentId);
+    updateComment(certificationId, commentId);
+});
+
+$('#comment-del-btn').on("click", function () {
+    let certificationId = $("#cert-id").val();
+    let commentId = $("#comment-id").val();
+    deleteComment(certificationId, commentId);
 });
 
 $('#like-img').on("click", function () {
@@ -53,6 +58,19 @@ function updateComment(certificationId, commentId) {
     });
 }
 
+function deleteComment(certificationId, commentId) {
+    $.ajax({
+        url: "/api/v1/certification/" + certificationId + "/comments/" + commentId,
+        type: "DELETE"
+    }).done(function (response) {
+        alert("작성한 댓글이 삭제되었습니다.")
+        location.href = "/certification/" + certificationId
+    }).fail(function (error) {
+        alert(JSON.stringify(error));
+    });
+}
+
+
 function updateLike(certificationId) {
     $.ajax({
         url: "/api/v1/certification/" + certificationId + "/likes",
@@ -69,7 +87,7 @@ function updateLike(certificationId) {
         } else if (response.message === "좋아요 취소") {
             $("#like-img").attr("src", "/assets/like_empty.png");
             console.log($("#like-cnt").text())
-            $("#like-cnt").text($("#like-cnt").text()-1)
+            $("#like-cnt").text($("#like-cnt").text() - 1)
         }
     }).fail(function (error) {
         console.log(JSON.stringify(error))
@@ -77,8 +95,8 @@ function updateLike(certificationId) {
     });
 }
 
-$(function(){
-    $(".cert-card").click(function(){
+$(function () {
+    $(".cert-card").click(function () {
         $(".modal").show();
         // 해당 이미지 가겨오기
         var imgSrc = $(this).children("img").attr("src");
@@ -87,7 +105,7 @@ $(function(){
         $(".modalBox img").attr("alt", imgAlt);
 
         // 해당 이미지 텍스트 가져오기
-        var imgTit =  $(this).children("p").text();
+        var imgTit = $(this).children("p").text();
         $(".modalBox p").text(imgTit);
 
         // 해당 이미지에 alt값을 가져와 제목으로
@@ -95,7 +113,7 @@ $(function(){
     });
 
     //.modal안에 button을 클릭하면 .modal닫기
-    $(".modal button").click(function(){
+    $(".modal button").click(function () {
         $(".modal").hide();
     });
 

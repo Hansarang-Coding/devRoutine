@@ -72,7 +72,6 @@
 
                     <li id="username" th:text="${comment.userName}"
                         th:if="${#authentication.name} != ${comment.oauthId}"></li>
-i
                     <li id="createdAt" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></li>
                     <li id="comment" th:text="${comment.comment}"></li>
                 </ul>
@@ -82,9 +81,8 @@ i
                             aria-expanded="false" aria-controls="collapseExample"
                             th:if="${#authentication.name} == ${comment.oauthId}">수정
                     </button>
-                    <buktton id="comment-del-btn" type="submit" name="submit" value="delete"
-                                  class="btn btn-dark"
-                                  th:if="${#authentication.name} == ${comment.oauthId}">삭제</buktton>
+                    <button id="comment-del-btn" type="button"                                  class="btn btn-dark"
+                            th:if="${#authentication.name} == ${comment.oauthId}">삭제</button>
                 </div>
 
                 <div class="collapse" th:id="'collapse-comment'+${comment.id}"
