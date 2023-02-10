@@ -1,6 +1,12 @@
 $('#comment-btn').on("click", function () {
     let certificationId = $("#cert-id").val();
-    updateComment(certificationId);
+    createComment(certificationId);
+});
+
+$('#comment-btn2').on("click", function () {
+    let certificationId = $("#cert-id").val();
+    let commentId = $("#comment-id").val();
+    updateComment(certificationId,commentId);
 });
 
 $('#like-img').on("click", function () {
@@ -8,7 +14,7 @@ $('#like-img').on("click", function () {
     updateLike(certificationId);
 });
 
-function updateComment(certificationId) {
+function createComment(certificationId) {
     let commentDto = {
         comment: $("#commentContent").val()
     };
@@ -21,6 +27,25 @@ function updateComment(certificationId) {
 
     }).done(function (response) {
         alert("댓글 작성을 완료하였습니다.")
+        location.href = "/certification/" + certificationId
+    }).fail(function (error) {
+        alert(JSON.stringify(error));
+    });
+}
+
+function updateComment(certificationId, commentId) {
+    let commentDto = {
+        comment: $("#comment-content-upt").val()
+    };
+    $.ajax({
+        url: "/api/v1/certification/" + certificationId + "/comments" + commentId,
+        type: "PUT",
+        data: JSON.stringify(commentDto),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json"
+
+    }).done(function (response) {
+        alert("댓글 수정을 완료하였습니다.")
         location.href = "/certification/" + certificationId
     }).fail(function (error) {
         alert(JSON.stringify(error));
