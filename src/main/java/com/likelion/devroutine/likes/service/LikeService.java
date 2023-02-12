@@ -77,8 +77,8 @@ public class LikeService {
 
     public void saveLikeAlarm(Long certificationId, Long fromId) {
         User user = likeRepository.findUserByLikeParam(certificationId);
-        alarmRepository.save(Alarm.createAlarm(fromId,
-                AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+        alarmRepository.save(Alarm.createAlarm(certificationId,
+                AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), fromId, user));
     }
 
 }

@@ -93,9 +93,10 @@ public class ParticipationService {
                 .orElseThrow(()->new UserNotFoundException());
         validateFollower(inviter, invitee);
         Challenge challenge=getChallenge(challengeId);
+        log.info("id : " + challenge.getId().toString());
         validateInvite(challenge, inviter, invitee);
         Invite savedInvite=inviteRepository.save(Invite.createInvite(challenge.getId(), inviter.getId(), invitee.getId()));
-        saveInviteAlarm(invitee,inviter.getId());
+        saveInviteAlarm(challenge.getId(), invitee, inviter.getId());
         return InviteCreateResponse.builder()
                 .inviterId(savedInvite.getInviterId())
                 .challengeId(savedInvite.getChallengeId())
@@ -167,9 +168,13 @@ public class ParticipationService {
     }
 
     public boolean isProgressChallenge(LocalDate startDate) {
-        if (LocalDate.now().isAfter(startDate))
-            throw new InProgressingChallengeException();
-        return false;
+        log.info(startDate.toString());
+        log.info("now: "+LocalDate.now().toString());
+        if (LocalDate.now().isBefore(startDate)){
+            log.info("챌린지 시작됨");
+            return true;
+        }
+        throw new InProgressingChallengeException();
     }
 
     private void validateFollower(User inviter, User invitee) {
@@ -207,8 +212,8 @@ public class ParticipationService {
         return challengeHashTagRepository.findByChallengeId(challengeId);
     }
 
-    public void saveInviteAlarm(User user, Long inviterId) {
-        alarmRepository.save(Alarm.createAlarm(inviterId,
-                AlarmType.NEW_CHALLENGE_INVITE,AlarmType.NEW_CHALLENGE_INVITE.getMessage(), user));
+    public void saveInviteAlarm(Long challengeId, User invitee, Long inviterId) {
+        alarmRepository.save(Alarm.createAlarm(challengeId,
+                AlarmType.NEW_CHALLENGE_INVITE,AlarmType.NEW_CHALLENGE_INVITE.getMessage(), inviterId, invitee));
     }
 }

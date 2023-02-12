@@ -24,7 +24,7 @@ public class InviteRepositoryCustomImpl implements InviteRepositoryCustom{
     public List<InviterResponse> findInviterByInviteeId(Long userId){
         QChallenge challenge=QChallenge.challenge;
         QUser user= QUser.user;
-        return queryFactory.select(Projections.constructor(InviterResponse.class, challenge.id, challenge.title, user.name, user.picture))
+        return queryFactory.select(Projections.constructor(InviterResponse.class, invite.id, challenge.id, challenge.title, user.name, user.picture))
                 .from(invite)
                 .join(challenge).on(invite.challengeId.eq(challenge.id))
                 .join(user).on(invite.inviterId.eq(user.id))
@@ -36,7 +36,7 @@ public class InviteRepositoryCustomImpl implements InviteRepositoryCustom{
     public List<InviteeResponse> findInviteeByInviterId(Long userId){
         QChallenge challenge=QChallenge.challenge;
         QUser user= QUser.user;
-        return queryFactory.select(Projections.constructor(InviteeResponse.class, challenge.id, challenge.title, user.name, user.picture))
+        return queryFactory.select(Projections.constructor(InviteeResponse.class, invite.id, challenge.id, challenge.title, user.name, user.picture))
                 .from(invite)
                 .join(challenge).on(invite.challengeId.eq(challenge.id))
                 .join(user).on(invite.inviteeId.eq(user.id))

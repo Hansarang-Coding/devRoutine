@@ -40,9 +40,8 @@ public class UserService {
         User follower = findUser(followerId);
         validateFollowExists(follower.getId(), followingUser.getId());
         validateSelfFollow(follower.getId(), followingUser.getId());
-        Follow follow = Follow.createFollow(follower, followingUser);
-        followRepository.save(follow);
-        saveFollowAlarm(follower, followingUser.getId());
+        Follow savedFollow=followRepository.save(Follow.createFollow(follower, followingUser));
+        saveFollowAlarm(savedFollow.getId(), follower, followingUser.getId());
         return FollowCreateResponse.of(followingUser.getName(), follower.getName());
     }
 
@@ -118,11 +117,9 @@ public class UserService {
         return participationRepository.findAllByUserId(userId);
     }
 
-    public void saveFollowAlarm(User user, Long oauthId) {
-        alarmRepository.save(Alarm.createAlarm(oauthId,
-                AlarmType.NEW_FOLLOW,AlarmType.NEW_FOLLOW.getMessage(), user));
+    public void saveFollowAlarm(Long followId, User user, Long fromUserId) {
+        alarmRepository.save(Alarm.createAlarm(followId,
+                AlarmType.NEW_FOLLOW,AlarmType.NEW_FOLLOW.getMessage(), fromUserId, user));
     }
-
-
 
 }

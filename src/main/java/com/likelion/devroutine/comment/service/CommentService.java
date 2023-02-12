@@ -40,7 +40,7 @@ public class CommentService {
         Certification certification = findCertification(certificationId);
         User user = findUserByOauthId(oauthId);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certification, user));
-        saveCommentAlarm(certificationId, user);
+        saveCommentAlarm(certificationId, user.getId());
         return CommentCreateResponse.of(savedComment);
     }
 
@@ -94,10 +94,10 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
     }
 
-    public void saveCommentAlarm(Long certificationId, User fromUser) {
+    public void saveCommentAlarm(Long certificationId, Long fromUserId) {
         User user = commentRepository.findUserByCommentParam(certificationId);
-        alarmRepository.save(Alarm.createAlarm(fromUser.getId(),
-                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+        alarmRepository.save(Alarm.createAlarm(certificationId,
+                AlarmType.NEW_COMMENT_ON_CERTIFICATION,AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), fromUserId, user));
     }
 
 }

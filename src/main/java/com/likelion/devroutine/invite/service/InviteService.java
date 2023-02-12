@@ -119,9 +119,9 @@ public class InviteService {
                 .orElseThrow(()-> new InviteNotFoundException());
     }
     public boolean isProgressChallenge(LocalDate startDate) {
-        if (LocalDate.now().isAfter(startDate))
-            throw new InProgressingChallengeException();
-        return false;
+        if (LocalDate.now().isBefore(startDate))
+            return true;
+        throw new InProgressingChallengeException();
     }
     public boolean validateParticipate(User user, Challenge challenge){
         isProgressChallenge(challenge.getStartDate());

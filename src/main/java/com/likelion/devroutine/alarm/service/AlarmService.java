@@ -2,17 +2,18 @@ package com.likelion.devroutine.alarm.service;
 
 import com.likelion.devroutine.alarm.domain.Alarm;
 import com.likelion.devroutine.alarm.dto.AlarmResponse;
+import com.likelion.devroutine.alarm.dto.CertificationAlarmResponse;
+import com.likelion.devroutine.alarm.dto.FollowAlarmResponse;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.alarm.repository.EmitterRepository;
+import com.likelion.devroutine.invite.dto.InviteReadResponse;
+import com.likelion.devroutine.invite.dto.InviteeResponse;
+import com.likelion.devroutine.invite.dto.InviterResponse;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -35,15 +36,27 @@ public class AlarmService {
         return AlarmResponse.of(alarms);
     }
 
+    public List<CertificationAlarmResponse> findLikeAlarm(String oauthId){
+        User alarmUser=findUserByOauthId(oauthId);
+        List<CertificationAlarmResponse> certificationAlarmRespons =alarmRepository.findLikeAlarmByUser(alarmUser.getId());
+        return certificationAlarmRespons;
+    }
+    public List<CertificationAlarmResponse> findCommentAlarm(String oauthId) {
+        User alarmUser=findUserByOauthId(oauthId);
+        List<CertificationAlarmResponse> certificationAlarmRespons =alarmRepository.findCommentAlarmByUser(alarmUser.getId());
+        return certificationAlarmRespons;
+    }
+
+    public List<FollowAlarmResponse> findFollowAlarm(String oauthId){
+        User alarmUser=findUserByOauthId(oauthId);
+        List<FollowAlarmResponse> followAlarmResponses =alarmRepository.findFollowAlarmByUser(alarmUser.getId());
+        return followAlarmResponses;
+    }
     private User findUserByOauthId(String OauthId) {
         return userRepository.findByOauthId(OauthId)
                 .orElseThrow(UserNotFoundException::new);
+
     }
-
-
-
-    
-
 
     public SseEmitter subscribe(String oauthId, String lastEventId) {
         User user = findUserByOauthId(oauthId);
@@ -88,8 +101,4 @@ public class AlarmService {
                 .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                 .forEach(entry -> sendNotification(emitter, entry.getKey(), emitterId, entry.getValue()));
     }
-
-
-
-
 }
