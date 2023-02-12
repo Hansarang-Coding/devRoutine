@@ -102,7 +102,7 @@
     <!-- 이미 진행중이면 버튼 안보여야함 -->
     <form th:if="(${challenge.getFromUserId()} != ${user.getId()}) and ${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:action="@{|/challenges/${challenge.getId()}/cancel|}" method="get">
         <div class="d-grid gap-2" style="margin-right: 100px; margin-left: 100px; margin-top: 20px">
-            <button class="btn btn-outline-primary" type="submit">참여취소 하기</button>
+            <button class="btn btn-outline-danger" type="submit">참여취소 하기</button>
         </div>
     </form>
 </body>
