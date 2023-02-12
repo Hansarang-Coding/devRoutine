@@ -1,6 +1,7 @@
 package com.likelion.devroutine.certification.controller;
 
 import com.likelion.devroutine.certification.dto.CertificationCreateRequest;
+import com.likelion.devroutine.certification.dto.CertificationFormResponse;
 import com.likelion.devroutine.certification.dto.CertificationResponse;
 import com.likelion.devroutine.certification.dto.ParticipationResponse;
 import com.likelion.devroutine.certification.dto.amazons3.FileUploadResponse;
@@ -34,8 +35,14 @@ public class CertificationController {
     @GetMapping("/certification/post/{participationId}")
     public String getCertificationForm(@PathVariable("participationId") Long participationId,
                                        Model model, Authentication authentication) {
-        model.addAttribute("participation", certificationService
-                .findCertificationFormInfo(participationId, authentication.getName()));
+        try{
+            CertificationFormResponse certificationFormInfo = certificationService
+                    .findCertificationFormInfo(participationId, authentication.getName());
+            model.addAttribute("participation", certificationFormInfo);
+        }catch(Exception e){
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/error";
+        }
         return "certification/form";
     }
 
