@@ -35,10 +35,9 @@ public class LikeService {
         if (isAlreadyPressedLike(certificationId, oauthId)) {
             deleteLikes(certificationId, oauthId);
         } else {
-            Like like = Like.createLike(getUser(oauthId), getCertification(certificationId));
-            likeRepository.save(like);
-            saveLikeAlarm(certificationId, like.getUser().getId());
-            return LikeResponse.of(LIKE_SUCCESS_MESSAGE, like);
+            Like savedLike=likeRepository.save(Like.createLike(getUser(oauthId), getCertification(certificationId)));
+            saveLikeAlarm(certificationId, savedLike.getId(), savedLike.getUser().getId());
+            return LikeResponse.of(LIKE_SUCCESS_MESSAGE, savedLike);
         }
         return LikeResponse.of(LIKE_RESET_MESSAGE);
     }
@@ -57,6 +56,8 @@ public class LikeService {
     public void deleteLikes(Long certificationId, String oauthId) {
         User user = getUser(oauthId);
         Certification certification = getCertification(certificationId);
+        Like like=getLike(user, certification);
+        alarmRepository.deleteByTargetIdAndFromUserId(like.getId(), user.getId());
         likeRepository.delete(getLike(user, certification));
     }
 
@@ -75,9 +76,9 @@ public class LikeService {
                 .orElseThrow(CertificationNotFoundException::new);
     }
 
-    public void saveLikeAlarm(Long certificationId, Long fromId) {
+    public void saveLikeAlarm(Long certificationId, Long likeId, Long fromId) {
         User user = likeRepository.findUserByLikeParam(certificationId);
-        alarmRepository.save(Alarm.createAlarm(certificationId,
+        alarmRepository.save(Alarm.createAlarm(likeId,
                 AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), fromId, user));
     }
 

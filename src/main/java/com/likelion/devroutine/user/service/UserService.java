@@ -62,6 +62,7 @@ public class UserService {
         User followingUser = findUserByOauthId(userName);
         User follower = findUser(followerId);
         Follow follow = findExistingFollow(follower.getId(), followingUser.getId());
+        alarmRepository.deleteByTargetIdAndFromUserId(follow.getId(), followingUser.getId());
         followRepository.delete(follow);
     }
 
