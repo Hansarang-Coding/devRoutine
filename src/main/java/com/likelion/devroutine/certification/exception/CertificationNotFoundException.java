@@ -1,4 +1,4 @@
-package com.likelion.devroutine.comment.exception;
+package com.likelion.devroutine.certification.exception;
 
 import com.likelion.devroutine.exception.NotFoundException;
 
