@@ -42,8 +42,11 @@
                         <div class="card-body">
                             <div style="margin-bottom: 10px" class="row justify-content-start" th:each="alarm: ${likeAlarms}">
                                 <a th:href="@{|/certification/${alarm.getCertificationId()}|}">
-                                    <img style="float: left;" th:src="${alarm.getUserImage()}" width="30px">
-                                    <p>[[${alarm.getUserName()}]]님이 회원님의 인증에 좋아요를 눌렀습니다.</p>
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;" >[[${alarm.getUserName()}]]님이 회원님의 인증에 좋아요를 눌렀습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
                                 </a>
                                 <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
                             </div>
@@ -63,14 +66,23 @@
                         <div class="card-body">
                             <div style="margin-bottom: 10px" th:each="alarm: ${commentAlarms}">
                                 <a th:href="@{|/certification/${alarm.getCertificationId()}|}">
-                                    <img style="float: left;" th:src="${alarm.getUserImage()}" width="30px">
-                                    <p>[[${alarm.getUserName()}]]님이 회원님의 인증에 댓글을 남겼습니다.</p></a>
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getUserName()}]]님이 회원님의 인증에 댓글을 남겼습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
+                                </a>
                                 <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div th:if="${alarmType}=='invite'" class="col-12">
+                    <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviterResponse().size() == 0}">
+                        <div class="card-header">
+                            초대 받은 내역이 없습니다.
+                        </div>
+                    </div>
                     <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviterResponse().size() > 0}">
                         <div class="card-header">
                             초대 받은 내역
@@ -79,13 +91,19 @@
                             <div style="margin-bottom: 10px" th:each="alarm: ${inviteAlarms.getInviterResponse()}">
                                 <a th:href="@{|/challenges/${alarm.getChallengeId()}|}">
                                     <input class="invite-id" type="text" hidden th:value="${alarm.getInviteId()}">
-                                    <img style="float: left;" th:src="${alarm.getInviterPicture()}" width="30px">
-                                    <p>[[${alarm.getInviterName()}]]님이 [[${alarm.getTitle()}]] 챌린지에 초대를 하셨습니다.</p></a>
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getInviterPicture()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getInviterName()}]]님이 [[${alarm.getTitle()}]] 챌린지에 초대를 하셨습니다.</p>
+                                </a>
                                 <div style="text-align: right;">
                                     <button style="font-size: 12px; width: 100px; height: 30px" class="btn btn-outline-danger" name="inviteReject" th:attrappend="id=${alarmStat.index}" type="submit">초대 거절</button>
                                 </div>
                                 <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
                             </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviteeResponses().size() == 0}">
+                        <div class="card-header">
+                            초대 받은 내역이 없습니다.
                         </div>
                     </div>
                     <div class="card" th:if="${inviteAlarms.getInviteeResponses().size() > 0}">
@@ -120,8 +138,11 @@
                         <div class="card-body">
                             <div style="margin-bottom: 10px" th:each="alarm: ${followAlarms}">
                                 <a th:href="@{|/users/${alarm.getUserId()}|}">
-                                    <img style="float: left;" th:src="${alarm.getUserImage()}" width="30px">
-                                    <p>[[${alarm.getUserName()}]]님이 회원님을 팔로우하기 시작했습니다.</p>
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getUserName()}]]님이 회원님을 팔로우하기 시작했습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
                                 </a>
                                 <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
                             </div>
