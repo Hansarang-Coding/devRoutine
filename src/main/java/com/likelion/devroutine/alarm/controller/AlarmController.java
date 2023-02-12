@@ -22,10 +22,7 @@ public class AlarmController {
 
     @GetMapping
     public String alarmList(Model model, Authentication authentication){
-        model.addAttribute("likeAlarms", alarmService.findLikeAlarm(authentication.getName()));
-        model.addAttribute("commentAlarms", alarmService.findCommentAlarm(authentication.getName()));
-        model.addAttribute("followAlarms", alarmService.findFollowAlarm(authentication.getName()));
-        model.addAttribute("inviteAlarms", inviteService.findAllInvite(authentication.getName()));
+
         return "alarm/list";
     }
 

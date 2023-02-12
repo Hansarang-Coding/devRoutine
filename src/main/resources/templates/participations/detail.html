@@ -8,7 +8,7 @@
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
     <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
-            <input type="text" hidden th:value="${participationChallenge.getId()}" id="challenge-id">
+            <input type="text" hidden th:value="${participationChallenge.getChallengeId()}" id="challenge-id">
             <h1>[[${participationChallenge.getTitle()}]]</h1>
             <div class="btn-group" style="margin-left: 30px;">
                 <div th:each="hashtag: ${participationChallenge.getChallengeHashTag()}">
@@ -40,8 +40,8 @@
                                 <div class="btn-group" id="user" style="margin-bottom: 10px;">
                                     <img th:src="${follower.getPicture()}" width="50px" style="margin-right: 10px" alt="profile_image">
                                     <p style="margin-right: 120px">[[${follower.getName()}]]</p>
-                                    <input type="text" hidden th:value="${follower.getId()}" id="user-id">
-                                    <button type="button" id="invite-btn" class="btn btn-light">초대</button>
+                                    <input type="text" hidden th:value="${follower.getId()}" th:id="user-id+${followerStat.index}">
+                                    <button type="button" name="inviteBtn" th:attrappend="id=${followerStat.index}" class="btn btn-light">초대</button>
                                 </div>
                                 <hr style="border: solid 0.5px gray; margin-bottom: 10px">
                             </div>
@@ -70,7 +70,7 @@
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <div class="row">
                     <p class="col-md-auto" id="username">[[${entry.getKey()}]]</p>
-                    <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto" name="moreBtn" th:attrappend="id=${entryStat.index}" style="margin-bottom: 10px">더보기</button>
+                    <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto more" name="moreBtn" th:attrappend="id=${entryStat.index}" style="font-size: 12px; width: 70px; height: 30px; margin-bottom: 10px">더보기</button>
                 </div>
                 <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
                 <div th:unless="${entry.getValue().size()}==0">
@@ -95,6 +95,7 @@
                         </div>
                     </div>
                 </div>
+                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
             </div>
         </div>
     </div>
@@ -106,17 +107,11 @@
     </form>
 </body>
 <script>
-    $('#invite-btn').on("click", function () {
+    $("button[name=inviteBtn]").click(function (){
+        var index = $(this).attr("id");
         let challengeId = $("#challenge-id").val();
-        let userId = $("#user-id").val();
-        console.log(userId);
+        let userId = $("#user-id"+index).val();
         inviteUser(userId, challengeId);
-    });
-    $('#more').on("click", function(){
-        let btnElement=document.getElementById('more');
-        console.log("more click");
-        console.log(btnElement);
-        moreEvent(btnElement);
     });
 
     $("button[name=moreBtn]").click(function(){
@@ -147,6 +142,7 @@
         }).done(function(response) {
             console.log(response);
             alert("초대가 완료되었습니다.");
+            location.href = "/challenges/"+challengeId;
         }).fail(function(request, error) {
             console.log(JSON.stringify(request.responseText));
             alert(JSON.stringify(request.responseText));
@@ -181,10 +177,5 @@
     #edit{
         margin-top: 10px;
         margin-bottom: 20px;
-    }
-    #more{
-        font-size: 12px;
-        width: 70px;
-        height: 30px
     }
 </style>

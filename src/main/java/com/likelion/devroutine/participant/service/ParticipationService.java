@@ -168,10 +168,7 @@ public class ParticipationService {
     }
 
     public boolean isProgressChallenge(LocalDate startDate) {
-        log.info(startDate.toString());
-        log.info("now: "+LocalDate.now().toString());
         if (LocalDate.now().isBefore(startDate)){
-            log.info("챌린지 시작됨");
             return true;
         }
         throw new InProgressingChallengeException();
