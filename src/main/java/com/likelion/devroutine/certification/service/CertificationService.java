@@ -4,6 +4,8 @@ import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.*;
 import com.likelion.devroutine.certification.exception.CertificationForbiddenException;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
+import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.exception.NotStartingChallengeException;
 import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
 import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
@@ -56,9 +58,15 @@ public class CertificationService {
 
     public CertificationFormResponse findCertificationFormInfo(Long participationId, String oauthId) {
         validateUserExists(oauthId);
+        isProgressing(participationId);
         validateCertificationDate(participationId, oauthId);
         Participation participation = findParticipation(participationId);
         return CertificationFormResponse.of(participation);
+    }
+
+    private void isProgressing(Long participationId) {
+        Challenge challenge = participantRepository.findById(participationId).get().getChallenge();
+        if(LocalDate.now().isBefore(challenge.getStartDate())) throw new NotStartingChallengeException();
     }
 
     private Participation findParticipation(Long participationId) {
