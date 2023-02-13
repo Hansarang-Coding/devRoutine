@@ -34,7 +34,9 @@ public class AmazonS3UploadService {
 
     @Transactional
     public FileUploadResponse upload(Long certificationId, File uploadFile, String filePath) {
+        log.info("start upload method");
         String fileName = filePath + "/" + certificationId + uploadFile.getName(); // S3에 저장된 파일 이름
+        log.info("upload fileName : "+fileName);
         String uploadImageUrl = putS3(uploadFile, fileName); // S3로 업로드
         log.info("uploadImageUrl = " + uploadImageUrl);
         removeNewFile(uploadFile);
@@ -43,6 +45,7 @@ public class AmazonS3UploadService {
 
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
+        log.info("start puts3 method");
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(
                 CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
@@ -57,9 +60,14 @@ public class AmazonS3UploadService {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
+        log.info("start convert method");
+        log.info("convertFile : "+System.getProperty("user.dir") + "/" + file.getOriginalFilename());
         File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
+        log.info("convertFile : " + convertFile);
         if (convertFile.createNewFile()) {
+            log.info("convertFile create if문");
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                log.info("fos try-catch 내부");
                 fos.write(file.getBytes());
             }
             return Optional.of(convertFile);
