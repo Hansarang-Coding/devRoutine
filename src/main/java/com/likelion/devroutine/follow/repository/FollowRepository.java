@@ -26,4 +26,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("SELECT ff FROM Follow f INNER JOIN f.follower ff ON f.following.id = :id")
     List<User> findByFollowerUserId(@Param("id") Long userId);
+
+    @Query("SELECT ff FROM Follow f INNER JOIN f.following ff ON f.follower.id = :id")
+    List<User> findByFollowingUserId(@Param("id") Long userId);
 }
