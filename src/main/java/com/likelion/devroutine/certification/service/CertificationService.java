@@ -2,6 +2,7 @@ package com.likelion.devroutine.certification.service;
 
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.*;
+import com.likelion.devroutine.certification.exception.CertificationForbiddenException;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
 import com.likelion.devroutine.participant.domain.Participation;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -35,8 +38,25 @@ public class CertificationService {
         return CertificationCreateResponse.of(savedCertification);
     }
 
+    private void validateCertificationDate(Long participationId, String oauthId) {
+        List<Certification> certifications = certificationRepository.findByParticipationId(participationId);
+        certifications.stream().filter(certification -> isCertificatedUser(oauthId, certification))
+                .filter(this::isCertificatedNotBeenOneDay).forEachOrdered(certification -> {
+                    throw new CertificationForbiddenException();
+                });
+    }
+
+    private boolean isCertificatedUser(String oauthId, Certification certification) {
+        return Objects.equals(certification.getParticipation().getUser().getName(), findUser(oauthId).getName());
+    }
+
+    private boolean isCertificatedNotBeenOneDay(Certification certification) {
+        return certification.getCreatedAt().toLocalDate().isEqual(LocalDate.now());
+    }
+
     public CertificationFormResponse findCertificationFormInfo(Long participationId, String oauthId) {
         validateUserExists(oauthId);
+        validateCertificationDate(participationId, oauthId);
         Participation participation = findParticipation(participationId);
         return CertificationFormResponse.of(participation);
     }

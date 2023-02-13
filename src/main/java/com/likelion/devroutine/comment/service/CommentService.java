@@ -4,11 +4,11 @@ import com.likelion.devroutine.alarm.domain.Alarm;
 import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
 import com.likelion.devroutine.certification.domain.Certification;
+import com.likelion.devroutine.certification.exception.CertificationNotFoundException;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.comment.domain.Comment;
 import com.likelion.devroutine.comment.dto.*;
 import com.likelion.devroutine.comment.enumerate.ResponseMessage;
-import com.likelion.devroutine.comment.exception.CertificationNotFoundException;
 import com.likelion.devroutine.comment.exception.CommentNotFoundException;
 import com.likelion.devroutine.comment.repository.CommentRepository;
 import com.likelion.devroutine.user.domain.User;
@@ -16,13 +16,11 @@ import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.exception.UserUnauthorizedException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

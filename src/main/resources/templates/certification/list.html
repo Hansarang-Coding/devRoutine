@@ -7,13 +7,13 @@
 <body>
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
 
-<div class="mt-6 h-100">
+<div class="mt-6">
     <legend>인증하기</legend>
     <p class="text-muted">내가 참여하고 있는 챌린지에 인증해 보세요.</p>
 </div>
-<div class="row d-flex justify-content-center align-items-center h-100 gap-3">
 
-<div class="row row-cols-1 g-4 text-center gap-3">
+<section class="container text-center mt-3">
+<div class="row row-cols-1 row-cols-md-3 gap-3">
     <div class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title fw-bold">원하는 챌린지를 추가해보세요!</h5>
@@ -21,7 +21,6 @@
                 <a th:href="@{/challenges}">챌린지 화면 바로 가기</a></p>
         </div>
     </div>
-
     <div class="card" th:each="p : ${participations}" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">[[${p.title}]]</h5>
@@ -31,6 +30,7 @@
         </div>
     </div>
 </div>
+</section>
 
 <div class="mt-6">
     <legend>인증모음</legend>

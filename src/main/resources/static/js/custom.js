@@ -3,10 +3,16 @@ $('#comment-btn').on("click", function () {
     createComment(certificationId);
 });
 
-$('#comment-btn2').on("click", function () {
+$('#comment-upt-btn').on("click", function () {
+    let certificationId = $("#cert-id2").val();
+    let commentId = $("#comment-id2").val();
+    updateComment(certificationId,commentId);
+});
+
+$('#comment-del-btn').on("click", function () {
     let certificationId = $("#cert-id").val();
     let commentId = $("#comment-id").val();
-    updateComment(certificationId,commentId);
+    deleteComment(certificationId,commentId);
 });
 
 $('#like-img').on("click", function () {
@@ -38,7 +44,7 @@ function updateComment(certificationId, commentId) {
         comment: $("#comment-content-upt").val()
     };
     $.ajax({
-        url: "/api/v1/certification/" + certificationId + "/comments" + commentId,
+        url: "/api/v1/certification/" + certificationId + "/comments/" + commentId,
         type: "PUT",
         data: JSON.stringify(commentDto),
         contentType: "application/json; charset=utf-8",
@@ -51,6 +57,19 @@ function updateComment(certificationId, commentId) {
         alert(JSON.stringify(error));
     });
 }
+
+function deleteComment(certificationId, commentId) {
+    $.ajax({
+        url: "/api/v1/certification/" + certificationId + "/comments/" + commentId,
+        type: "DELETE"
+    }).done(function (response) {
+        alert("작성한 댓글이 삭제되었습니다.")
+        location.href = "/certification/" + certificationId
+    }).fail(function (error) {
+        alert(JSON.stringify(error));
+    });
+}
+
 
 function updateLike(certificationId) {
     $.ajax({
@@ -68,7 +87,7 @@ function updateLike(certificationId) {
         } else if (response.message === "좋아요 취소") {
             $("#like-img").attr("src", "/assets/like_empty.png");
             console.log($("#like-cnt").text())
-            $("#like-cnt").text($("#like-cnt").text()-1)
+            $("#like-cnt").text($("#like-cnt").text() - 1)
         }
     }).fail(function (error) {
         console.log(JSON.stringify(error))
@@ -76,29 +95,10 @@ function updateLike(certificationId) {
     });
 }
 
-$(function(){
-    $(".cert-card").click(function(){
-        $(".modal").show();
-        // 해당 이미지 가겨오기
-        var imgSrc = $(this).children("img").attr("src");
-        var imgAlt = $(this).children("img").attr("alt");
-        $(".modalBox img").attr("src", imgSrc);
-        $(".modalBox img").attr("alt", imgAlt);
+let img = $(".cert-card");
+executeImageModal(img);
 
-        // 해당 이미지 텍스트 가져오기
-        var imgTit =  $(this).children("p").text();
-        $(".modalBox p").text(imgTit);
-
-        // 해당 이미지에 alt값을 가져와 제목으로
-        //$(".modalBox p").text(imgAlt);
-    });
-
-    //.modal안에 button을 클릭하면 .modal닫기
-    $(".modal button").click(function(){
-        $(".modal").hide();
-    });
-
-    //.modal밖에 클릭시 닫힘
+function closeModalByClickOtherTab() {
     $(".modal").click(function (e) {
         if (e.target.className != "modal") {
             return false;
@@ -106,4 +106,35 @@ $(function(){
             $(".modal").hide();
         }
     });
-});
+}
+
+function closeModalByButton() {
+    $(".modal button").click(function () {
+        $(".modal").hide();
+    });
+}
+
+function executeImageModal() {
+    $(function () {
+        $(img).click(function () {
+            $(".modal").show();
+            // 해당 이미지 가겨오기
+            let imgSrc = $(this).children("img").attr("src");
+            let imgAlt = $(this).children("img").attr("alt");
+            $(".modalBox img").attr("src", imgSrc);
+            $(".modalBox img").attr("alt", imgAlt);
+
+            // 해당 이미지 텍스트 가져오기
+            let imgTit = $(this).children("p").text();
+            $(".modalBox p").text(imgTit);
+
+            // 해당 이미지에 alt값을 가져와 제목으로
+            //$(".modalBox p").text(imgAlt);
+        });
+
+        //.modal안에 button을 클릭하면 .modal닫기
+        closeModalByButton();
+        //.modal밖에 클릭시 닫힘
+        closeModalByClickOtherTab();
+    });
+}
