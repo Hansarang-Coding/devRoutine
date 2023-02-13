@@ -19,5 +19,4 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("SELECT p.user FROM Like l INNER JOIN l.certification c INNER JOIN " +
             "c.participation p ON l.certification.id = :id")
     User findUserByLikeParam(@Param("id") Long id);
-
 }

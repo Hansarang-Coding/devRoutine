@@ -16,17 +16,19 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 public class InviterResponse {
+    private Long inviteId;
     private Long challengeId;
     private String title;
-    private String inviteeName;
-    private String inviteePicture;
+    private String inviterName;
+    private String inviterPicture;
 
     @QueryProjection
-    public InviterResponse(Long challengeId, String title, String inviteeName, String inviteePicture) { // 생성자
+    public InviterResponse(Long inviteId, Long challengeId, String title, String inviterName, String inviterPicture) { // 생성자
+        this.inviteId=inviteId;
         this.challengeId=challengeId;
         this.title=title;
-        this.inviteeName=inviteeName;
-        this.inviteePicture=inviteePicture;
+        this.inviterName=inviterName;
+        this.inviterPicture=inviterPicture;
     }
 
     public static List<InviterResponse> toList(List<Challenge> challenges) {

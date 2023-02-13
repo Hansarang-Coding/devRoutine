@@ -26,6 +26,7 @@ public class AlarmResponse {
     //알림을 받는 사람
     private Long userId;
 
+    private Long fromUserId;
 
     private LocalDateTime createdAt;
 

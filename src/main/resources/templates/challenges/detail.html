@@ -40,7 +40,7 @@
     </div>
     <form sec:authorize="isAuthenticated()" th:if="${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:action="@{|/challenges/${challenge.getId()}|}" method="post">
         <div class="d-grid gap-2" style="margin-right: 100px; margin-left: 100px; margin-top: 20px">
-            <button class="btn btn-outline-primary" type="submit">참여하기</button>
+            <button class="btn btn-outline-success" type="submit">참여하기</button>
         </div>
     </form>
 </body>

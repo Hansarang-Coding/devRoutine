@@ -38,7 +38,7 @@ public class CommentService {
         Certification certification = findCertification(certificationId);
         User user = findUserByOauthId(oauthId);
         Comment savedComment = commentRepository.save(Comment.createComment(request.getComment(), certification, user));
-        saveCommentAlarm(certificationId, user);
+        saveCommentAlarm(certification.getId(), savedComment.getId(), user.getId());
         return CommentCreateResponse.of(savedComment);
     }
 
@@ -51,6 +51,7 @@ public class CommentService {
     public CommentDeleteResponse deleteComment(Long certificationId, Long commentId, String oauthId) {
         validateCertificationExists(certificationId);
         Comment comment = getCommentByAuthorizedUser(commentId, oauthId);
+        alarmRepository.deleteByTargetIdAndFromUserId(comment.getId(), findUserByOauthId(oauthId).getId());
         comment.deleteComment();
         return CommentDeleteResponse.of(ResponseMessage.COMMENT_DELETE_SUCCESS.getMessage(), commentId);
     }
@@ -92,10 +93,10 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
     }
 
-    public void saveCommentAlarm(Long certificationId, User fromUser) {
+    public void saveCommentAlarm(Long certificationId, Long commentId, Long fromUserId) {
         User user = commentRepository.findUserByCommentParam(certificationId);
-        alarmRepository.save(Alarm.createAlarm(fromUser.getId(),
-                AlarmType.NEW_LIKE_ON_CERTIFICATION,AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), user));
+        alarmRepository.save(Alarm.createAlarm(commentId,
+                AlarmType.NEW_COMMENT_ON_CERTIFICATION,AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), fromUserId, user));
     }
 
 }

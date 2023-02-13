@@ -69,16 +69,6 @@ public class ChallengeService {
         List<Challenge> challenges = challengeRepository.findSearchTitleSortById(keyword);
         return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
     }
-    //무한스크롤
-    /*public List<ChallengeDto> findAllChallenge(Long challengeId, int size) {
-        List<Challenge> challenges = challengeRepository.findAllSortById(challengeId, PageRequest.of(0, size));
-        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
-    }
-
-    public List<ChallengeDto> findAllChallengeTitle(Long challengeId, int size, String keyword) {
-        List<Challenge> challenges = challengeRepository.findSearchTitleSortById(challengeId, keyword, PageRequest.of(0, size));
-        return ChallengeDto.toList(challenges, getChallengeHashTagResponse(challenges));
-    }*/
 
     public ChallengeDto findByChallengeId(Long challengeId) {
         Challenge challenge = getChallenge(challengeId);

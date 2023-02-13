@@ -8,7 +8,7 @@
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
     <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
-            <input type="text" hidden th:value="${participationChallenge.getId()}" id="challenge-id">
+            <input type="text" hidden th:value="${participationChallenge.getChallengeId()}" id="challenge-id">
             <h1>[[${participationChallenge.getTitle()}]]</h1>
             <div class="btn-group" style="margin-left: 30px;">
                 <div th:each="hashtag: ${participationChallenge.getChallengeHashTag()}">
@@ -40,8 +40,8 @@
                                 <div class="btn-group" id="user" style="margin-bottom: 10px;">
                                     <img th:src="${follower.getPicture()}" width="50px" style="margin-right: 10px" alt="profile_image">
                                     <p style="margin-right: 120px">[[${follower.getName()}]]</p>
-                                    <input type="text" hidden th:value="${follower.getId()}" id="user-id">
-                                    <button type="button" id="invite-btn" class="btn btn-light">초대</button>
+                                    <input type="text" hidden th:value="${follower.getId()}" th:id="user-id+${followerStat.index}">
+                                    <button type="button" name="inviteBtn" th:attrappend="id=${followerStat.index}" class="btn btn-light">초대</button>
                                 </div>
                                 <hr style="border: solid 0.5px gray; margin-bottom: 10px">
                             </div>
@@ -70,11 +70,11 @@
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <div class="row">
                     <p class="col-md-auto" id="username">[[${entry.getKey()}]]</p>
-                    <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto" id="more" style=" margin-bottom: 10px">더보기</button>
+                    <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto more" name="moreBtn" th:attrappend="id=${entryStat.index}" style="font-size: 12px; width: 70px; height: 30px; margin-bottom: 10px">더보기</button>
                 </div>
                 <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
                 <div th:unless="${entry.getValue().size()}==0">
-                    <div id="cert-list" class="row row-cols-1 row-cols-md-3">
+                    <div th:id="cert-list+${entryStat.index}" class="row row-cols-1 row-cols-md-3">
                         <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification, num: ${entry.getValue()}" th:if="${num.count}<=5">
                             <a th:href="@{|/certification/${certification.getCertificationId()}|}">
                                 <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="cert-all" class="row row-cols-1 row-cols-md-3" style="display: none;">
+                    <div th:id="cert-all+${entryStat.index}" class="row row-cols-1 row-cols-md-3" style="display: none;">
                         <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
                             <a th:href="@{|/certification/${certification.getCertificationId()}|}">
                                 <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
@@ -95,17 +95,60 @@
                         </div>
                     </div>
                 </div>
+                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
             </div>
         </div>
     </div>
     <!-- 이미 진행중이면 버튼 안보여야함 -->
     <form th:if="(${challenge.getFromUserId()} != ${user.getId()}) and ${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:action="@{|/challenges/${challenge.getId()}/cancel|}" method="get">
         <div class="d-grid gap-2" style="margin-right: 100px; margin-left: 100px; margin-top: 20px">
-            <button class="btn btn-outline-primary" type="submit">참여취소 하기</button>
+            <button class="btn btn-outline-danger" type="submit">참여취소 하기</button>
         </div>
     </form>
 </body>
-<script type="text/javascript" th:src="@{/js/invite.js}"></script>
+<script>
+    $("button[name=inviteBtn]").click(function (){
+        var index = $(this).attr("id");
+        let challengeId = $("#challenge-id").val();
+        let userId = $("#user-id"+index).val();
+        inviteUser(userId, challengeId);
+    });
+
+    $("button[name=moreBtn]").click(function(){
+        var index = $(this).attr("id");
+        let btnElement=document.getElementById(index);
+        console.log(index);
+        moreEvent(index, btnElement)
+    });
+
+    function moreEvent(index, btnElement){
+        console.log("moreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("cert-list"+index).style.display='none';
+            document.getElementById("cert-all"+index).style.display='';
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("cert-all"+index).style.display='none';
+            document.getElementById("cert-list"+index).style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+    function inviteUser(userId, challengeId) {
+        $.ajax({
+            url: "/api/v1/challenges/"+challengeId+"/invite/"+userId,
+            type: "POST",
+            data: JSON.stringify(userId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("초대가 완료되었습니다.");
+            location.href = "/challenges/"+challengeId;
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+</script>
 </html>
 <style>
     h1{
@@ -134,10 +177,5 @@
     #edit{
         margin-top: 10px;
         margin-bottom: 20px;
-    }
-    #more{
-        font-size: 12px;
-        width: 70px;
-        height: 30px
     }
 </style>

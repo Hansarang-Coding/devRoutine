@@ -24,13 +24,14 @@ public class Alarm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long fromId;
+    private Long targetId;
 
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
 
     private String message;
 
+    private Long fromUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -40,9 +41,10 @@ public class Alarm {
     private LocalDateTime createdAt;
 
     public static Alarm createAlarm(
-            Long fromId,AlarmType alarmType, String message, User user) {
+            Long targetId,AlarmType alarmType, String message, Long fromUserId, User user) {
         return Alarm.builder()
-                .fromId(fromId)
+                .targetId(targetId)
+                .fromUserId(fromUserId)
                 .alarmType(alarmType)
                 .message(message)
                 .user(user)
