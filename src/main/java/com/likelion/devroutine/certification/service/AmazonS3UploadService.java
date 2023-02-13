@@ -1,20 +1,21 @@
 package com.likelion.devroutine.certification.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.likelion.devroutine.certification.dto.amazons3.FileUploadResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,48 +23,47 @@ import java.util.Optional;
 public class AmazonS3UploadService {
 
     private final AmazonS3Client amazonS3Client;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Transactional
-    public FileUploadResponse uploadFiles(Long userId, MultipartFile multipartFile, String dirName) throws IOException {
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("Error: MultipartFile -> File로 전환이 실패했습니다."));
-        return upload(userId, uploadFile, dirName);
-    }
+    public FileUploadResponse upload(MultipartFile uploadFile, String dirName) {
+        String fileType = uploadFile.getOriginalFilename().substring(uploadFile.getOriginalFilename().lastIndexOf("."));
+        String randomName = UUID.randomUUID().toString() + fileType; // 파일 중복되지 않게 고유식별자 생성
 
-    @Transactional
-    public FileUploadResponse upload(Long certificationId, File uploadFile, String filePath) {
-        String fileName = filePath + "/" + certificationId + uploadFile.getName(); // S3에 저장된 파일 이름
-        String uploadImageUrl = putS3(uploadFile, fileName); // S3로 업로드
-        log.info("uploadImageUrl = " + uploadImageUrl);
-        removeNewFile(uploadFile);
+        String fileName = dirName + "/" + randomName;
+        String uploadImageUrl = putS3(uploadFile, fileName);
         return new FileUploadResponse(fileName, uploadImageUrl);
     }
 
+    public void deleteFileFromS3(String key) {
+        //key는 경로, 파일이름 풀로 ex) static/test.txt
+        deleteFile(key);
+    }
+
     // S3로 업로드
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(
-                CannedAccessControlList.PublicRead));
+    private String putS3(MultipartFile uploadFile, String fileName) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(uploadFile.getContentType());
+        metadata.setContentLength(uploadFile.getSize());
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile.getInputStream(), metadata).withCannedAcl(CannedAccessControlList.PublicRead));
+
+        } catch (IOException e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
-    private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            log.info("파일이 삭제되었습니다.");
-        } else {
-            log.info("파일이 삭제되지 못했습니다.");
+    private void deleteFile(String key) {
+        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, key);
+        try {
+            amazonS3Client.deleteObject(deleteObjectRequest);
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            e.printStackTrace();
         }
-    }
-
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
-        }
-        return Optional.empty();
     }
 }
