@@ -95,6 +95,7 @@ public class CommentService {
 
     public void saveCommentAlarm(Long certificationId, Long commentId, Long fromUserId) {
         User user = commentRepository.findUserByCommentParam(certificationId);
+        if(fromUserId.equals(user.getId())) return;
         alarmRepository.save(Alarm.createAlarm(commentId,
                 AlarmType.NEW_COMMENT_ON_CERTIFICATION,AlarmType.NEW_COMMENT_ON_CERTIFICATION.getMessage(), fromUserId, user));
     }

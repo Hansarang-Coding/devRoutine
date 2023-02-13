@@ -76,10 +76,11 @@ public class LikeService {
                 .orElseThrow(CertificationNotFoundException::new);
     }
 
-    public void saveLikeAlarm(Long certificationId, Long likeId, Long fromId) {
+    public void saveLikeAlarm(Long certificationId, Long likeId, Long fromUserId) {
         User user = likeRepository.findUserByLikeParam(certificationId);
+        if(fromUserId.equals(user.getId())) return;
         alarmRepository.save(Alarm.createAlarm(likeId,
-                AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), fromId, user));
+                AlarmType.NEW_LIKE_ON_CERTIFICATION, AlarmType.NEW_LIKE_ON_CERTIFICATION.getMessage(), fromUserId, user));
     }
 
 }
