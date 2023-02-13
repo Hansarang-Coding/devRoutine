@@ -123,6 +123,8 @@ public class ParticipationService {
         List<Follow> followers=followRepository.findByFollowerId(user.getId());
         followers = followers.stream()
                 .filter(follow -> participationRepository.findByChallengeAndUser(challenge, follow.getFollowing()).isEmpty())
+                .filter(follow-> inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), follow.getFollowing().getId())
+                        .isEmpty())
                 .collect(Collectors.toList());
         return FollowerResponse.of(followers);
     }
