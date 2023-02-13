@@ -2,16 +2,30 @@ $('#comment-btn').on("click", function () {
     let certificationId = $("#cert-id").val();
     createComment(certificationId);
 });
-
+/*
 $('#comment-upt-btn').on("click", function () {
     let certificationId = $("#cert-id2").val();
     let commentId = $("#comment-id2").val();
     updateComment(certificationId,commentId);
+});*/
+
+$("button[name=comment-upt-btn]").click(function(){
+    var index=$(this).attr("id");
+    let certificationId=$("#cert-id2").val();
+    let commentId=$('#comment-id2'+index).val();
+    updateComment(index, certificationId, commentId);
 });
 
-$('#comment-del-btn').on("click", function () {
+/*$('#comment-del-btn').on("click", function () {
     let certificationId = $("#cert-id").val();
     let commentId = $("#comment-id").val();
+    deleteComment(certificationId,commentId);
+});*/
+
+$("button[name=comment-del-btn]").click(function (){
+    var index=$(this).attr("id");
+    let certificationId=$("#cert-id").val();
+    let commentId=$('#comment-id'+index).val();
     deleteComment(certificationId,commentId);
 });
 
@@ -39,9 +53,9 @@ function createComment(certificationId) {
     });
 }
 
-function updateComment(certificationId, commentId) {
+function updateComment(index, certificationId, commentId) {
     let commentDto = {
-        comment: $("#comment-content-upt").val()
+        comment: $('#comment-content-upt'+index).val()
     };
     $.ajax({
         url: "/api/v1/certification/" + certificationId + "/comments/" + commentId,

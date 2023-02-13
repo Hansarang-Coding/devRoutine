@@ -6,108 +6,109 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
-
-<div class="d-flex justify-content-center">
-    <div th:class="cert-card" class="card text-center col-lg-6 col-sm-12 mt-6" style="width: 18rem;">
-        <img th:src="${certification.getImageUrl()}" class="card-img-top img-fluid" alt="깃허브 인증">
-        <div class="card-body">
-            <p class="card-text" th:text="${certification.getDescription()}"></p>
-        </div>
-    </div>
-</div>
-
-<!-- 팝업 될 곳 -->
-<div class="modal">
-    <button>&times;</button>
-    <div class="modalBox">
-        <img src="" alt="">
-        <p></p>
-    </div>
-</div>
-
-<section>
-    <div class="d-flex justify-content-center mt3-l">
-        <img id="like-img" th:src= "${isPressed == true ?
-             '/assets/like_click.png' : '/assets/like_empty.png'}"
-             width="30" height="30"/>
-        <div id="like-cnt" th:value="${likeCount}" th:text="${likeCount}"></div>
-    </div>
-
-    <!--  댓글  -->
-    <br>
-    <div class="d-flex">
-        <h3 class="comment text-left justify-start">댓글</h3>
-        <a th:href="@{/certification}">
-            <button type="button" class="return btn btn-light" style="float: right">돌아가기</button>
-        </a>
-    </div>
-    <hr>
-</section>
-<div sec:authorize="isAuthenticated()">
-    <form method="post">
-        <div class="input-group" style="width:auto">
-            <label class="form-label mt-4" hidden>댓글 작성</label>
-            <input type="text" class="form-control" id="commentContent" name="commentContent"
-                   placeholder="댓글을 입력해주세요">
-            <input type="text" hidden th:value="${certificationId}" id="cert-id">
-            <button type="button" id="comment-btn" class="btn btn-light">작성</button>
-            <div>
+<div style="margin-top: 20px; margin-left: 15px; margin-right: 15px;">
+    <div class="d-flex justify-content-center">
+        <div th:class="cert-card" class="card text-center col-lg-6 col-sm-12 mt-6" style="width: 18rem;">
+            <img th:src="${certification.getImageUrl()}" class="card-img-top img-fluid" alt="깃허브 인증" style="margin-bottom: 10px;">
+            <div class="card-body text-center" style="margin-bottom: 10px;">
+                <p class="card-text" th:text="${certification.getDescription()}"></p>
             </div>
-            <br>
-        </div>
-    </form>
-</div>
-
-<section>
-    <div id="commentTable">
-        <div th:each="comment:${comments}">
-            <form method="POST">
-                <input type="hidden" id="comment-id" name="CommentNum" th:value="${comment.id}">
-                <div>
-                    <input type="button" class="btn p-0 btn-md" name="commentID"/>
-                </div>
-                <ul>
-                    <li id="writer" th:text="|${comment.userName}(작성자)|"
-                        th:if="${#authentication.name} == ${comment.oauthId}"></li>
-
-                    <li id="username" th:text="${comment.userName}"
-                        th:if="${#authentication.name} != ${comment.oauthId}"></li>
-                    <li id="createdAt" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></li>
-                    <li id="comment" th:text="${comment.comment}"></li>
-                </ul>
-                <div class="text-right">
-                    <button type="button" class="btn btn-dark"
-                            data-bs-toggle="collapse" th:attr="data-bs-target=|#collapse-comment${comment.id}|"
-                            aria-expanded="false" aria-controls="collapseExample"
-                            th:if="${#authentication.name} == ${comment.oauthId}">수정
-                    </button>
-                    <button id="comment-del-btn" type="button"                                  class="btn btn-dark"
-                            th:if="${#authentication.name} == ${comment.oauthId}">삭제</button>
-                </div>
-
-                <div class="collapse" th:id="'collapse-comment'+${comment.id}"
-                     th:if="${#authentication.name} == ${comment.oauthId}">
-                    <div class="card card-body">
-                        <form method="post">
-                            <div class="input-group" style="width:auto;">
-                                <label class="form-label mt-4" hidden>댓글 작성</label>
-                                <input type="text" class="form-control" id="comment-content-upt"
-                                       placeholder="댓글을 입력해주세요">
-                                <input type="text" hidden th:value="${comment.id}" id="comment-id2">
-                                <input type="text" hidden th:value="${certificationId}" id="cert-id2">
-                                <button type="button" id="comment-upt-btn" class="btn btn-light">작성</button>
-                                <div>
-                                </div>
-                                <br>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </form>
-            <hr />
         </div>
     </div>
-</section>
+
+    <!-- 팝업 될 곳 -->
+    <div class="modal">
+        <button>&times;</button>
+        <div class="modalBox">
+            <img src="" alt="">
+            <p></p>
+        </div>
+    </div>
+
+    <section>
+        <div class="d-flex justify-content-center mt3-l">
+            <img id="like-img" th:src= "${isPressed == true ?
+                 '/assets/like_click.png' : '/assets/like_empty.png'}"
+                 width="30" height="30"/>
+            <div id="like-cnt" th:value="${likeCount}" th:text="${likeCount}"></div>
+        </div>
+
+        <!--  댓글  -->
+        <br>
+        <div class="d-flex">
+            <h3 class="comment text-left justify-start">댓글</h3>
+            <a th:href="@{/certification}">
+                <button type="button" class="return btn btn-light" style="float: right">돌아가기</button>
+            </a>
+        </div>
+        <hr>
+    </section>
+    <div sec:authorize="isAuthenticated()">
+        <form method="post">
+            <div class="input-group" style="width:auto">
+                <label class="form-label mt-4" hidden>댓글 작성</label>
+                <input type="text" class="form-control" id="commentContent" name="commentContent"
+                       placeholder="댓글을 입력해주세요">
+                <input type="text" hidden th:value="${certificationId}" id="cert-id">
+                <button type="button" id="comment-btn" class="btn btn-light">작성</button>
+                <div>
+                </div>
+                <br>
+            </div>
+        </form>
+    </div>
+
+    <section>
+        <div id="commentTable">
+            <div th:each="comment:${comments}">
+                <form method="POST">
+                    <input type="hidden" th:id="comment-id+${commentStat.index}" name="CommentNum" th:value="${comment.id}">
+                    <div>
+                        <input type="button" class="btn p-0 btn-md" name="commentID"/>
+                    </div>
+                    <ul>
+                        <li id="writer" th:text="|${comment.userName}(작성자)|"
+                            th:if="${#authentication.name} == ${comment.oauthId}"></li>
+
+                        <li id="username" th:text="${comment.userName}"
+                            th:if="${#authentication.name} != ${comment.oauthId}"></li>
+                        <li id="createdAt" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></li>
+                        <li id="comment" th:text="${comment.comment}"></li>
+                    </ul>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-dark"
+                                data-bs-toggle="collapse" th:attr="data-bs-target=|#collapse-comment${comment.id}|"
+                                aria-expanded="false" aria-controls="collapseExample"
+                                th:if="${#authentication.name} == ${comment.oauthId}">수정
+                        </button>
+                        <button name="comment-del-btn" type="button" th:attrappend="id=${commentStat.index}" class="btn btn-dark"
+                                th:if="${#authentication.name} == ${comment.oauthId}">삭제</button>
+                    </div>
+
+                    <div class="collapse" th:id="'collapse-comment'+${comment.id}"
+                         th:if="${#authentication.name} == ${comment.oauthId}">
+                        <div class="card card-body">
+                            <form method="post">
+                                <div class="input-group" style="width:auto;">
+                                    <label class="form-label mt-4" hidden>댓글 작성</label>
+                                    <input type="text" class="form-control" th:id="comment-content-upt+${commentStat.index}"
+                                           placeholder="댓글을 입력해주세요">
+                                    <input type="text" hidden th:value="${comment.id}" th:id="comment-id2+${commentStat.index}">
+                                    <input type="text" hidden th:value="${certificationId}" th:id="cert-id2">
+                                    <button type="button" name="comment-upt-btn" th:attrappend="id=${commentStat.index}" class="btn btn-light">작성</button>
+                                    <div>
+                                    </div>
+                                    <br>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </form>
+                <hr />
+            </div>
+        </div>
+    </section>
+</div>
 </body>
 <script type="text/javascript" th:src="@{/js/custom.js}"></script>
 </html>
