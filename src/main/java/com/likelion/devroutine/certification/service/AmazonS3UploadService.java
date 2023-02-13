@@ -72,6 +72,6 @@ public class AmazonS3UploadService {
             }
             return Optional.of(convertFile);
         }
-        return Optional.empty();
+        return Optional.of(convertFile);
     }
 }
