@@ -61,8 +61,8 @@ public class AmazonS3UploadService {
 
     private Optional<File> convert(MultipartFile file) throws IOException {
         log.info("start convert method");
-        log.info("convertFile : "+System.getProperty("user.dir") + "/" + file.getOriginalFilename());
-        File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
+        log.info("convertFile : "+file.getOriginalFilename());
+        File convertFile = new File(file.getOriginalFilename());
         log.info("convertFile : " + convertFile);
         if (convertFile.createNewFile()) {
             log.info("convertFile create if문");
