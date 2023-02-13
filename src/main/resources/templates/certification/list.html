@@ -23,8 +23,12 @@
             </div>
             <div class="card" th:each="p : ${participations}" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">[[${p.title}]]</h5>
-                    <p class="card-text" style="font-size: 13px">[[${p.description}]]</p>
+                    <div>
+                        <h5 class="card-title">[[${p.title}]]</h5>
+                        <p class="card-text" style="font-size: 13px; margin-bottom: 10px;">[[${p.description}]]</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
                     <a th:href="@{/certification/post/{participationId}(participationId=${p.id})}"
                        class="btn btn-success active" role="button">인증하기</a>
                 </div>
