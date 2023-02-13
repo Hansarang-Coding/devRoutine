@@ -3,7 +3,7 @@ stages:
 
 package:
   only:
-    - "#37-s3-upload"
+    - develop
   image: docker:latest
   stage: dockerbuild-push
   services:
