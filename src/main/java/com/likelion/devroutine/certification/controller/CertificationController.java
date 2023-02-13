@@ -35,11 +35,11 @@ public class CertificationController {
     @GetMapping("/certification/post/{participationId}")
     public String getCertificationForm(@PathVariable("participationId") Long participationId,
                                        Model model, Authentication authentication) {
-        try{
+        try {
             CertificationFormResponse certificationFormInfo = certificationService
                     .findCertificationFormInfo(participationId, authentication.getName());
             model.addAttribute("participation", certificationFormInfo);
-        }catch(Exception e){
+        } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "error/error";
         }
@@ -60,20 +60,16 @@ public class CertificationController {
     public String createCertification(@PathVariable Long participationId,
                                       CertificationCreateRequest request,
                                       Authentication authentication) {
-        try {
-            FileUploadResponse certification = s3UploadService
-                    .uploadFiles(participationId, request.getCertImage(), "certificationFile");
-            certificationService.createCertification(participationId, request, authentication.getName(), certification.getUploadImageUrl());
-            return "redirect:/certification";
-        } catch (IOException e) {
-            return "error/error";
-        }
+        FileUploadResponse response = s3UploadService
+                .upload(request.getCertImage(), "certificationFile");
+        certificationService.createCertification(participationId, request, authentication.getName(), response.getUploadImageUrl());
+        return "redirect:/certification";
     }
 
     @GetMapping("/certification/{certificationId}")
     public String getCertificationDetail(@PathVariable Long certificationId, Model model,
                                          Authentication authentication,
-                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         model.addAttribute("certification", certificationService
                 .findCertificationDetail(certificationId));
         model.addAttribute("comments", commentService.findAll(certificationId, pageable));
