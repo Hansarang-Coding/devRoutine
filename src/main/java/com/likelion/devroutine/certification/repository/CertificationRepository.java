@@ -8,11 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface CertificationRepository extends JpaRepository<Certification, Long> {
+public interface CertificationRepository extends JpaRepository<Certification, Long>, CertificationRepositoryCustom {
     List<Certification> findByParticipationIdOrderByCreatedAtDesc(Long participationId);
-
-    @Query("select c from Certification c order by c.createdAt desc")
-    List<Certification> findAllCertification();
 
     List<Certification> findByParticipationId(Long participationId);
 
