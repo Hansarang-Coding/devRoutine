@@ -79,11 +79,16 @@ public class ParticipationService {
         }
         Participation participation =getParticipant(user, challenge);
         isProgressChallenge(challenge.getStartDate());
+        deleteCertification(participation);
         participationRepository.delete(participation);
         return ParticipationResponse.builder()
                 .challengeId(challenge.getId())
                 .message(ResponseMessage.CHALLENGE_CANCEL_SUCCESS.getMessage())
                 .build();
+    }
+
+    private void deleteCertification(Participation participation) {
+        certificationRepository.deleteAllByParticipationId(participation.getId());
     }
 
     @Transactional
@@ -193,9 +198,27 @@ public class ParticipationService {
         List<Participation> participations=participationRepository.findAllByUserId(user.getId());
         List<Challenge> participateChallenges=participations.stream()
                 .filter(participation -> challengeRepository.findById(participation.getChallenge().getId()).isPresent())
+                .filter(participation -> challengeRepository.findById(participation.getChallenge().getId()).get().getEndDate().isAfter(LocalDate.now()))
                 .map(participation -> challengeRepository.findById(participation.getChallenge().getId()).get())
                 .collect(Collectors.toList());
+        log.info("참여중인 챌린지 크기 : "+participateChallenges.size());
         return ChallengeDto.toList(participateChallenges, getChallengeHashTagResponse(participateChallenges));
+    }
+    public List<ChallengeDto> findAllFinishChallenge(String oauthId) {
+        User user=getUser(oauthId);
+        List<Participation> participations=participationRepository.findAllFinishParticipation(user.getId());
+        List<Challenge> participationChallenges=participations.stream()
+                .filter(participation -> challengeRepository.findById(participation.getChallenge().getId()).isPresent())
+                .map(participation -> challengeRepository.findById(participation.getChallenge().getId()).get())
+                .collect(Collectors.toList());
+        log.info("참여완료 챌린지 크기 : "+participationChallenges.size());
+        return ChallengeDto.toList(participationChallenges, getChallengeHashTagResponse(participationChallenges));
+    }
+    public List<ChallengeDto> findCreatedChallenge(String oauthId) {
+        User user=getUser(oauthId);
+        List<Challenge> createdChallenge=challengeRepository.findAllByUserId(user.getId());
+        log.info("개설한 챌린지 크기 : "+createdChallenge.size());
+        return ChallengeDto.toList(createdChallenge, getChallengeHashTagResponse(createdChallenge));
     }
 
     private Map<Long, List<ChallengeHashTagResponse>> getChallengeHashTagResponse(List<Challenge> challenges){

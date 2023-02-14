@@ -15,4 +15,6 @@ public interface CertificationRepository extends JpaRepository<Certification, Lo
     List<Certification> findAllCertification();
 
     List<Certification> findByParticipationId(Long participationId);
+
+    void deleteAllByParticipationId(Long participationId);
 }
