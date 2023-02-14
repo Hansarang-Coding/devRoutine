@@ -53,19 +53,6 @@
         <div style="margin-top: 20px; margin-bottom: 20px; margin-left:30px">
             <p>[[${participationChallenge.getDescription()}]]</p>
         </div>
-        <div th:if="${challenge.getAuthenticationType().name().equals('GITHUB')}" style="margin-left: 20px">
-            <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
-                <p class="username">[[${entry.getKey()}]]</p>
-                <div class="row row-cols-1 row-cols-md-3" >
-                    <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
-                    <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
-                        <div class="card-body">
-                            <p class="card-title" id="description">[[${certification.getDescription}]]</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <div class="row">
