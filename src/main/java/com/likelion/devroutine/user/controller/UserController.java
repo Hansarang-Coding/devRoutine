@@ -24,4 +24,13 @@ public class UserController {
         model.addAttribute("profile", profile);
         return "user/profile";
     }
+
+    @GetMapping("profile/{id}")
+    public String getOther(Authentication authentication,
+                             @PathVariable Long userId,
+                             Model model) {
+        MyProfileResponse profile = userService.getOther(authentication.getName(), userId);
+        model.addAttribute("profile", profile);
+        return "user/other";
+    }
 }
