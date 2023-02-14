@@ -76,7 +76,7 @@ public class CertificationService {
 
     public List<ParticipationResponse> findAllParticipationByUser(String oauthId) {
         User user = findUser(oauthId);
-        List<Participation> participations = participantRepository.findAllByUserId(user.getId());
+        List<Participation> participations = participantRepository.findProgressingChallengeByUserId(user.getId());
         return ParticipationResponse.of(participations);
     }
 

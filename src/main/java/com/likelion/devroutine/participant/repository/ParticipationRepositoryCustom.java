@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface ParticipationRepositoryCustom {
     List<ParticipationSortResponse> findAllByChallengeOrderByCertificationCnt(Challenge challenge);
+    List<Participation> findAllFinishParticipation(Long userId);
+    List<Participation> findAllByUserId(Long userId);
+    List<Participation> findProgressingChallengeByUserId(Long userId);
 }
