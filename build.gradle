@@ -2,11 +2,13 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
+
 }
 
 group = 'com.likelion'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+
 
 configurations {
     compileOnly {
@@ -21,13 +23,41 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.0')
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
+    implementation 'org.springframework.security:spring-security-test:5.7.3'
 
-tasks.named('test') {
-    useJUnitPlatform()
+    //springdoc
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    //OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // spring에서 redis에 대한 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // spring에서 redis를 session storage로 사용하기 위한 의존성
+    implementation 'org.springframework.session:spring-session-data-redis'
+
+    //Amazon S3
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
+    implementation "com.amazonaws:aws-java-sdk-s3:1.12.395"
+
+    //template Engine
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE"
+
+    //querydsl dependencies 추가(스프링부트 3.0 이상)
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }

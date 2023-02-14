@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>인증 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+
+<section class="container text-center mt-6">
+    <div class="card text-center mt-6 col-6 mx-auto">
+        <div class="card-header">
+            [[${participation.title}]]
+        </div>
+        <div class="card-body">
+            <h3>
+                <p class="card-title" th:text="${participation.description}"></p>
+            </h3>
+            <span class="card-text" th:text="|${participation.startDate} - ${participation.endDate}|"></span>
+            <form th:action="@{/certification/post/{participationId}(participationId=${participation.id})}"
+                  method="post"
+                  enctype="multipart/form-data">
+                <div class="row g-3">
+                    <hr/>
+                    <div class="mb-3">
+                        <label for="imgFile" class="form-label">인증 사진 업로드</label>
+                        <input class="form-control" type="file" name="certImage" id="imgFile">
+                    </div>
+
+                    <div class="col-12">
+                        <label for="text" class="form-label">설명</label>
+                        <input type="text" class="form-control" name="description" id="text" placeholder="인증 설명을 입력하세요.">
+                    </div>
+
+                    <div id="liveAlertPlaceholder" class="col-6 mx-auto">
+                        <button id="liveAlertBtn" class="btn btn-success active" type="submit">인증하기</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+<script th:inline="javascript">
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+
+    const alert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+        alertPlaceholder.append(wrapper)
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+        alertTrigger.addEventListener('click', () => {
+            alert('인증에 성공하였습니다!', 'success')
+        })
+    }
+</script>
+</html>

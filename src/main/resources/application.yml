@@ -2,9 +2,20 @@ server.port: 8080
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ec2-54-180-80-4.ap-northeast-2.compute.amazonaws.com/devroutine?serverTimezone=Asia/Seoul
     username: root
     password: 123456
+
+  profiles:
+    include:
+      - aws
+      - credential
+# Redis 설정
+  data:
+    redis:
+      host: localhost
+      port: 1234
+  session:
+    storage-type: redis
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -12,8 +23,27 @@ spring:
     database: mysql
     show-sql: true
     hibernate:
-      dda-auto: update
-  jwt:
-    token:
-      secret: hello
+      ddl-auto: update
 
+servlet:
+  multipart:
+    enabled: true
+    max-file-size: 50MB
+    max-request-size: 50MB
+
+# Swagger (springdoc-openapi-ui)
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html                              # swagger-ui.html을 기본 경로로 설정
+    operations-sorter: method                           # method, alpha
+    display-request-duration: true                      # 요청 시간 표시
+    # filter: true
+    # tags-sorter: alpha
+    # oauth2-redirect-url: /swagger-ui/oauth2-redirect.html
+
+  api-docs:
+    path: /api-docs                                     # API 문서 경로 (Json 형태)
+  paths-to-match: /api/**                               # Swagger 문서에 표시할 경로
+  show-actuator: true                                   # Actuator API 문서 표시
+  default-produces-media-type: application/json         # 기본 응답 타입
+  default-consumes-media-type: application/json         # 기본 요청 타입

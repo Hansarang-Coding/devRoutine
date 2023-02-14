@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>챌린지 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <div class="card text-center" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
+        <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
+            <h1>[[${challenge.getTitle()}]]</h1>
+        </div>
+        <p class="text-muted" id="period">[[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+        <div style="margin-top: 20px; margin-bottom: 20px; margin-left:30px">
+            <p>[[${challenge.getDescription()}]]</p>
+        </div>
+        <fieldset class="form-group">
+            <div style="text-align: center">
+                <p>인증 방식</p>
+                <div class="form-check" style="display: inline-block">
+                    <input class="form-check-input" type="checkbox" value="GITHUB" id="github" th:checked="${challenge.getAuthenticationType().name().equals('GITHUB')}" disabled>
+                    <label class="form-check-label" for="github">
+                        GITHUB
+                    </label>
+                </div>
+                <div class="form-check" style="display: inline-block; margin-left: 30px;">
+                    <input class="form-check-input" type="checkbox" value="PICTURE" id="image" th:checked="${challenge.getAuthenticationType().name().equals('PICTURE')}" disabled>
+                    <label class="form-check-label" for="image">
+                        이미지
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+        <div class="btn-group" style="margin-top: 20px; margin-left: 30px; margin-bottom: 20px">
+            <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                <button class="btn btn-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</button>
+            </div>
+        </div>
+    </div>
+    <form sec:authorize="isAuthenticated()" th:if="${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')} > ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" th:action="@{|/challenges/${challenge.getId()}|}" method="post">
+        <div class="d-grid gap-2" style="margin-right: 100px; margin-left: 100px; margin-top: 20px">
+            <button class="btn btn-outline-success" type="submit">참여하기</button>
+        </div>
+    </form>
+</body>
+</html>
+<style>
+    h1{
+        margin-top: 10px;
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+    p{
+        margin-top: 10px;
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    #period{
+        margin-top: 10px;
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+</style>
