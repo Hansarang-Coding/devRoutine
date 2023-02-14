@@ -3,7 +3,6 @@ package com.likelion.devroutine.participant.service;
 import com.likelion.devroutine.alarm.domain.Alarm;
 import com.likelion.devroutine.alarm.enumurate.AlarmType;
 import com.likelion.devroutine.alarm.repository.AlarmRepository;
-import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.CertificationResponse;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
 import com.likelion.devroutine.challenge.domain.Challenge;
@@ -12,6 +11,7 @@ import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
+import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.follow.domain.Follow;
 import com.likelion.devroutine.follow.dto.FollowerResponse;
 import com.likelion.devroutine.follow.exception.FollowingNotFoundException;
@@ -27,13 +27,12 @@ import com.likelion.devroutine.participant.domain.Participation;
 import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.dto.ParticipationSortResponse;
+import com.likelion.devroutine.participant.dto.PopularParticipationResponse;
 import com.likelion.devroutine.participant.enumerate.ResponseMessage;
-import com.likelion.devroutine.challenge.repository.ChallengeRepository;
 import com.likelion.devroutine.participant.exception.ParticipationNotFoundException;
 import com.likelion.devroutine.participant.exception.RejectCancelException;
 import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.user.domain.User;
-import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import com.likelion.devroutine.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -143,6 +143,10 @@ public class ParticipationService {
                         participation -> participation.getUsername(),
                         participation -> CertificationResponse.of(certificationRepository.findByParticipationIdOrderByCreatedAtDesc(participation.getParticipationId()))
                 ));
+    }
+
+    public List<PopularParticipationResponse> findPopularParticipation(){
+       return participationRepository.findPopularParticipation();
     }
 
     public Participation getParticipant(User user, Challenge challenge){
