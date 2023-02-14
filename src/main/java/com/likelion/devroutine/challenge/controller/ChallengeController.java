@@ -130,7 +130,7 @@ public class ChallengeController {
             return "redirect:/challenges";
         }catch(Exception e){
             model.addAttribute("errorMessage", e.getMessage());
-            return "error/error";
+            return "error/challengeError";
         }
     }
 }
