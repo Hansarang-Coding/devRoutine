@@ -21,11 +21,6 @@
         <a class="d-flex btn btn-success active" href="/oauth2/authorization/github"
            role="button" sec:authorize="isAnonymous()">로그인</a>
 
-        <div style="margin-right: 10px" sec:authorize="isAuthenticated()" class="g-4">
-            <span id="user" sec:authentication="name"></span>
-            <b>님 안녕하세요!</b>
-        </div>
-
         <div style="margin-right: 10px" sec:authorize="isAuthenticated()">
             <a href="/alarms">
                 <img id="alarm" src="/assets/alarm.png"  width="24" height="24"></a>
