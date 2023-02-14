@@ -15,6 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    public static final String[] PERMIT_URL = {
+            "/assets/**", "/js/**", "/css/**", "/webjars/**"
+    };
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     @Bean
@@ -24,6 +28,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/challenges/**", "/").permitAll()
+                        .requestMatchers(PERMIT_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/challenges/**").permitAll()
                         .anyRequest().authenticated())
                 .logout()
@@ -36,10 +41,5 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService);
         return httpSecurity.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web -> web.ignoring().requestMatchers("/images/**", "/js/**", "/css/**", "/webjars/**"));
     }
 }
