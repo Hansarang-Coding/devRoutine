@@ -42,7 +42,7 @@
                         <div class="btn-group" style="margin-bottom: 10px;">
 
                             <img th:src="${following.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
-                            <a class="text" th:href="@{profile/{id}(id=${following.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${following.getName}]]</p>  </a>
+                            <a class="text" th:href="@{{id}(id=${following.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${following.getName}]]</p>  </a>
                             <input type="text" hidden th:value="${following.getName()}">
 
                         </div>
@@ -67,7 +67,7 @@
                     <div th:each="follower: ${profile.byFollowingList}">
                         <div class="btn-group" style="margin-bottom: 10px;">
                             <img th:src="${follower.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
-                            <p style="margin-right: 120px; margin-top: 13px">[[${follower.getName}]]</p>
+                            <a class="text" th:href="@{{id}(id=${follower.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${follower.getName}]]</p></a>
                             <input type="text" hidden th:value="${follower.getName()}">
                         </div>
                         <hr style="border: solid 0.5px gray; margin-bottom: 10px">

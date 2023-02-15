@@ -25,12 +25,19 @@ public class UserController {
         return "user/profile";
     }
 
-    @GetMapping("profile/{id}")
+    @GetMapping("/{id}")
     public String getOther(Authentication authentication,
-                             @PathVariable Long userId,
-                             Model model) {
+                             @PathVariable("id") Long userId,
+        Model model){
+
+
         MyProfileResponse profile = userService.getOther(authentication.getName(), userId);
+
         model.addAttribute("profile", profile);
+
+        if(profile.getMyUser().getName() == profile.getNickName()){
+            return "user/profile";
+        }
         return "user/other";
     }
 }

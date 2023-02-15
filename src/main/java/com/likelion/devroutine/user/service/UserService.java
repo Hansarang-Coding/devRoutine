@@ -111,11 +111,11 @@ public class UserService {
         List<User> byFollowerList = followRepository.findByFollowingUserId(user.getId());
         List<User> byFollowingList= followRepository.findByFollowerUserId(user.getId());
         System.out.println(byFollowingList.get(1));
-        return MyProfileResponse.of(user, followers, following, participations, byFollowingList, byFollowerList);
+        return MyProfileResponse.of(user, followers, following, participations, byFollowingList, byFollowerList, user);
     }
 
     public MyProfileResponse getOther(String oauthId, Long userId) {
-//        User user = findUserByOauthId(oauthId);
+        User oauthUser = findUserByOauthId(oauthId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -127,7 +127,7 @@ public class UserService {
         List<User> byFollowerList = followRepository.findByFollowingUserId(user.getId());
         List<User> byFollowingList= followRepository.findByFollowerUserId(user.getId());
 
-        return MyProfileResponse.of(user, followers, following, participations, byFollowingList, byFollowerList);
+        return MyProfileResponse.of(user, followers, following, participations, byFollowingList, byFollowerList, oauthUser);
     }
 
     private List<Participation> findParticipations(Long userId) {
