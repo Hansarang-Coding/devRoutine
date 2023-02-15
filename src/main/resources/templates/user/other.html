@@ -83,7 +83,7 @@
     <div id = "chall-list">
         <p th:if="${participationChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여중인 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${participationChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" th:if="${num.count}<=3">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">
@@ -104,7 +104,7 @@
     </div>
     <div id ="chall-all" style="margin-bottom: 10px; display: none; ">
         <div class="card" th:each="challenge : ${participationChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">
@@ -132,7 +132,7 @@
     <div id = "finish-list" style="margin-bottom: 10px;">
         <p th:if="${finishChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여완료한 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${finishChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">
@@ -153,7 +153,7 @@
     </div>
     <div id="finish-all" style="display: none; margin-bottom: 10px;">
         <div class="card" th:each="challenge : ${finishChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">
@@ -181,7 +181,7 @@
     <div id = "created-list" style="margin-bottom: 10px;">
         <p th:if="${createdChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">개설한 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${createdChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">
@@ -202,7 +202,7 @@
     </div>
     <div id="created-all" style="display: none; margin-bottom: 10px;">
         <div class="card" th:each="challenge : ${createdChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
-            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+            <a class="text" th:href="@{|/profile/${profile.getUserId}/challenges/${challenge.getId()}|}">
                 <div class="card-body">
                     <div>
                         <div style="display: inline-block">

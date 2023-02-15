@@ -172,11 +172,20 @@ public class ParticipationService {
         return challenge;
     }
 
-    public boolean isViewable(Challenge challenge, User user){
-        if(challenge.getVigibility() || !inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), user.getId()).isEmpty()){
+    public boolean isViewable(Long challengeId, String oauthId){
+        Challenge challenge=getChallenge(challengeId);
+        User user=getUser(oauthId);
+        if(challenge.getVigibility() || !inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), user.getId()).isEmpty() || isParticipate(challenge, user)){
             return true;
         }
         throw new InaccessibleChallengeException();
+    }
+
+    public boolean isParticipate(Challenge challenge, User user) {
+        if (participationRepository.findByUserAndChallenge(user,challenge).isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     public boolean isProgressChallenge(LocalDate startDate) {
@@ -242,4 +251,5 @@ public class ParticipationService {
         alarmRepository.save(Alarm.createAlarm(challengeId,
                 AlarmType.NEW_CHALLENGE_INVITE,AlarmType.NEW_CHALLENGE_INVITE.getMessage(), inviterId, invitee));
     }
+
 }
