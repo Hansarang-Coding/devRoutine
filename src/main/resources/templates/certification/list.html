@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>인증 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+<div style="margin-left: 15px;">
+    <div class="mt-6">
+        <legend>인증하기</legend>
+        <p class="text-muted">내가 참여하고 있는 챌린지에 인증해 보세요.</p>
+    </div>
+
+    <section class="container text-center mt-3">
+        <div class="row row-cols-1 row-cols-md-3 gap-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">원하는 챌린지를 추가해보세요!</h5>
+                    <p class="card-text" style="text-decoration: underline;">
+                        <a th:href="@{/challenges}">챌린지 화면 바로 가기</a></p>
+                </div>
+            </div>
+            <div class="card" th:each="p : ${participations}" style="width: 18rem;">
+                <div class="card-body">
+                    <div>
+                        <h5 class="card-title">[[${p.title}]]</h5>
+                        <p class="card-text" style="font-size: 13px; margin-bottom: 10px;">[[${p.description}]]</p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a th:href="@{/certification/post/{participationId}(participationId=${p.id})}"
+                       class="btn btn-success active" role="button">인증하기</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+    <div class="mt-6">
+        <legend>인증모음</legend>
+        <p class="text-muted">다른 사람이 남긴 인증 글을 확인해 보세요.</p>
+    </div>
+
+    <section class="container text-center mt-3">
+        <div class="row row-cols-1 row-cols-md-3 g-4 gap-6">
+            <div class="card text-center" th:each="c : ${certifications}" style="width: 18rem;">
+                <h5 class="card-header">[[${c.challengeTitle}]]</h5>
+                <a th:href="@{/certification/{certificationId}(certificationId=${c.certificationId})}">
+                    <img th:src="${c.uploadImageUrl}" class="card-img-top" alt="깃허브 인증">
+                </a>
+                <div class="row card-body">
+                    <h5 class="card-title col-5">[[${c.name}]]</h5>
+                    <p class="card-text col-6" style="font-size: 13px">[[${c.createdDate}]]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

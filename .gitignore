@@ -25,6 +25,8 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+application-aws.yml
+application-credential.yml
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +37,7 @@ out/
 
 ### VS Code ###
 .vscode/
+/node_modules/
+/package.json
+/package-lock.json
+/src/main/generated/

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>홈 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+<main>
+    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
+                    aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/assets/carousel_first_ele.png"/>
+
+                <div class="container">
+                    <div class="carousel-caption text-end" style="color: black">
+                        <h1>devRoutine.</h1>
+                        <p>여러 사람들이 데브루틴을 통해 도전하고 있는 챌린지를 확인해 보세요!</p>
+                        <p><a class="btn btn-lg btn-success" href="/challenges">챌린지 확인 바로가기</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <img src="/assets/carousel_second_ele.png"/>
+
+                <div class="container">
+                    <div class="carousel-caption" style="color: black">
+                        <h1>혼자가 아닌 함께 성장하기</h1>
+                        <p>같은 꿈을 가진 여러 동료들과 챌린지를 설정하고 도전해 보세요!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <img src="/assets/carousel_third_ele.png"/>
+                <div class="container">
+                    <div class="carousel-caption text-end" style="color: black">
+                        <h1>깃허브 아이디만 있으면 데브루틴을 바로 활용하실 수 있어요!.</h1>
+                        <p>깃허브 아이디가 없으시다면, 이동하셔서 회원 가입 해주세요!</p>
+                        <p><a class="btn btn-lg btn-success" href="/oauth2/authorization/github">로그인 바로가기</a></p>
+                    </div>
+                </div>
+            </div>
+
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <!-- Marketing messaging and popular challenges
+        ================================================== -->
+        <!-- Wrap the rest of the page in another container to center all the content. -->
+        <!-- Three columns of text below the carousel -->
+        <legend class="fw-bold">최근 인기 챌린지</legend>
+        <div class="container text-center mb-3">
+            <div class="row">
+                <div class="col-lg-4" th:each="p : ${participation}">
+                    <div class="card border-success mb-3">
+                        <a th:href="@{|/challenges/${p.getChallengeId()}|}" style="margin-bottom: 10px">
+                            <div class="card-body">
+                                <div>
+                                    <div style="display: inline-block">
+                                        <h4 class="card-title">[[${p.getTitle()}]]</h4>
+                                    </div>
+                                    <p>
+                                    <h4 th:text="|현재 ${p.getCount()}명이 참가 중 이에요!|"></h4>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <p class="text-muted" id="period">진행 기간 :
+                                    [[${#temporals.format(p.getStartDate(), 'yyyy-MM-dd')}]] ~
+                                    [[${#temporals.format(p.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- START THE FEATURETTES -->
+        <hr class="featurette-divider">
+        <div class="row featurette justify-center">
+            <div class="col-sm-8">
+                <h2 class="featurette-heading fw-normal lh-1">데브루틴과 함께 시작해 보세요.
+                    <p><span class="text-muted">Github 아이디 소유자면 누구나 가능!</span></h2>
+                </p>
+                <p class="lead">데브루틴은 깃허브 아이디 소유자라면 누구든지 1초만에 로그인 하여 참여할 수 있어요!</p>
+            </div>
+            <div class="col-sm-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt=""
+                     width="300" height="300"/>
+            </div>
+        </div>
+
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-7 order-md-2">
+                <h2 class="featurette-heading fw-normal lh-1"> 데브루틴의 지향점
+                    <p>
+                        <span class="text-muted">매일 해야 한다는 강박보단 주 3일을 권장합니다.</span>
+                    </p>
+                </h2>
+                <p class="lead-sec">잠깐의 불타는 열정보단 잔잔한 꾸준함을 지향하고 있습니다.</p>
+            </div>
+            <div class="col-md-5 order-md-1">
+                <img src="/assets/featture_second_ele.png" />
+            </div>
+        </div>
+        <hr class="featurette-divider">
+        <!-- /END THE FEATURETTES -->
+    </div><!-- /.container -->
+    <!-- FOOTER -->
+    <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+</main>
+</body>
+</html>

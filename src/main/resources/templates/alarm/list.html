@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>챌린지 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <div class="container">
+        <div class="row py-5 text-center">
+            <div class="col-3">
+                <ul class="list-group">
+                    <a id="invite" th:href="@{/alarms/invites}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        초대
+                    </a>
+                    <a id="follow" th:href="@{/alarms/follows}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        팔로우
+                    </a>
+                    <a id="comment" th:href="@{/alarms/comments}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        댓글
+                    </a>
+                    <a id="like" th:href="@{/alarms/likes}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        좋아요
+                    </a>
+                </ul>
+            </div>
+            <div class="col-9">
+                <div th:if="${alarmType}=='like'" class="col-12">
+                    <div class="card" th:if="${likeAlarms.size() == 0}">
+                        <div class="card-header">
+                            좋아요 알림 메시지가 없습니다.
+                        </div>
+                    </div>
+                    <div class="card" th:if="${likeAlarms.size() > 0}">
+                        <div class="card-header">
+                            좋아요 알람
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px" class="row justify-content-start" th:each="alarm: ${likeAlarms}">
+                                <a th:href="@{|/certification/${alarm.getCertificationId()}|}">
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;" >[[${alarm.getUserName()}]]님이 회원님의 인증에 좋아요를 눌렀습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
+                                </a>
+                                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${alarmType}=='comment'" class="col-12">
+                    <div class="card" th:if="${commentAlarms.size() == 0}">
+                        <div class="card-header">
+                            댓글 알림 메시지가 없습니다.
+                        </div>
+                    </div>
+                    <div class="card" th:if="${commentAlarms.size() > 0}">
+                        <div class="card-header">
+                            댓글 알람
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px" th:each="alarm: ${commentAlarms}">
+                                <a th:href="@{|/certification/${alarm.getCertificationId()}|}">
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getUserName()}]]님이 회원님의 인증에 댓글을 남겼습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
+                                </a>
+                                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${alarmType}=='invite'" class="col-12">
+                    <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviterResponse().size() == 0}">
+                        <div class="card-header">
+                            초대 받은 내역이 없습니다.
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviterResponse().size() > 0}">
+                        <div class="card-header">
+                            초대 받은 내역
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px" th:each="alarm: ${inviteAlarms.getInviterResponse()}">
+                                <a th:href="@{|/challenges/${alarm.getChallengeId()}|}">
+                                    <input class="invite-id" type="text" hidden th:value="${alarm.getInviteId()}">
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getInviterPicture()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getInviterName()}]]님이 [[${alarm.getTitle()}]] 챌린지에 초대를 하셨습니다.</p>
+                                </a>
+                                <div style="text-align: right;">
+                                    <button style="font-size: 12px; width: 100px; height: 30px" class="btn btn-outline-danger" name="inviteReject" th:attrappend="id=${alarmStat.index}" type="submit">초대 거절</button>
+                                </div>
+                                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom: 10px" th:if="${inviteAlarms.getInviteeResponses().size() == 0}">
+                        <div class="card-header">
+                            초대 받은 내역이 없습니다.
+                        </div>
+                    </div>
+                    <div class="card" th:if="${inviteAlarms.getInviteeResponses().size() > 0}">
+                        <div class="card-header">
+                            초대한 내역
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px" th:each="alarm: ${inviteAlarms.getInviteeResponses()}">
+                                <a th:href="@{|/challenges/${alarm.getChallengeId()}|}">
+                                    <input class="invite-id" type="text" hidden th:value="${alarm.getInviteId()}">
+                                    <img style="float: left; margin-right: 10px " th:src="${alarm.getInviteePicture()}" width="30px">
+                                    <p style="float: left;" >[[${alarm.getInviteeName()}]]님을 [[${alarm.getTitle()}]] 챌린지에 초대하였습니다.</p>
+                                </a>
+                                <div style="text-align: right;">
+                                    <button style="font-size: 12px; width: 100px; height: 30px" class="btn btn-outline-danger" name="inviteCancel" th:attrappend="id=${alarmStat.index}" type="submit">초대 취소</button>
+                                </div>
+                                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${alarmType}=='follow'"class="col-12">
+                    <div class="card" th:if="${followAlarms.size() == 0}">
+                        <div class="card-header">
+                            팔로우 알림 메시지가 없습니다.
+                        </div>
+                    </div>
+                    <div class="card" th:if="${followAlarms.size() > 0}">
+                        <div class="card-header">
+                            팔로우 알람
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 10px" th:each="alarm: ${followAlarms}">
+                                <a th:href="@{|/profile/${alarm.getUserId()}|}">
+                                    <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
+                                    <p style="float: left;">[[${alarm.getUserName()}]]님이 회원님을 팔로우하기 시작했습니다.</p>
+                                    <div style="text-align: right">
+                                        <p class="text-muted" style="font-size: 12px;">[[${#temporals.format(alarm.getCreatedAt(), 'yyyy-MM-dd HH:mm')}]]</p>
+                                    </div>
+                                </a>
+                                <hr style="border: solid 0.5px gray; margin-top: 10px; margin-bottom: 10px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $("button[name=inviteCancel]").click(function(){
+        var index = $(this).attr("id");
+        let inviteId =$('.invite-id').eq(index).val();
+        console.log(inviteId);
+        inviteCancelEvent(inviteId);
+    });
+
+    $("button[name=inviteReject]").click(function(){
+        var index = $(this).attr("id");
+        let inviteId =$('.invite-id').eq(index).val();
+        console.log(inviteId);
+        inviteRejectEvent(inviteId);
+    });
+
+    function inviteRejectEvent(inviteId){
+        $.ajax({
+            url: "/api/v1/invites/"+inviteId+"/reject",
+            type: "DELETE",
+            data: JSON.stringify(inviteId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("초대를 거절했습니다.");
+            location.href = "/alarms/invites";
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function inviteCancelEvent(inviteId){
+        $.ajax({
+            url: "/api/v1/invites/"+inviteId+"/cancel",
+            type: "DELETE",
+            data: JSON.stringify(inviteId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("초대가 취소되었습니다.");
+            location.href = "/alarms/invites";
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+</script>
+</html>

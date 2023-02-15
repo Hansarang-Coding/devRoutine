@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="fragments/head :: frag-header"></head>
+<body>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /* <![CDATA[ */
+        window.onload = () => {
+            const message = [[ ${errorMessage} ]];
+            if (message) {
+                alert(message);
+                location.href = "/certification";
+            }
+        }
+        /* ]]> */
+    </script>
+</th:block>
+</body>
+</html>

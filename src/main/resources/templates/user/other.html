@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>마이 프로필 | devroutine : 개발자 챌린지 서비스</title>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+<div class="btn-group" style="margin-left: 300px; margin-top: 20px; margin-right:300px">
+    <div class="card mb-3" style="max-width: 500px; border-style: none" >
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img style="border-radius: 70%" id="profileImg" th:src="${profile.profileImageUrl}" alt="첨부이미지" th:if="${profile.profileImageUrl != null}" />
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-title" th:text="|닉네임 : ${profile.nickName}|"></p>
+                    <p class="card-text">꾸준한 재미 devRoutine!</p>
+                    <input id="user-id" hidden th:value="${profile.getUserId()}">
+                    <button id = "follow" type="button" class="btn btn-outline-success" th:text="${followingStatus} ? unfollow : follow"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group" style="text-align: center; width: 300px; margin-left: 100px;">
+        <div class="card">
+            <button  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight1" aria-controls="offcanvasRight">
+                <div class="card-body" style="margin-top: 33px;">
+                    <p class="text" th:text="${profile.followerCount}"></p>
+                    <h5 class="card-title">팔로워</h5>
+                </div>
+            </button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight1" aria-labelledby="offcanvasRightLabel1">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel1">팔로워</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div th:each="following: ${profile.byFollowerList}">
+                        <div class="btn-group" style="margin-bottom: 10px;">
+                            <img th:src="${following.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
+                            <a class="text" th:href="@{{id}(id=${following.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${following.getName}]]</p>  </a>
+                            <input type="text" hidden th:value="${following.getName()}">
+                        </div>
+                        <hr style="border: solid 0.5px gray; margin-bottom: 10px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <button  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                <div class="card-body" style="margin-top: 33px">
+                    <p class="text" th:text="${profile.followingCount}"></p>
+                    <h5 class="card-title">팔로잉</h5>
+                </div>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">팔로잉</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div th:each="follower: ${profile.byFollowingList}">
+                        <div class="btn-group" style="margin-bottom: 10px;">
+                            <img th:src="${follower.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
+                            <a class="text" th:href="@{{id}(id=${follower.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${follower.getName}]]</p></a>
+                            <input type="text" hidden th:value="${follower.getName()}">
+                        </div>
+                        <hr style="border: solid 0.5px gray; margin-bottom: 10px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 20px; margin-left: 280px; margin-right: 280px;" >
+    </br>
+    <h5 class="card-title" style="margin-left: 10px;">참여중인 챌린지</h5>
+    <div id = "chall-list">
+        <p th:if="${participationChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여중인 챌린지가 없습니다.</p>
+        <div class="card" th:each="challenge, num: ${participationChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" th:if="${num.count}<=3">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id ="chall-all" style="margin-bottom: 10px; display: none; ">
+        <div class="card" th:each="challenge : ${participationChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button th:if="${participationChallenge.size()>3}" id="chall-more" type="button" class="btn btn-outline-success">더보기</button>
+</div>
+
+<div class="card" style="margin-top: 50px; margin-left: 280px; margin-right: 280px;" >
+    </br>
+    <h5 class="card-title" style="margin-left: 10px;">참여완료한 챌린지</h5>
+    <div id = "finish-list" style="margin-bottom: 10px;">
+        <p th:if="${finishChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여완료한 챌린지가 없습니다.</p>
+        <div class="card" th:each="challenge, num: ${finishChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id="finish-all" style="display: none; margin-bottom: 10px;">
+        <div class="card" th:each="challenge : ${finishChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button th:if="${finishChallenge.size()>3}" id="finish-more" type="button" class="btn btn-outline-success">더보기</button>
+</div>
+
+<div class="card" style="margin-top: 50px; margin-left: 280px; margin-right: 280px;" >
+    </br>
+    <h5 class="card-title" style="margin-left: 10px;">개설한 챌린지</h5>
+    <div id = "created-list" style="margin-bottom: 10px;">
+        <p th:if="${createdChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">개설한 챌린지가 없습니다.</p>
+        <div class="card" th:each="challenge, num: ${createdChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id="created-all" style="display: none; margin-bottom: 10px;">
+        <div class="card" th:each="challenge : ${createdChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+            <a class="text" th:href="@{|/challenges/${challenge.getId()}|}">
+                <div class="card-body">
+                    <div>
+                        <div style="display: inline-block">
+                            <h4 class="card-title">[[${challenge.getTitle()}]]</h4>
+                        </div>
+                        <div style="display: inline-block; float: right;">
+                            <p class="text-muted period">진행 기간 : [[${#temporals.format(challenge.getStartDate(), 'yyyy-MM-dd')}]] ~ [[${#temporals.format(challenge.getEndDate(), 'yyyy-MM-dd')}]]</p>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <div th:each="hashtag: ${challenge.getChallengeHashTag()}">
+                            <span class="badge rounded-pill bg-secondary" style="margin-right: 10px">[[${hashtag.getHashTag()}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button th:if="${createdChallenge.size()>3}" id="created-more" type="button" class="btn btn-outline-success">더보기</button>
+</div>
+</body>
+
+<script>
+    $('#finish-more').on("click", function(){
+        let btnElement=document.getElementById('finish-more');
+        console.log("more click");
+        console.log(btnElement);
+        moreEvent(btnElement);
+    });
+
+    $('#created-more').on("click", function(){
+        let btnElement=document.getElementById('created-more');
+        console.log("participation click");
+        console.log(btnElement);
+        createdChallengeMoreEvent(btnElement);
+    });
+
+    $('#chall-more').on("click", function(){
+        let btnElement=document.getElementById('chall-more');
+        console.log("participation click");
+        console.log(btnElement);
+        participatoinMoreEvent(btnElement);
+    });
+
+    $('#follow').on("click", function(){
+        console.log("팔로우 클릭");
+        let btnElement=document.getElementById('follow');
+        let userId = $("#user-id").val();
+        if(btnElement.innerText=="unfollow"){
+            unFollowEvent(btnElement, userId);
+        }else{
+            followEvent(btnElement, userId);
+        }
+    });
+
+    function unFollowEvent(btnElement, userId){
+        $.ajax({
+            url: "/api/v1/users/"+userId+"/unfollow",
+            type: "POST",
+            data: JSON.stringify(userId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("팔로우가 취소되었습니다.");
+            location.href = "/profile/"+userId;
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function followEvent(btnElement, userId){
+        $.ajax({
+            url: "/api/v1/users/"+userId+"/follow",
+            type: "POST",
+            data: JSON.stringify(userId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("팔로우 되었습니다.");
+            location.href = "/profile/"+userId;
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function participatoinMoreEvent(btnElement){
+        console.log("participatoinMoreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("chall-list").style.display='none';
+            document.getElementById("chall-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("chall-all").style.display='none';
+            document.getElementById("chall-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+
+    function createdChallengeMoreEvent(btnElement){
+        console.log("개설한 챌린지");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("created-list").style.display='none';
+            document.getElementById("created-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("created-all").style.display='none';
+            document.getElementById("created-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+
+    function moreEvent(btnElement){
+        console.log("moreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("finish-list").style.display='none';
+            document.getElementById("finish-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("finish-all").style.display='none';
+            document.getElementById("finish-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+</script>
+<style>
+    .period{
+        font-size: 12px;
+    }
+</style>
+</html>
+</body>
+</html>
