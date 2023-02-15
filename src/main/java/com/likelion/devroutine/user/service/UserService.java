@@ -102,21 +102,16 @@ public class UserService {
 
     public MyProfileResponse getProfile(String oauthId) {
         User user = findUserByOauthId(oauthId);
-
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(UserNotFoundException::new);
         Long followers = followRepository.countFollowers(user.getId());
         Long following = followRepository.countFollowing(user.getId());
 
         List<User> byFollowerList = followRepository.findByFollowingUserId(user.getId());
         List<User> byFollowingList= followRepository.findByFollowerUserId(user.getId());
-        System.out.println(byFollowingList.get(1));
+
         return MyProfileResponse.of(user, followers, following, byFollowingList, byFollowerList);
     }
 
     public MyProfileResponse getOther(String oauthId, Long userId) {
-//        User user = findUserByOauthId(oauthId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
