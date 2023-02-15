@@ -118,7 +118,7 @@ public class ParticipationService {
     }
 
     private boolean isInviteChallenge(Challenge challenge, User invitee){
-        if(inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), invitee.getId()).isEmpty()){
+        if(inviteRepository.findByChallengeIdAndInviteeId(challenge.getId(), invitee.getId()).isEmpty()){
             return true;
         }
         throw new DuplicatedInviteException();
@@ -129,7 +129,7 @@ public class ParticipationService {
         List<Follow> followers=followRepository.findByFollowerId(user.getId());
         followers = followers.stream()
                 .filter(follow -> participationRepository.findByChallengeAndUser(challenge, follow.getFollowing()).isEmpty())
-                .filter(follow-> inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), follow.getFollowing().getId())
+                .filter(follow-> inviteRepository.findByChallengeIdAndInviteeId(challenge.getId(), follow.getFollowing().getId())
                         .isEmpty())
                 .collect(Collectors.toList());
         return FollowerResponse.of(followers);
@@ -175,7 +175,7 @@ public class ParticipationService {
     public boolean isViewable(Long challengeId, String oauthId){
         Challenge challenge=getChallenge(challengeId);
         User user=getUser(oauthId);
-        if(challenge.getVigibility() || !inviteRepository.findAllByChallengeIdAndInviteeId(challenge.getId(), user.getId()).isEmpty() || isParticipate(challenge, user)){
+        if(challenge.getVigibility() || !inviteRepository.findByChallengeIdAndInviteeId(challenge.getId(), user.getId()).isEmpty() || isParticipate(challenge, user)){
             return true;
         }
         throw new InaccessibleChallengeException();
