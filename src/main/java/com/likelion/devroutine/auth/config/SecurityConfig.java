@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .httpBasic().disable()
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/challenges/**", "/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/challenges/**", "/").permitAll()
                         .requestMatchers(PERMIT_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/challenges/**").permitAll()
                         .anyRequest().authenticated())
