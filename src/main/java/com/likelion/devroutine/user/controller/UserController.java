@@ -37,7 +37,7 @@ public class UserController {
                            @PathVariable Long userId,
                            Model model) {
         MyProfileResponse profile = userService.getOther(authentication.getName(), userId);
-        if(profile.getOauthId().equals(authentication.getName())){
+        if (profile.getOauthId().equals(authentication.getName())) {
             return "redirect:/profile";
         }
         model.addAttribute("profile", profile);
@@ -46,5 +46,17 @@ public class UserController {
         model.addAttribute("createdChallenge", participationService.findCreatedChallenge(profile.getOauthId()));
         model.addAttribute("followingStatus", userService.isFollowing(userId, authentication.getName()));
         return "user/other";
+    }
+
+    @GetMapping("profile/{userId}/challenges/{challengeId}")
+    public String showChallenge(Authentication authentication, @PathVariable Long challengeId, @PathVariable Long userId, Model model) {
+        try {
+            participationService.isViewable(challengeId, authentication.getName());
+            return "redirect:/challenges/" + String.valueOf(challengeId);
+        }catch(Exception e){
+            model.addAttribute("userId", userId);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/profileError";
+        }
     }
 }
