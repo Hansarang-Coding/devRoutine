@@ -34,7 +34,7 @@ servlet:
 # Swagger (springdoc-openapi-ui)
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html                              # swagger-ui.html을 기본 경로로 설정
+    path: /swagger-ui                              # swagger-ui.html을 기본 경로로 설정
     operations-sorter: method                           # method, alpha
     display-request-duration: true                      # 요청 시간 표시
     # filter: true
