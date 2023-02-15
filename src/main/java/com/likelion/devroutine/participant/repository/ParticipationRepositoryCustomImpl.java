@@ -82,7 +82,7 @@ public class ParticipationRepositoryCustomImpl implements ParticipationRepositor
         return queryFactory.selectFrom(participation)
                 .join(participation.challenge,challenge)
                 .fetchJoin()
-                .where(participation.user.id.eq(userId),challenge.endDate.after(LocalDate.now()),challenge.startDate.before(LocalDate.now()))
+                .where(participation.user.id.eq(userId),challenge.endDate.after(LocalDate.now().minusDays(1)),challenge.startDate.before(LocalDate.now().plusDays(1)))
                 .fetch();
     }
 }
