@@ -48,6 +48,7 @@ public class ParticipationRepositoryCustomImpl implements ParticipationRepositor
                         challenge.description, challenge.startDate, challenge.endDate))
                 .from(participation)
                 .rightJoin(challenge).on(participation.challenge.id.eq(challenge.id))
+                .where(challenge.startDate.after(LocalDate.now()), challenge.vigibility.eq(true))
                 .groupBy(challenge.id)
                 .orderBy(participation.challenge.id.count().desc())
                 .limit(3)

@@ -6,7 +6,8 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
-    <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
+    <main>
+    <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px; margin-bottom: 100px;">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
             <input type="text" hidden th:value="${participationChallenge.getChallengeId()}" id="challenge-id">
             <h1>[[${participationChallenge.getTitle()}]]</h1>
@@ -50,13 +51,15 @@
                 </div>
             </div>
         </div>
-        <div style="margin-top: 20px; margin-bottom: 20px; margin-left:30px">
+        <div style="margin-top: 20px; margin-bottom: 50px; margin-left:30px">
             <p>[[${participationChallenge.getDescription()}]]</p>
         </div>
         <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
+            <p style="font-size: 22px; font-weight: normal;">참가자</p>
+            <hr style="border: solid 0.5px gray; margin-bottom: 10px">
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <div class="row">
-                    <p class="col-md-auto" id="username">[[${entry.getKey()}]]</p>
+                    <p class="col-md-auto" id="username" style="font-size: 18px;">[[${entry.getKey()}]]</p>
                     <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto more" name="moreBtn" th:attrappend="id=${entryStat.index}" style="font-size: 12px; width: 70px; height: 30px; margin-bottom: 10px">더보기</button>
                 </div>
                 <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
@@ -92,6 +95,9 @@
             <button class="btn btn-outline-danger" type="submit">참여취소 하기</button>
         </div>
     </form>
+        <hr class="featurette-divider">
+        <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 <script>
     $("button[name=inviteBtn]").click(function (){

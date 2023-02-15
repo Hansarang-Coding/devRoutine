@@ -7,6 +7,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <main>
     <form class="d-flex" style="margin-botton: 10px; margin-top:40px; margin-left: 300px; margin-right: 300px;" th:action="@{/challenges(keyword=${keyword})}" method="get">
         <input name="keyword" class="form-control me-sm-2" type="search" placeholder="Search" th:value="${keyword}">
         <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
@@ -47,6 +48,9 @@
             </a>
         </div>
     </div>
+        <hr class="featurette-divider">
+        <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 <style>
     #period{
