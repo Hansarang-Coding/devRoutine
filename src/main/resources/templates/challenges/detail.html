@@ -7,6 +7,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <main>
     <div class="card text-center" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
             <h1>[[${challenge.getTitle()}]]</h1>
@@ -43,6 +44,9 @@
             <button class="btn btn-outline-success" type="submit">참여하기</button>
         </div>
     </form>
+    <hr class="featurette-divider">
+    <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 </html>
 <style>

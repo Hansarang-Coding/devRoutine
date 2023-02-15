@@ -6,6 +6,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <main>
     <div style="margin-top: 20px; margin-right: 100px; margin-left: 100px; margin-bottom: 10px">
         <form role="form" th:action="@{/challenges/new}" th:method="post" enctype="multipart/form-data">
             <fieldset>
@@ -61,6 +62,9 @@
             </fieldset>
         </form>
     </div>
+    <hr class="featurette-divider">
+    <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 <script>
     function getVigibility(element){

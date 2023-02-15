@@ -6,7 +6,8 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
-    <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px">
+    <main>
+    <div class="card" style="margin-top: 30px; margin-right: 100px; margin-left: 100px; margin-bottom: 100px;">
         <div class="card-header" style="text-align: center; margin-top: 20px; margin-button: 20px; margin-right: 20px; margin-left:20px">
             <input type="text" hidden th:value="${participationChallenge.getChallengeId()}" id="challenge-id">
             <h1>[[${participationChallenge.getTitle()}]]</h1>
@@ -92,6 +93,9 @@
             <button class="btn btn-outline-danger" type="submit">참여취소 하기</button>
         </div>
     </form>
+        <hr class="featurette-divider">
+        <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 <script>
     $("button[name=inviteBtn]").click(function (){

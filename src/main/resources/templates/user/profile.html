@@ -8,8 +8,8 @@
 <body>
 
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
-
-<div class="btn-group" style="margin-left: 300px; margin-top: 20px; margin-right:300px">
+<main>
+<div class="btn-group" style="margin-left: 300px; margin-top: 20px; margin-right:300px; margin-bottom: 100px;">
     <div class="card mb-3" style="max-width: 500px; border-style: none" >
         <div class="row g-0">
             <div class="col-md-4">
@@ -222,6 +222,9 @@
     </div>
     <button th:if="${createdChallenge.size()>3}" id="created-more" type="button" class="btn btn-outline-success">더보기</button>
 </div>
+    <hr class="featurette-divider">
+    <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+</main>
 </body>
 
 <script>
