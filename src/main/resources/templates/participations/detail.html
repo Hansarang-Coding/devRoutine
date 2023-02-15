@@ -51,13 +51,15 @@
                 </div>
             </div>
         </div>
-        <div style="margin-top: 20px; margin-bottom: 20px; margin-left:30px">
+        <div style="margin-top: 20px; margin-bottom: 50px; margin-left:30px">
             <p>[[${participationChallenge.getDescription()}]]</p>
         </div>
         <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
+            <p style="font-size: 22px; font-weight: normal;">참가자</p>
+            <hr style="border: solid 0.5px gray; margin-bottom: 10px">
             <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
                 <div class="row">
-                    <p class="col-md-auto" id="username">[[${entry.getKey()}]]</p>
+                    <p class="col-md-auto" id="username" style="font-size: 18px;">[[${entry.getKey()}]]</p>
                     <button th:if="${entry.getValue().size()}>5" class="btn btn-outline-secondary col-md-auto more" name="moreBtn" th:attrappend="id=${entryStat.index}" style="font-size: 12px; width: 70px; height: 30px; margin-bottom: 10px">더보기</button>
                 </div>
                 <p th:if="${entry.getValue().size()}==0">인증 내역이 없습니다.</p>
