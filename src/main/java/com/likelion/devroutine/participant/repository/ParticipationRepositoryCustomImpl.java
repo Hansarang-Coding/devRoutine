@@ -2,19 +2,17 @@ package com.likelion.devroutine.participant.repository;
 
 import com.likelion.devroutine.certification.domain.QCertification;
 import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.participant.domain.Participation;
+import com.likelion.devroutine.challenge.domain.QChallenge;
 import com.likelion.devroutine.participant.domain.QParticipation;
 import com.likelion.devroutine.participant.dto.ParticipationSortResponse;
+import com.likelion.devroutine.participant.dto.PopularParticipationResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-
-import static com.likelion.devroutine.participant.domain.QParticipation.participation;
 
 @RequiredArgsConstructor
 public class ParticipationRepositoryCustomImpl implements ParticipationRepositoryCustom{
@@ -32,6 +30,22 @@ public class ParticipationRepositoryCustomImpl implements ParticipationRepositor
                 .where(participation.challenge.id.eq(challenge.getId()))
                 .groupBy(participation.id)
                 .orderBy(aliasQuantity.desc(), participation.user.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<PopularParticipationResponse> findPopularParticipation() {
+        QParticipation participation=QParticipation.participation;
+        QChallenge challenge=QChallenge.challenge;
+        return queryFactory.select(Projections.constructor(PopularParticipationResponse.class,
+
+                        participation.challenge.id.count(), challenge.id, challenge.vigibility, challenge.title,
+                        challenge.description, challenge.startDate, challenge.endDate))
+                .from(participation)
+                .rightJoin(challenge).on(participation.challenge.id.eq(challenge.id))
+                .groupBy(challenge.id)
+                .orderBy(participation.challenge.id.count().desc())
+                .limit(3)
                 .fetch();
     }
 }
