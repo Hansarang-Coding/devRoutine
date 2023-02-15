@@ -18,6 +18,13 @@ public class SecurityConfig {
             "/assets/**", "/js/**", "/css/**", "/webjars/**"
     };
 
+    public static final String[] SWAGGER_URL = {
+            "/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/swagger/**",
+    };
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
@@ -29,8 +36,9 @@ public class SecurityConfig {
                 .csrf().disable()
                 .httpBasic().disable()
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(HttpMethod.GET, "/challenges/**", "/").permitAll()
                         .requestMatchers(PERMIT_URL).permitAll()
+                        .requestMatchers(SWAGGER_URL).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/challenges/**", "/").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/challenges/**").permitAll()
                         .anyRequest().authenticated())
 
