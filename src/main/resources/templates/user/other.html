@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:replace="fragments/head :: frag-header"></th:block>
-    <title>마이 프로필 | devroutine : 개발자 챌린지 서비스</title>
+    <title>프로필 | devroutine : 개발자 챌린지 서비스</title>
 
 </head>
 <body>
@@ -16,8 +16,8 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <p class="card-title" th:text="|닉네임 : ${profile.nickName}|"></p>
-                    <p class="card-text">꾸준한 재미 devRoutine!</p>
+                    <p class="card-title" style="font-size: 20px;" th:text="|${profile.nickName}|"></p>
+                    <p class="card-text" style="margin-bottom: 10px;">꾸준한 재미 devRoutine!</p>
                     <input id="user-id" hidden th:value="${profile.getUserId()}">
                     <button id = "follow" type="button" class="btn btn-outline-success" th:text="${followingStatus} ? unfollow : follow"></button>
                 </div>
