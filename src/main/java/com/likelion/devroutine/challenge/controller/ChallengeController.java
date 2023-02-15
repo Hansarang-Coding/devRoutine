@@ -43,7 +43,8 @@ public class ChallengeController {
             model.addAttribute("hashtags", challengeService.getRandomHashTag());
             return "challenges/list";
         }catch(Exception e){
-            return "error/error";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
         }
     }
 
@@ -53,48 +54,62 @@ public class ChallengeController {
     }
 
     @PostMapping("/new")
-    public String saveChallenges(Authentication authentication, ChallengeCreateRequest requestDto){
+    public String saveChallenges(Authentication authentication, ChallengeCreateRequest requestDto, Model model){
         try {
             ChallengeCreateResponse challengeCreateResponse = challengeService.createChallenge(authentication.getName(), requestDto);
             return "redirect:/challenges/"+challengeCreateResponse.getChallengeId();
         }catch(UserNotFoundException e) {
-            return "error/error";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
         }
     }
 
     @GetMapping("/{challengeId}")
     public String showChallenge(@PathVariable Long challengeId, Model model,Authentication authentication, @LoginUser SessionUser sessionUser){
-        if(sessionUser==null || sessionUser.getName()==null || !challengeService.isParticipate(challengeId, authentication.getName())){
-            ChallengeDto challengeDto;
-            if(sessionUser==null || sessionUser.getName()==null) challengeDto=challengeService.findByChallengeId(challengeId);
-            else challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
-            model.addAttribute("challenge", challengeDto);
-            log.info("참여중이지 않은 상세조회");
-            return "challenges/detail";
+        try {
+            if (sessionUser == null || sessionUser.getName() == null || !challengeService.isParticipate(challengeId, authentication.getName())) {
+                ChallengeDto challengeDto;
+                if (sessionUser == null || sessionUser.getName() == null)
+                    challengeDto = challengeService.findByChallengeId(challengeId);
+                else challengeDto = challengeService.findByChallengeId(challengeId, authentication.getName());
+                model.addAttribute("challenge", challengeDto);
+                log.info("참여중이지 않은 상세조회");
+                return "challenges/detail";
+            }
+            model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
+            model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
+            model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
+            model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
+            return "participations/detail";
+        }catch(Exception e){
+            model.addAttribute("errorMessage", e.getMessage());
+            log.info(e.getMessage());
+            return "error/challengeError";
         }
-        model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
-        model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
-        model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
-        model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
-        return "participations/detail";
     }
 
     @PostMapping("/{challengeId}")
-    public String participateChallenge(@PathVariable Long challengeId, Authentication authentication){
+    public String participateChallenge(@PathVariable Long challengeId, Authentication authentication, Model model){
         try {
             ParticipationResponse participationResponse = challengeService.participateChallenge(authentication.getName(), challengeId);
             return "redirect:/challenges/{challengeId}";
         }catch(Exception e){
-            return "error/error";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
         }
     }
 
     @GetMapping("/{challengeId}/edit")
     public String editChallengeForm(@PathVariable Long challengeId, Authentication authentication, Model model){
-        ChallengeDto challengeDto=challengeService.findByChallengeId(challengeId, authentication.getName());
-        model.addAttribute("challenge", challengeDto);
-        model.addAttribute("hashtag", challengeService.getHashTagString(challengeDto.getChallengeHashTag()));
-        return "challenges/edit";
+        try {
+            ChallengeDto challengeDto = challengeService.findByChallengeId(challengeId, authentication.getName());
+            model.addAttribute("challenge", challengeDto);
+            model.addAttribute("hashtag", challengeService.getHashTagString(challengeDto.getChallengeHashTag()));
+            return "challenges/edit";
+        }catch(Exception e){
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
+        }
     }
 
     @PostMapping("/{challengeId}/edit")
@@ -103,17 +118,19 @@ public class ChallengeController {
             ChallengeResponse challengeResponse=challengeService.modifyChallenge(authentication.getName(), challengeId, challengeModifiyRequest);
             return "redirect:/challenges/"+String.valueOf(challengeId);
         }catch(Exception e){
-            return "error/error";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
         }
     }
 
     @GetMapping("/{challengeId}/delete")
-    public String deleteChallenge(@PathVariable Long challengeId, Authentication authentication){
+    public String deleteChallenge(@PathVariable Long challengeId, Authentication authentication, Model model){
         try {
             ChallengeResponse challengeResponse = challengeService.deleteChallenge(authentication.getName(), challengeId);
             return "redirect:/challenges";
         }catch(Exception e){
-            return "error/error";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "error/challengeError";
         }
     }
 }
