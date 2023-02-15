@@ -125,10 +125,17 @@ public class ChallengeService {
         Challenge challenge=getChallenge(challengeId);
         validateParticipate(user, challenge);
         Participation savedParticipation = participationRepository.save(Participation.createParticipant(user, challenge));
+        deleteInvite(user, challenge);
         return ParticipationResponse.builder()
                 .challengeId(savedParticipation.getChallenge().getId())
                 .message(com.likelion.devroutine.participant.enumerate.ResponseMessage.PARTICIPATE_SUCCESS.getMessage())
                 .build();
+    }
+
+    private void deleteInvite(User user, Challenge challenge) {
+        inviteRepository.findByChallengeIdAndInviteeId(challenge.getId(), user.getId()).ifPresent(
+                invite -> invite.deleteInvite()
+        );
     }
 
     private void removeChallengeHashTag(Challenge challenge) {
@@ -210,7 +217,7 @@ public class ChallengeService {
     }
 
     private boolean isPresentInvite(Long challengeId, String oauthId) {
-        if(oauthId!=null && !inviteRepository.findAllByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
+        if(oauthId!=null && !inviteRepository.findByChallengeIdAndInviteeId(challengeId, getUser(oauthId).getId()).isEmpty()){
             return true;
         }
         return false;
