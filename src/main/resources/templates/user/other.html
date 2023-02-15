@@ -9,5 +9,172 @@
 
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
 
+<div class="btn-group" style="margin-left: 300px; margin-top: 20px; margin-right:300px">
+    <div class="card mb-3" style="max-width: 500px; border-style: none" >
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img style="border-radius: 70%" id="profileImg" th:src="${profile.profileImageUrl}" alt="첨부이미지" th:if="${profile.profileImageUrl != null}" />
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-title" th:text="|닉네임 : ${profile.nickName}|"></p>
+                    <p class="card-text">꾸준한 재미 devRoutine!</p>
+                    <button id = "follow" type="button" class="btn btn-outline-success">follow</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group" style="text-align: center; width: 300px; margin-left: 100px;">
+        <div class="card">
+            <button  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight1" aria-controls="offcanvasRight">
+                <div class="card-body" style="margin-top: 33px;">
+                    <p class="text" th:text="${profile.followerCount}"></p>
+                    <h5 class="card-title">팔로워</h5>
+                </div>
+            </button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight1" aria-labelledby="offcanvasRightLabel1">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel1">팔로워</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div th:each="following: ${profile.byFollowerList}">
+                        <div class="btn-group" style="margin-bottom: 10px;">
+
+                            <img th:src="${following.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
+                            <a class="text" th:href="@{{id}(id=${following.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${following.getName}]]</p>  </a>
+                            <input type="text" hidden th:value="${following.getName()}">
+
+                        </div>
+                        <hr style="border: solid 0.5px gray; margin-bottom: 10px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <button  type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                <div class="card-body" style="margin-top: 33px">
+                    <p class="text" th:text="${profile.followingCount}"></p>
+                    <h5 class="card-title">팔로잉</h5>
+                </div>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasRightLabel">팔로잉</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div th:each="follower: ${profile.byFollowingList}">
+                        <div class="btn-group" style="margin-bottom: 10px;">
+                            <img th:src="${follower.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
+                            <a class="text" th:href="@{{id}(id=${follower.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${follower.getName}]]</p></a>
+                            <input type="text" hidden th:value="${follower.getName()}">
+                        </div>
+                        <hr style="border: solid 0.5px gray; margin-bottom: 10px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 20px; margin-left: 280px; margin-right: 280px;" >
+    </br>
+    <h5 class="card-title" style="margin-left: 10px;">참가중인 챌린지</h5>
+    <div id = "chall-list">
+        <p th:if="${profile.getChallenges().size()}==0">참여중인 챌린지가 없습니다.</p>
+        <div class="card" th:each="challenge, num: ${profile.getChallenges}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" th:if="${num.count}<=3">
+            <a class="text" th:href=@{|/challenges/${challenge.getId()}|}>
+                <div class="card-body">
+                    <h7 class="card-subtitle mb-2 text-muted">Challenge</h7>
+                    <p class="text" th:text="|${challenge.message}|"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id ="chall-all" style="margin-bottom: 10px; display: none; ">
+        <div class="card" th:each="challenge : ${profile.getChallenges()}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+            <a class="text" th:href=@{|/challenges/${challenge.getId()}|}>
+                <div class="card-body">
+                    <h7 class="card-subtitle mb-2 text-muted">Challenge</h7>
+                    <p class="text" th:text="|${challenge.message}|"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button th:if="${profile.getChallenges().size()>3}" id="all" type="button" class="btn btn-outline-success">더보기</button>
+</div>
+
+<div class="card" style="margin-top: 50px; margin-left: 280px; margin-right: 280px;" >
+    </br>
+    <h5 class="card-title" style="margin-left: 10px;">개설한 챌린지</h5>
+    <div id = "cert-list" style="margin-bottom: 10px;">
+        <div class="card" th:each="challenge, num: ${profile.getAuthorizedChallenges}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
+            <a class="text" th:href=@{|/challenges/${challenge.getId()}|}>
+                <div class="card-body">
+                    <h7 class="card-subtitle mb-2 text-muted">Challenge</h7>
+                    <p class="text" th:text="${challenge.message}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id="cert-all" style="display: none; margin-bottom: 10px;">
+        <div class="card" th:each="challenge : ${profile.getAuthorizedChallenges}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;">
+            <a class="text" th:href=@{|/challenges/${challenge.getId()}|}>
+                <div class="card-body">
+                    <h7 class="card-subtitle mb-2 text-muted">Challenge</h7>
+                    <p class="text" th:text="${challenge.message}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button th:if="${profile.getAuthorizedChallenges().size()>3}" id="more" type="button" class="btn btn-outline-success">더보기</button>
+</div>
 </body>
+
+<script>
+    $('#more').on("click", function(){
+        let btnElement=document.getElementById('more');
+        console.log("more click");
+        console.log(btnElement);
+        moreEvent(btnElement);
+    });
+
+    function moreEvent(btnElement){
+        console.log("moreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("cert-list").style.display='none';
+            document.getElementById("cert-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("cert-all").style.display='none';
+            document.getElementById("cert-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+
+    $('#all').on("click", function(){
+        let btnElement=document.getElementById('all');
+        console.log("participation click");
+        console.log(btnElement);
+        participatoinMoreEvent(btnElement);
+    });
+
+    function participatoinMoreEvent(btnElement){
+        console.log("participatoinMoreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("chall-list").style.display='none';
+            document.getElementById("chall-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("chall-all").style.display='none';
+            document.getElementById("chall-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+
+</script>
 </html>

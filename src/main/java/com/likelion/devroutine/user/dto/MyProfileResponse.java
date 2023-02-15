@@ -21,12 +21,13 @@ public class MyProfileResponse {
     private Long followingCount;
     private List<ChallengeResponse> challenges; //참가중인 챌린지
     private List<ChallengeResponse> authorizedChallenges; //개설한 챌린지
+    private User myUser;
 
     private List<User> byFollowingList;
     private List<User> byFollowerList;
 
     public static MyProfileResponse of(User user, Long followerCount, Long followingCount, List<Participation> participations
-    ,List<User> byFollowingList, List<User> byFollowerList) {
+    ,List<User> byFollowingList, List<User> byFollowerList, User myUser) {
         List<ChallengeResponse> challenges = extractchallenges(participations);
         List<ChallengeResponse> authorizedChallenges = extractchallenges(participations, user.getId());
         return MyProfileResponse.builder()
@@ -38,6 +39,7 @@ public class MyProfileResponse {
                 .authorizedChallenges(authorizedChallenges)
                 .byFollowingList(byFollowingList)
                 .byFollowerList(byFollowerList)
+                .myUser(myUser)
                 .build();
     }
 
