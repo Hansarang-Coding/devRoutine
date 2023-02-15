@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <p class="card-title" style="font-size: 20px;" th:text="|${profile.nickName}|"></p>
+                    <p class="card-title" style="font-size: 20px; font-weight: bold;" th:text="|${profile.nickName}|"></p>
                     <p class="card-text" style="margin-bottom: 10px;">꾸준한 재미 devRoutine!</p>
                     <input id="user-id" hidden th:value="${profile.getUserId()}">
                     <button id = "follow" type="button" class="btn btn-outline-success" th:text="${followingStatus} ? unfollow : follow"></button>
@@ -79,7 +79,7 @@
 
 <div class="card" style="margin-top: 20px; margin-left: 280px; margin-right: 280px;" >
     </br>
-    <h5 class="card-title" style="margin-left: 10px;">참여중인 챌린지</h5>
+    <h3 class="card-title" style="margin-left: 10px; font-size: 20px; font-weight: bold; ">참여중인 챌린지</h5>
     <div id = "chall-list">
         <p th:if="${participationChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여중인 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${participationChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" th:if="${num.count}<=3">
@@ -128,7 +128,7 @@
 
 <div class="card" style="margin-top: 50px; margin-left: 280px; margin-right: 280px;" >
     </br>
-    <h5 class="card-title" style="margin-left: 10px;">참여완료한 챌린지</h5>
+    <h5 class="card-title" style="margin-left: 10px; font-size: 20px; font-weight: bold; ">참여완료한 챌린지</h5>
     <div id = "finish-list" style="margin-bottom: 10px;">
         <p th:if="${finishChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">참여완료한 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${finishChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
@@ -177,7 +177,7 @@
 
 <div class="card" style="margin-top: 50px; margin-left: 280px; margin-right: 280px;" >
     </br>
-    <h5 class="card-title" style="margin-left: 10px;">개설한 챌린지</h5>
+    <h5 class="card-title" style="margin-left: 10px; font-size: 20px; font-weight: bold; ">개설한 챌린지</h5>
     <div id = "created-list" style="margin-bottom: 10px;">
         <p th:if="${createdChallenge.size()}==0" style="margin-left: 10px; font-size: 14px;">개설한 챌린지가 없습니다.</p>
         <div class="card" th:each="challenge, num: ${createdChallenge}" style="margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;"th:if="${num.count}<=3">
