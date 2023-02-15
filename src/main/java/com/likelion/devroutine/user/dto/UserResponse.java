@@ -19,6 +19,7 @@ public class UserResponse {
     private String name;
     private String picture;
     private UserRole role;
+    private String oauthId;
 
     public static List<UserResponse> toList(List<User> users){
         return users.stream()
@@ -27,7 +28,18 @@ public class UserResponse {
                         .name(user.getName())
                         .picture(user.getPicture())
                         .role(user.getRole())
+                        .oauthId(user.getOauthId())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public static UserResponse of(User user){
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .picture(user.getPicture())
+                .role(user.getRole())
+                .oauthId(user.getOauthId())
+                .build();
     }
 }
