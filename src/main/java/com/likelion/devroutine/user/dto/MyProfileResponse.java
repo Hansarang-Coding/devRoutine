@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public class MyProfileResponse {
+    private Long userId;
     private String nickName;
     private String oauthId;
     private String profileImageUrl;
@@ -26,6 +27,7 @@ public class MyProfileResponse {
 
     public static MyProfileResponse of(User user, Long followerCount, Long followingCount, List<User> byFollowingList, List<User> byFollowerList) {
         return MyProfileResponse.builder()
+                .userId(user.getId())
                 .nickName(user.getName())
                 .oauthId(user.getOauthId())
                 .profileImageUrl(user.getPicture())

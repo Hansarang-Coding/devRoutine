@@ -40,11 +40,11 @@ public class UserController {
         if(profile.getOauthId().equals(authentication.getName())){
             return "redirect:/profile";
         }
-        UserResponse loginUser=userService.getUserResponse(authentication.getName());
         model.addAttribute("profile", profile);
         model.addAttribute("participationChallenge", participationService.findAllParticipateChallenge(profile.getOauthId()));
         model.addAttribute("finishChallenge", participationService.findAllFinishChallenge(profile.getOauthId()));
         model.addAttribute("createdChallenge", participationService.findCreatedChallenge(profile.getOauthId()));
+        model.addAttribute("followingStatus", userService.isFollowing(userId, authentication.getName()));
         return "user/other";
     }
 }

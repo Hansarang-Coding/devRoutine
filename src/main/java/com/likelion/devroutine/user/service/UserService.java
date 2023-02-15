@@ -143,4 +143,11 @@ public class UserService {
                 AlarmType.NEW_FOLLOW,AlarmType.NEW_FOLLOW.getMessage(), fromUserId, user));
     }
 
+    public boolean isFollowing(Long followerId, String oauthId){
+        User user=findUserByOauthId(oauthId);
+        if(followRepository.findByFollowerIdAndFollowingId(followerId, user.getId()).isEmpty()) {
+            return false;
+        }
+        return true;
+    }
 }

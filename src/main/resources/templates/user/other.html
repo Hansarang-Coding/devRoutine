@@ -18,7 +18,8 @@
                 <div class="card-body">
                     <p class="card-title" th:text="|닉네임 : ${profile.nickName}|"></p>
                     <p class="card-text">꾸준한 재미 devRoutine!</p>
-                    <button id = "follow" type="button" class="btn btn-outline-success">follow</button>
+                    <input id="user-id" hidden th:value="${profile.getUserId()}">
+                    <button id = "follow" type="button" class="btn btn-outline-success" th:text="${followingStatus} ? unfollow : follow"></button>
                 </div>
             </div>
         </div>
@@ -42,7 +43,6 @@
                         <div class="btn-group" style="margin-bottom: 10px;">
                             <img th:src="${following.getPicture}" width="50px" style="margin-right: 10px" alt="profile_image">
                             <a class="text" th:href="@{{id}(id=${following.id})}"><p style="margin-right: 120px; margin-top: 13px">[[${following.getName}]]</p>  </a>
-                            <input type="text" hidden th:value="${following.getName()}">
                             <input type="text" hidden th:value="${following.getName()}">
                         </div>
                         <hr style="border: solid 0.5px gray; margin-bottom: 10px">
@@ -233,19 +233,12 @@
         moreEvent(btnElement);
     });
 
-    function moreEvent(btnElement){
-        console.log("moreEvent");
-        if(btnElement.innerText=="더보기"){
-            document.getElementById("finish-list").style.display='none';
-            document.getElementById("finish-all").style.display='';
-            console.log("전체");
-            btnElement.innerText="숨기기";
-        }else{
-            document.getElementById("finish-all").style.display='none';
-            document.getElementById("finish-list").style.display='';
-            btnElement.innerText="더보기";
-        }
-    }
+    $('#created-more').on("click", function(){
+        let btnElement=document.getElementById('created-more');
+        console.log("participation click");
+        console.log(btnElement);
+        createdChallengeMoreEvent(btnElement);
+    });
 
     $('#chall-more').on("click", function(){
         let btnElement=document.getElementById('chall-more');
@@ -253,6 +246,49 @@
         console.log(btnElement);
         participatoinMoreEvent(btnElement);
     });
+
+    $('#follow').on("click", function(){
+        console.log("팔로우 클릭");
+        let btnElement=document.getElementById('follow');
+        let userId = $("#user-id").val();
+        if(btnElement.innerText=="unfollow"){
+            unFollowEvent(btnElement, userId);
+        }else{
+            followEvent(btnElement, userId);
+        }
+    });
+
+    function unFollowEvent(btnElement, userId){
+        $.ajax({
+            url: "/api/v1/users/"+userId+"/unfollow",
+            type: "POST",
+            data: JSON.stringify(userId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("팔로우가 취소되었습니다.");
+            location.href = "/profile/"+userId;
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function followEvent(btnElement, userId){
+        $.ajax({
+            url: "/api/v1/users/"+userId+"/follow",
+            type: "POST",
+            data: JSON.stringify(userId),
+            contentType: "application/json; charset=utf-8",
+        }).done(function(response) {
+            console.log(response);
+            alert("팔로우 되었습니다.");
+            location.href = "/profile/"+userId;
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
 
     function participatoinMoreEvent(btnElement){
         console.log("participatoinMoreEvent");
@@ -268,13 +304,6 @@
         }
     }
 
-    $('#created-more').on("click", function(){
-        let btnElement=document.getElementById('created-more');
-        console.log("participation click");
-        console.log(btnElement);
-        createdChallengeMoreEvent(btnElement);
-    });
-
     function createdChallengeMoreEvent(btnElement){
         console.log("개설한 챌린지");
         if(btnElement.innerText=="더보기"){
@@ -285,6 +314,20 @@
         }else{
             document.getElementById("created-all").style.display='none';
             document.getElementById("created-list").style.display='';
+            btnElement.innerText="더보기";
+        }
+    }
+
+    function moreEvent(btnElement){
+        console.log("moreEvent");
+        if(btnElement.innerText=="더보기"){
+            document.getElementById("finish-list").style.display='none';
+            document.getElementById("finish-all").style.display='';
+            console.log("전체");
+            btnElement.innerText="숨기기";
+        }else{
+            document.getElementById("finish-all").style.display='none';
+            document.getElementById("finish-list").style.display='';
             btnElement.innerText="더보기";
         }
     }
