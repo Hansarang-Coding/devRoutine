@@ -27,13 +27,7 @@
                 <fieldset class="form-group">
                     <legend class="mt-4">인증 방식</legend>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="GITHUB" id="github" name="authenticationType" onclick='getAuthentication(this)'>
-                        <label class="form-check-label" for="github">
-                            GITHUB
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="PICTURE" id="image" checked="" name="authenticationType" onclick='getAuthentication(this)'>
+                        <input class="form-check-input" type="checkbox" value="PICTURE" id="image" checked="checked" onclick="return false" name="authenticationType">
                         <label class="form-check-label" for="image">
                             이미지
                         </label>
@@ -57,8 +51,8 @@
                 <fieldset class="form-group">
                     <legend class="mt-4">기간 선택</legend>
                     <form>
-                        <p>시작 날짜 :  <input value="startDate" name="startDate" type="date" required></p>
-                        <p>종료 날짜 :  <input value="endDate" name="endDate" type="date" required></p>
+                        <p>시작 날짜 :  <input value="startDate" th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" name="startDate" type="date" required></p>
+                        <p>종료 날짜 :  <input value="endDate" th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" name="endDate" type="date" required></p>
                     </form>
                 </fieldset>
                 <div style="text-align: right">
@@ -69,16 +63,6 @@
     </div>
 </body>
 <script>
-    function getAuthentication(element){
-        const checkboxes = document.getElementsByName("authenticationType");
-
-        checkboxes.forEach((cb)=>{
-            cb.checked=false;
-        })
-        element.checked=true;
-        console.log(checkboxes.values());
-    }
-
     function getVigibility(element){
         const checkboxes = document.getElementsByName("vigibility");
 
@@ -87,13 +71,6 @@
         })
         element.checked=true;
         console.log(checkboxes.values());
-    }
-
-    const alertTrigger = document.getElementById('liveAlertBtn')
-    if (alertTrigger) {
-        alertTrigger.addEventListener('click', () => {
-            alert('챌린지 생성에 성공하였습니다!', 'success')
-        })
     }
 </script>
 </html>

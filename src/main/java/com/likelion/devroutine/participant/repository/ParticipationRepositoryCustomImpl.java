@@ -6,13 +6,18 @@ import com.likelion.devroutine.challenge.domain.QChallenge;
 import com.likelion.devroutine.participant.domain.QParticipation;
 import com.likelion.devroutine.participant.dto.ParticipationSortResponse;
 import com.likelion.devroutine.participant.dto.PopularParticipationResponse;
+import com.likelion.devroutine.participant.domain.Participation;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import static com.likelion.devroutine.challenge.domain.QChallenge.challenge;
+import static com.likelion.devroutine.participant.domain.QParticipation.participation;
 
 @RequiredArgsConstructor
 public class ParticipationRepositoryCustomImpl implements ParticipationRepositoryCustom{
@@ -46,6 +51,37 @@ public class ParticipationRepositoryCustomImpl implements ParticipationRepositor
                 .groupBy(challenge.id)
                 .orderBy(participation.challenge.id.count().desc())
                 .limit(3)
+                .fetch();
+    }
+
+    @Override
+    public List<Participation> findAllFinishParticipation(Long userId){
+        QParticipation participation=QParticipation.participation;
+        QChallenge challenge= QChallenge.challenge;
+
+        return queryFactory.selectFrom(participation)
+                .join(participation.challenge, challenge)
+                .fetchJoin()
+                .where(participation.user.id.eq(userId), challenge.endDate.before(LocalDate.now()))
+                .fetch();
+    }
+
+    @Override
+    public List<Participation> findAllByUserId(Long userId) {
+        return queryFactory.selectFrom(participation)
+                .join(participation.challenge,challenge)
+                .fetchJoin()
+                .where(participation.user.id.eq(userId),challenge.endDate.after(LocalDate.now()))
+                .orderBy(challenge.startDate.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Participation> findProgressingChallengeByUserId(Long userId) {
+        return queryFactory.selectFrom(participation)
+                .join(participation.challenge,challenge)
+                .fetchJoin()
+                .where(participation.user.id.eq(userId),challenge.endDate.after(LocalDate.now()),challenge.startDate.before(LocalDate.now()))
                 .fetch();
     }
 }
