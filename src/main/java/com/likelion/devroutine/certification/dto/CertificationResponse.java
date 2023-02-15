@@ -16,6 +16,7 @@ public class CertificationResponse {
     private Long certificationId;
     private String challengeTitle;
     private String name;
+    private Long userId;
     private LocalDate createdDate;
     private String uploadImageUrl;
     private String description;
@@ -26,6 +27,7 @@ public class CertificationResponse {
                         .certificationId(certification.getId())
                         .challengeTitle(certification.getParticipation().getChallenge().getTitle())
                         .name(certification.getParticipation().getUser().getName())
+                        .userId(certification.getParticipation().getUser().getId())
                         .createdDate(certification.getCreatedAt().toLocalDate())
                         .uploadImageUrl(certification.getUploadImageUrl())
                         .description(certification.getDescription())

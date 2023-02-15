@@ -6,6 +6,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+    <main>
     <div class="container">
         <div class="row py-5 text-center">
             <div class="col-3">
@@ -152,6 +153,9 @@
             </div>
         </div>
     </div>
+    <hr class="featurette-divider">
+    <th:block th:replace="fragments/footer :: frag-footer"></th:block>
+    </main>
 </body>
 <script>
     $("button[name=inviteCancel]").click(function(){
