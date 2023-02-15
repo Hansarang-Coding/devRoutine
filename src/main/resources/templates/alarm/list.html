@@ -137,7 +137,7 @@
                         </div>
                         <div class="card-body">
                             <div style="margin-bottom: 10px" th:each="alarm: ${followAlarms}">
-                                <a th:href="@{|/users/${alarm.getUserId()}|}">
+                                <a th:href="@{|/profile/${alarm.getUserId()}|}">
                                     <img style="float: left; margin-right: 10px" th:src="${alarm.getUserImage()}" width="30px">
                                     <p style="float: left;">[[${alarm.getUserName()}]]님이 회원님을 팔로우하기 시작했습니다.</p>
                                     <div style="text-align: right">
