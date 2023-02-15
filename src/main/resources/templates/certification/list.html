@@ -49,9 +49,11 @@
                 <a th:href="@{/certification/{certificationId}(certificationId=${c.certificationId})}">
                     <img th:src="${c.uploadImageUrl}" class="card-img-top" alt="깃허브 인증">
                 </a>
-                <div class="row card-body">
-                    <h5 class="card-title col-5">[[${c.name}]]</h5>
-                    <p class="card-text col-6" style="font-size: 13px">[[${c.createdDate}]]</p>
+                <div class="row card-body text-center">
+                    <a th:href="@{|/profile/${c.userId}|}">
+                    <h5 class="card-title">[[${c.name}]]</h5>
+                    </a>
+                    <p class="card-text" style="font-size: 13px">[[${c.createdDate}]]</p>
                 </div>
             </div>
         </div>
