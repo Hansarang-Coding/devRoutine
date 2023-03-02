@@ -3,7 +3,7 @@
 > 개발자 챌린지 서비스, devRoutine
 
 <p align="center">
-프로젝트 배포 링크 : <a href = "http://ec2-54-180-153-95.ap-northeast-2.compute.amazonaws.com:8080">바로가기</a>
+프로젝트 배포 링크 : <a href = "http://ec2-13-125-242-160.ap-northeast-2.compute.amazonaws.com:8080">바로가기</a>
 </p>
 
 <p align="center">
