@@ -23,7 +23,13 @@
             <fieldset class="form-group">
                 <legend class="mt-4">인증 방식</legend>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="PICTURE" id="image" checked="checked" onclick="return false" name="authenticationType">
+                    <input class="form-check-input" type="checkbox" value="GITHUB" id="github" name="authenticationType" th:checked="${challenge.getAuthenticationType().name().equals('GITHUB')}" onclick='getAuthentication(this)'>
+                    <label class="form-check-label" for="github">
+                        GITHUB
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="PICTURE" id="image" th:checked="${challenge.getAuthenticationType().name().equals('PICTURE')}" name="authenticationType" onclick='getAuthentication(this)'>
                     <label class="form-check-label" for="image">
                         이미지
                     </label>
