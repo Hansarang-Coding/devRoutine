@@ -2,9 +2,15 @@ package com.likelion.devroutine.certification.service;
 
 import com.likelion.devroutine.certification.domain.Certification;
 import com.likelion.devroutine.certification.dto.*;
+import com.likelion.devroutine.certification.dto.github.CommitApiDto;
+import com.likelion.devroutine.certification.dto.github.CommitDto;
+import com.likelion.devroutine.certification.dto.github.RepositoryDto;
 import com.likelion.devroutine.certification.exception.CertificationForbiddenException;
+import com.likelion.devroutine.certification.exception.NotGithubAuthenticationException;
 import com.likelion.devroutine.certification.repository.CertificationRepository;
+import com.likelion.devroutine.certification.util.GithubCrawl;
 import com.likelion.devroutine.challenge.domain.Challenge;
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.exception.NotStartingChallengeException;
 import com.likelion.devroutine.likes.exception.CertificationNotFoundException;
 import com.likelion.devroutine.participant.domain.Participation;
@@ -29,6 +35,8 @@ public class CertificationService {
     private final CertificationRepository certificationRepository;
     private final ParticipationRepository participantRepository;
     private final UserRepository userRepository;
+
+    private final GithubCrawl githubCrawl;
 
     @Transactional
     public CertificationCreateResponse createCertification(Long participationId, CertificationCreateRequest request,
@@ -61,7 +69,30 @@ public class CertificationService {
         isProgressing(participationId);
         validateCertificationDate(participationId, oauthId);
         Participation participation = findParticipation(participationId);
+
         return CertificationFormResponse.of(participation);
+    }
+
+    public List<RepositoryDto> getUserRepository(Long participationId, String oauthId){
+        validateUserExists(oauthId);
+        isProgressing(participationId);
+        validateCertificationDate(participationId, oauthId);
+        Participation participation = findParticipation(participationId);
+        List<RepositoryDto> repos;
+        if(participation.getChallenge().getAuthenticationType().equals(AuthenticationType.GITHUB)) {
+            repos=githubCrawl.getUserRepository(participation.getUser().getName());
+        }else{
+            throw new NotGithubAuthenticationException();
+        }
+        return repos;
+    }
+
+    public List<CommitApiDto> getRepositoryCommits(String repoName, Long participationId, String oauthId){
+        validateUserExists(oauthId);
+        isProgressing(participationId);
+        validateCertificationDate(participationId, oauthId);
+        Participation participation = findParticipation(participationId);
+        return githubCrawl.getUserCommit(repoName, participation.getUser().getName());
     }
 
     private void isProgressing(Long participationId) {

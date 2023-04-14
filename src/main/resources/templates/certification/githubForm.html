@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="fragments/head :: frag-header"></th:block>
+    <title>인증 | devroutine : 개발자 챌린지 서비스</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:replace="fragments/nav :: menu"></nav>
+<main>
+    <section class="container text-center mt-6">
+        <div class="card text-center mt-6 col-6 mx-auto">
+            <div class="card-header">
+                [[${participation.title}]]
+            </div>
+            <div class="card-body">
+                <h3>
+                    <p class="card-title" th:text="${participation.description}"></p>
+                </h3>
+                <span class="card-text" th:text="|${participation.startDate} - ${participation.endDate}|"></span>
+                <input type="text" hidden th:value="${participation.id}" id="participation-id">
+                <form th:action="@{/certification/post/{participationId}(participationId=${participation.id})}"
+                      method="post"
+                      enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <hr/>
+                        <div class="mb-3">
+                            <label for="commitLog" class="form-label">Github 커밋 내역</label>
+                            <div class="d-flex">
+                                <input class="form-control me-sm-2" name="certImage" id="commitLog" readonly>
+                                <button id="openModalBtn" style="width: 10rem" type="button" class="btn btn-outline-success my-2 my-sm-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    커밋 선택
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="text" class="form-label">설명</label>
+                            <input type="text" class="form-control" name="description" id="text" placeholder="인증 설명을 입력하세요.">
+                        </div>
+                        <div id="liveAlertPlaceholder" class="col-6 mx-auto">
+                            <button id="liveAlertBtn" class="btn btn-success active" type="submit">인증하기</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <!-- Modal -->
+    <div style="z-index: 1060;" class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div id='modalContent' class="modal-content">
+                <div id='modalHeader' class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Github Repository</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id='modalBody' class="modal-body">
+                    ...
+                </div>
+                <div id='modalFooter' class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="submitBtn" type="button" style="right: 155px; top: 100px;" class="btn btn-outline-success">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<hr class="featurette-divider">
+<th:block th:replace="fragments/footer :: frag-footer"></th:block>
+</body>
+<script th:inline="javascript">
+    $("#openModalBtn").click(function (){
+        let participationId = $("#participation-id").val();
+        getRepository(participationId);
+    });
+
+    $("#submitBtn").click(function(){
+        let btnElement=document.getElementById("submitBtn");
+        if(btnElement.innerText=="Next"){
+            btnElement.innerText="Done";
+            var repoName;
+            $('input[name=repository]:checked').each(function() {
+                repoName=$(this).prop("id");
+            });
+            console.log(repoName);
+            getCommits(repoName);
+
+        }else if(btnElement.innerText=="Done"){
+            btnElement.innerText="Next";
+            console.log("커밋 선택 완료")
+        }
+    });
+
+    function getRepository(participationId) {
+        console.log("ajax get");
+        $.ajax({
+            url: "/api/v1/certification/"+participationId+"/repos",
+            type: "GET",
+            dataType: "json",
+        }).done(function(result) {
+            setRepositoryChoice(result);
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function getCommits(repoName) {
+        let participationId = $("#participation-id").val();
+        $.ajax({
+            url: "/api/v1/certification/"+participationId+"/repos/"+repoName+"/commits",
+            type: "GET",
+            dataType: "json",
+        }).done(function(result) {
+            console.log(result[0].name);
+        }).fail(function(request, error) {
+            console.log(JSON.stringify(request.responseText));
+            alert(JSON.stringify(request.responseText));
+        });
+    }
+
+    function setRepositoryChoice(result){
+        let modalTitle=document.getElementById("modalTitle");
+        modalTitle.innerText='Repository 선택';
+        let modalFooterBtn=document.getElementById("submitBtn");
+        modalFooterBtn.innerText="Next";
+        const element = document.getElementById('modalBody');
+        let modalBody='';
+
+        if(result.length==0){
+            element.innerHTML=[
+                `<p>push 내역 없음</p>`
+            ]
+        }else{
+            for(var i=0; i<Math.min(10, result.length); i++){
+                console.log(result[i].name);
+                modalBody+=`<div className="form-check">`+`    <input className="form-check-input" type="checkbox" value="true" id="`+result[i].name+`" name="repository"
+                       onClick='checkRepository(this)'>`+
+                    `       <label className="form-check-label" name="repoName" htmlFor="public" th:value="">`+result[i].name+`</label>`+`</div>`
+            }
+            element.innerHTML= [
+                modalBody
+            ].join('');
+        }
+    }
+
+    function checkRepository(element){
+        const checkboxes = document.getElementsByName("repository");
+
+        checkboxes.forEach((cb)=>{
+            cb.checked=false;
+        })
+        element.checked=true;
+    }
+
+    const alert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+        alertPlaceholder.append(wrapper)
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+        alertTrigger.addEventListener('click', () => {
+            alert('인증에 성공하였습니다!', 'success')
+        })
+    }
+</script>
+</html>

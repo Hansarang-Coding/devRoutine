@@ -7,6 +7,7 @@ import com.likelion.devroutine.certification.dto.ParticipationResponse;
 import com.likelion.devroutine.certification.dto.amazons3.FileUploadResponse;
 import com.likelion.devroutine.certification.service.AmazonS3UploadService;
 import com.likelion.devroutine.certification.service.CertificationService;
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.comment.service.CommentService;
 import com.likelion.devroutine.likes.service.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,11 +39,12 @@ public class CertificationController {
             CertificationFormResponse certificationFormInfo = certificationService
                     .findCertificationFormInfo(participationId, authentication.getName());
             model.addAttribute("participation", certificationFormInfo);
+            if(certificationFormInfo.getAuthenticationType().equals(AuthenticationType.GITHUB)) return "certification/githubForm";
+            else return "certification/imageForm";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "error/error";
         }
-        return "certification/form";
     }
 
     @GetMapping("/certification")

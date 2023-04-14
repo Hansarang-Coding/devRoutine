@@ -1,5 +1,6 @@
 package com.likelion.devroutine.certification.dto;
 
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.participant.domain.Participation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,6 @@ public class ParticipationResponse {
     private Long id;
     private String title;
     private String description;
-
     public static List<ParticipationResponse> of(List<Participation> participations) {
         return participations.stream()
                 .map(participation -> ParticipationResponse.builder()
