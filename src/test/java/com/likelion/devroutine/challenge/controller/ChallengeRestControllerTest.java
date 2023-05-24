@@ -1,135 +1,184 @@
 package com.likelion.devroutine.challenge.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateResponse;
-import com.likelion.devroutine.challenge.dto.ChallengeDto;
+import com.likelion.devroutine.auth.dto.SessionUser;
+import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.service.ChallengeService;
-import org.junit.jupiter.api.AfterEach;
+import com.likelion.devroutine.user.domain.User;
+import com.likelion.devroutine.user.domain.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-//import org.springframework.security.test.context.support.WithMockUser;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ChallengeRestController.class)
 class ChallengeRestControllerTest {
+
+    @Mock
+    private ChallengeService challengeService;
+
+    private ChallengeRestController challengeRestController;
+
     @Autowired
-    WebApplicationContext context; // MockMvc 객체 생성을 위한 context
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
+
     @Autowired
     ObjectMapper objectMapper;
-    @MockBean
-    ChallengeService challengeService;
-    @MockBean
-    RedisConnectionFactory redisConnectionFactory;
 
-    MockHttpSession session;
 
-    private final ChallengeCreateRequest challengeCreateRequest =
-            new ChallengeCreateRequest("title", "description", true, null, "#test", null, null);
-
+    private final ChallengeCreateRequest CHALLENGE_CREATE_REQUEST=new ChallengeCreateRequest("title", "description", true, AuthenticationType.PICTURE, null, LocalDate.now(), LocalDate.of(2024, 5, 31));
+    private final ChallengeCreateResponse CHALLENGE_CREATEP_REPONSE=ChallengeCreateResponse.builder()
+            .challengeId(1L)
+            .title("title")
+            .description("description")
+            .authenticationType(AuthenticationType.PICTURE)
+            .vigibility("공개")
+            .build();
     @BeforeEach
-    void setup(){
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build(); //test를 위한 MockMvc 객체 생성. 스프링이 로드한 WebApplicationContext의 인스턴스로 작동
-        session = new MockHttpSession();
-        session.setAttribute("name", "test");
-    }
-
-    @AfterEach
-    void clean(){
-        session.clearAttributes();
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        challengeRestController=new ChallengeRestController(challengeService);
     }
 
     @Test
-    @DisplayName("챌린지 상세 조회 성공")
-    void findByChallengeId_success() throws Exception {
-        ChallengeDto challengeDto= ChallengeDto.builder()
-                .id(1l)
-                .title("1일 1 알고리즘 풀기")
-                .description("하루에 알고리즘 하나 이상 풀기")
-                .vigibility("공개")
-                .authenticationType(AuthenticationType.PICTURE)
-                .fromUserId(1l)
-                .build();
-        given(challengeService.findByChallengeId(any())).willReturn(challengeDto);
+    @DisplayName("챌린지 생성 성공")
+    void testCreateChallenge() throws Exception {
+        Authentication authentication = mock(Authentication.class);
+        ChallengeCreateRequest dto = new ChallengeCreateRequest();
+        ChallengeCreateResponse expectedResponse = new ChallengeCreateResponse();
 
-        mockMvc.perform(get("/api/v1/challenges/1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.title").exists())
-                .andExpect(jsonPath("$.authenticationType").exists());
+        when(challengeService.createChallenge(authentication.getName(), dto)).thenReturn(expectedResponse);
+
+        ResponseEntity<ChallengeCreateResponse> response = challengeRestController.createChallenge(authentication, dto);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+        verify(challengeService, times(1)).createChallenge(authentication.getName(), dto);
     }
+
     @Test
-    @DisplayName("챌린지 전체 리스트 - 조회 성공 ")
-    void findAllchallenge_success() throws Exception {
-        List<ChallengeDto> challengeDtos=List.of(
-                new ChallengeDto(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
-                new ChallengeDto(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
-        );
+    @DisplayName("챌린지 검색 성공-keyword 없는 경우")
+    void testFindAllChallengeList_WithoutKeyword() {
+        String keyword = null;
+        List<ChallengeDto> expectedChallenges = new ArrayList<>();
+        when(challengeService.findAllChallenge()).thenReturn(expectedChallenges);
 
-        given(challengeService.findAllChallenge(null, 10)).willReturn(challengeDtos);
+        ResponseEntity<List<ChallengeDto>> response = challengeRestController.findAllChallengeList(keyword);
 
-        mockMvc.perform(get("/api/v1/challenges")
-                        .param("keyword", "알고리즘")
-                        .param("size", "10"))
-                .andDo(print())
-                .andExpect(status().isOk());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedChallenges, response.getBody());
+        verify(challengeService, times(1)).findAllChallenge();
     }
-    @Test
-    @DisplayName("챌린지 검색 - 조회 성공 ")
-    void findSearchChallenge_success() throws Exception {
-        List<ChallengeDto> challengeDtos=List.of(
-            new ChallengeDto(1l, "1일 1 알고리즘", "description", AuthenticationType.PICTURE, "공개", 1L, null),
-                new ChallengeDto(2l, "알고리즘 문제 풀기", "description", AuthenticationType.PICTURE, "비공개", 1L, null)
-        );
-        given(challengeService.findAllChallengeTitle(null, 10, "알고리즘")).willReturn(challengeDtos);
 
-        mockMvc.perform(get("/api/v1/challenges")
-                .param("keyword", "알고리즘")
-                .param("size", "10"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2));
+    @Test
+    @DisplayName("챌린지 검색 성공 - keyword 있는 경우")
+    void testFindAllChallengeList_WithKeyword() {
+        String keyword = "example";
+        List<ChallengeDto> expectedChallenges = new ArrayList<>();
+        when(challengeService.findAllChallengeTitle(keyword)).thenReturn(expectedChallenges);
+
+        ResponseEntity<List<ChallengeDto>> response = challengeRestController.findAllChallengeList(keyword);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedChallenges, response.getBody());
+        verify(challengeService, times(1)).findAllChallengeTitle(keyword);
+    }
+
+    @Test
+    @DisplayName("챌린지 상세 조회 - 참여중이지 않은 경우")
+    void testFindByChallengeId_NotParticipating() {
+        Authentication authentication = mock(Authentication.class);
+        Long id = 1L;
+        SessionUser sessionUser = null;
+        ChallengeDto expectedChallengeDto = new ChallengeDto();
+
+        when(challengeService.isParticipate(id, authentication.getName())).thenReturn(false);
+        when(challengeService.findByChallengeId(id)).thenReturn(expectedChallengeDto);
+
+        ResponseEntity<ChallengeDto> response = challengeRestController.findByChallengeId(authentication, id, sessionUser);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedChallengeDto, response.getBody());
+        verify(challengeService, times(1)).findByChallengeId(id);
+        verify(challengeService, never()).findByChallengeId(id, authentication.getName());
     }
 
     /*@Test
-    @DisplayName("챌린지 생성 성공")
-    void createChallenge_success() throws Exception {
-        ChallengeCreateResponse challengeCreateResponse=ChallengeCreateResponse.builder()
-                .challengeId(1l)
-                .title("title")
-                .description("description")
-                .build();
-        given(challengeService.createChallenge(any(), any())).willReturn(challengeCreateResponse);
-        mockMvc.perform(post("/api/v1/challenges")
-                        .with(csrf())
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(challengeCreateRequest)))
-                .andDo(print())
-                .andExpect(status().isOk());
+    @DisplayName("챌린지 상세 조회 성공 - 참여중인 경우")
+    void testFindByChallengeId_Participating() {
+        Authentication authentication = mock(Authentication.class);
+        Long id = 1L;
+        SessionUser sessionUser = new SessionUser(new User(1L, "testname", "testEmail", null, "test_oauth", UserRole.USER));
+        ChallengeDto expectedChallengeDto = new ChallengeDto();
+        HttpHeaders expectedHeaders = new HttpHeaders();
 
+        when(challengeService.isParticipate(id, authentication.getName())).thenReturn(true);
+        when(challengeService.findByChallengeId(id, authentication.getName())).thenReturn(expectedChallengeDto);
+
+        ResponseEntity<ChallengeDto> response = challengeRestController.findByChallengeId(authentication, id, sessionUser);
+
+        System.out.println(response.getBody());
+        assertEquals(HttpStatus.MOVED_PERMANENTLY, response.getStatusCode());
+        assertEquals(expectedChallengeDto, response.getBody());
+        assertEquals(expectedHeaders.getLocation(), response.getHeaders().getLocation());
+        verify(challengeService, never()).findByChallengeId(id);
+        verify(challengeService, times(1)).findByChallengeId(id, authentication.getName());
     }*/
+
+    @Test
+    @DisplayName("챌린지 삭제 성공")
+    void testDeleteChallenge() {
+        Authentication authentication = mock(Authentication.class);
+        Long id = 1L;
+        ChallengeResponse expectedResponse = new ChallengeResponse(id, "챌린지 삭제 성공");
+
+        when(challengeService.deleteChallenge(authentication.getName(), id)).thenReturn(expectedResponse);
+
+        ResponseEntity<ChallengeResponse> response = challengeRestController.deleteChallenge(authentication, id);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+        verify(challengeService, times(1)).deleteChallenge(authentication.getName(), id);
+    }
+
+    @Test
+    @DisplayName("챌린지 수정 성공")
+    void testModifyChallenge() {
+        Authentication authentication = mock(Authentication.class);
+        Long id = 1L;
+        ChallengeModifiyRequest dto = new ChallengeModifiyRequest();
+        ChallengeResponse expectedResponse = new ChallengeResponse(id, "챌린지 수정 성공");
+
+        when(challengeService.modifyChallenge(authentication.getName(), id, dto)).thenReturn(expectedResponse);
+
+        ResponseEntity<ChallengeResponse> response = challengeRestController.modifyChallenge(authentication, id, dto);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+        verify(challengeService, times(1)).modifyChallenge(authentication.getName(), id, dto);
+    }
+
 }

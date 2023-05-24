@@ -1,7 +1,7 @@
 server.port: 8080
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver 
     username: root
     password: 123456
 
@@ -24,6 +24,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
 
 servlet:
   multipart:

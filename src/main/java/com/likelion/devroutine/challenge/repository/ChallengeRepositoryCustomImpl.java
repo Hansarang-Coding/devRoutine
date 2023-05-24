@@ -37,29 +37,11 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
     @Override
     public List<Challenge> findAllSortById() {
         return queryFactory.selectFrom(challenge)
-                .where( challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
+                .where(challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
                 .orderBy(challenge.id.desc())
                 .fetch();
     }
 
-    /*@Override
-    public List<Challenge> findSearchTitleSortById(Long cursorId, String keyword, Pageable pageable) {
-        return queryFactory.selectFrom(challenge)
-                .where(cursorId(cursorId), challenge.title.contains(keyword), challenge.vigibility.eq(true))
-                .orderBy(challenge.id.desc())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-    }
-
-    @Override
-    public List<Challenge> findAllSortById(Long cursorId, Pageable pageable) {
-        return queryFactory.selectFrom(challenge)
-                .where(cursorId(cursorId), challenge.vigibility.eq(true))
-                .orderBy(challenge.id.desc())
-                .limit(pageable.getPageSize())
-                .fetch();
-    }*/
 
     /*
     첫페이지에 접근한 경우 Null
