@@ -52,3 +52,6 @@ devRoutine은 여러 사람과 함께 챌린지에 도전하는 서비스를 제
 
 ## ERD
 ![image](https://user-images.githubusercontent.com/71599552/219229898-ddadcf93-c958-411e-ab63-eab6d27b9612.png)
+
+---
+[gitlab 링크(2023.02.17 이전)](https://gitlab.com/minjikim99/devroutine)
