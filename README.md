@@ -45,10 +45,13 @@ devRoutine은 여러 사람과 함께 챌린지에 도전하는 서비스를 제
 ![image](https://user-images.githubusercontent.com/71599552/219006766-05e1d4e0-3deb-4f91-921d-519c2a56fcd3.png)
 
 ## CI/CD
-![image](https://user-images.githubusercontent.com/71599552/219006130-7fb38439-8ca1-479a-9eab-6f1505f409b6.png)
+![image](https://user-images.githubusercontent.com/71599552/232656116-edcd5fa4-b74c-425d-a85a-b76abd803a4c.png)
 
 ## Swagger
 <a href="http://ec2-54-180-153-95.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui">devRoutine API 명세서</a>
 
 ## ERD
 ![image](https://user-images.githubusercontent.com/71599552/219229898-ddadcf93-c958-411e-ab63-eab6d27b9612.png)
+
+---
+[gitlab 링크(2023.02.17 이전)](https://gitlab.com/minjikim99/devroutine)
