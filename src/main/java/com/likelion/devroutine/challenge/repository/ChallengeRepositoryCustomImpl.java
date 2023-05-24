@@ -24,8 +24,10 @@ public class ChallengeRepositoryCustomImpl implements ChallengeRepositoryCustom 
         QChallenge challenge=QChallenge.challenge;
         QHashTag hashTag= QHashTag.hashTag;
         return queryFactory.selectFrom(challenge)
-                .leftJoin(challengehashtag).on(challengehashtag.challenge.id.eq(challenge.id))
-                .leftJoin(hashTag).on(challengehashtag.hashTag.id.eq(hashTag.id))
+                .join(challenge.challengeHashTags, challengehashtag)
+                .fetchJoin()
+                .join(challengehashtag.hashTag, hashTag)
+                .fetchJoin()
                 .where(challenge.title.contains(keyword).or(hashTag.contents.eq(keyword)), challenge.vigibility.eq(true), challenge.startDate.after(LocalDate.now()))
                 .orderBy(challenge.id.desc())
                 .fetch();

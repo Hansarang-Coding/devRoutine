@@ -1,20 +1,22 @@
 package com.likelion.devroutine.challenge.service;
 
 import com.likelion.devroutine.challenge.domain.Challenge;
-import com.likelion.devroutine.challenge.dto.ChallengeCreateRequest;
-import com.likelion.devroutine.challenge.dto.ChallengeDto;
-import com.likelion.devroutine.challenge.dto.ChallengeModifiyRequest;
-import com.likelion.devroutine.challenge.dto.ChallengeResponse;
+import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.enumerate.ResponseMessage;
 import com.likelion.devroutine.challenge.exception.ChallengeNotFoundException;
 import com.likelion.devroutine.challenge.exception.InProgressingChallengeException;
 import com.likelion.devroutine.challenge.exception.InaccessibleChallengeException;
 import com.likelion.devroutine.challenge.exception.InvalidPermissionException;
 import com.likelion.devroutine.challenge.repository.ChallengeRepository;
+import com.likelion.devroutine.hashtag.domain.ChallengeHashTag;
+import com.likelion.devroutine.hashtag.domain.HashTag;
 import com.likelion.devroutine.hashtag.repository.ChallengeHashTagRepository;
 import com.likelion.devroutine.hashtag.repository.HashTagRepository;
+import com.likelion.devroutine.invite.repository.InviteRepository;
 import com.likelion.devroutine.participant.repository.ParticipationRepository;
 import com.likelion.devroutine.support.ChallengeFixture;
+import com.likelion.devroutine.support.ChallengeHashTagFixture;
+import com.likelion.devroutine.support.HashTagFixture;
 import com.likelion.devroutine.support.UserFixture;
 import com.likelion.devroutine.user.domain.User;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,11 +41,15 @@ class ChallengeServiceTest {
     private HashTagRepository hashTagRepository = mock(HashTagRepository.class);
     private UserRepository userRepository = mock(UserRepository.class);
     private ParticipationRepository participationRepository =mock(ParticipationRepository.class);
-    
+    private InviteRepository inviteRepository=mock(InviteRepository.class);
+
     private User userFixture;
     private User mockUser;
     private Challenge challengeFixture;
     private Challenge mockChallenge;
+    private ChallengeHashTag challengeHashTagFixture;
+    private HashTag hashTagFixture;
+    private List<Challenge> challenges;
 
     private final ChallengeCreateRequest challengeCreateRequest =
             new ChallengeCreateRequest("title", "description", true, null, "#test1 #test2", null, null);
@@ -53,9 +60,11 @@ class ChallengeServiceTest {
     void setup() {
         challengeService = new ChallengeService(
                 challengeRepository, hashTagRepository,
-                challengeHashTagRepository, userRepository, participationRepository);
+                challengeHashTagRepository, userRepository, participationRepository, inviteRepository);
         userFixture = UserFixture.getUser();
-        challengeFixture = ChallengeFixture.getChallenge(userFixture);
+        hashTagFixture = HashTagFixture.getHashTag();
+        challengeHashTagFixture= ChallengeHashTagFixture.getChallengeHashTag(challengeFixture, hashTagFixture);
+        challengeFixture = ChallengeFixture.getChallenge(userFixture, List.of(challengeHashTagFixture));
         mockUser = mock(User.class);
         mockChallenge = mock(Challenge.class);
     }
@@ -92,8 +101,9 @@ class ChallengeServiceTest {
     void createChallenge_success() {
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.save(any())).thenReturn(mockChallenge);
+        Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
 
-        assertDoesNotThrow(() -> challengeService.createChallenge(mockUser.getOauthId(), challengeCreateRequest));
+        assertDoesNotThrow(()->challengeService.createChallenge(mockUser.getOauthId(), challengeCreateRequest));
     }
 
     @Test
@@ -111,7 +121,7 @@ class ChallengeServiceTest {
     void modifyChallenge_success() {
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(mockUser);
+        //Mockito.when(mockChallenge.getUserId()).thenReturn(mockUser.getId());
         Mockito.when(mockChallenge.getStartDate()).thenReturn(LocalDate.now().plusDays(2));
 
         ChallengeResponse challengeResponse=challengeService.modifyChallenge(mockUser.getOauthId(), mockChallenge.getId(), challengeModifyRequest);
@@ -143,7 +153,7 @@ class ChallengeServiceTest {
     void modifyChallenge_fail3(){
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(userFixture);
+        Mockito.when(mockChallenge.getUserId()).thenReturn(1L);
 
         assertThrows(InvalidPermissionException.class,
                 ()->challengeService.modifyChallenge(mockUser.getOauthId(), mockChallenge.getId(), challengeModifyRequest));
@@ -154,7 +164,6 @@ class ChallengeServiceTest {
     void modifyChallenge_fail4(){
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(mockUser);
         Mockito.when(mockChallenge.getStartDate()).thenReturn(LocalDate.now().minusDays(2));
 
         assertThrows(InProgressingChallengeException.class,
@@ -166,7 +175,6 @@ class ChallengeServiceTest {
     void deleteChallenge_success() {
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(mockUser);
         Mockito.when(mockChallenge.getStartDate()).thenReturn(LocalDate.now().plusDays(2));
 
         ChallengeResponse challengeResponse=challengeService.deleteChallenge(mockUser.getOauthId(), mockChallenge.getId());
@@ -174,7 +182,7 @@ class ChallengeServiceTest {
     }
 
     @Test
-    @DisplayName("챌린지 수정 삭제 - 유저 존재하지 않음")
+    @DisplayName("챌린지 삭제 실패 - 유저 존재하지 않음")
     void deleteChallenge_fail1() {
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.empty());
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
@@ -198,7 +206,7 @@ class ChallengeServiceTest {
     void deleteChallenge_fail3(){
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(userFixture);
+        Mockito.when(mockChallenge.getUserId()).thenReturn(1L);
 
         assertThrows(InvalidPermissionException.class,
                 ()->challengeService.deleteChallenge(mockUser.getOauthId(), mockChallenge.getId()));
@@ -209,7 +217,6 @@ class ChallengeServiceTest {
     void deleteChallenge_fail4() {
         Mockito.when(userRepository.findByOauthId(mockUser.getOauthId())).thenReturn(Optional.of(mockUser));
         Mockito.when(challengeRepository.findById(mockChallenge.getId())).thenReturn(Optional.of(mockChallenge));
-        Mockito.when(mockChallenge.getUser()).thenReturn(mockUser);
         Mockito.when(mockChallenge.getStartDate()).thenReturn(LocalDate.now().minusDays(2));
 
         assertThrows(InProgressingChallengeException.class,
