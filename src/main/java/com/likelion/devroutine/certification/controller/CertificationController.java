@@ -86,6 +86,6 @@ public class CertificationController {
         model.addAttribute("isPressed", likeService.isAlreadyPressedLike(certificationId,
                 authentication.getName()));
         model.addAttribute("likeCount", likeService.countLikes(certificationId));
-        return "imageDetail";
+        return "certification/imageDetail";
     }
 }

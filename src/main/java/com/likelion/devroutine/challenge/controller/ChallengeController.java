@@ -77,7 +77,7 @@ public class ChallengeController {
             model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
             model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
             model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
-            return "imageDetail";
+            return "participations/imageDetail";
         }catch(Exception e){
             model.addAttribute("errorMessage", e.getMessage());
             log.info(e.getMessage());
