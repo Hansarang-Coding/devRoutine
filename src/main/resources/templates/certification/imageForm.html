@@ -17,7 +17,7 @@
                 <p class="card-title" th:text="${participation.description}"></p>
             </h3>
             <span class="card-text" th:text="|${participation.startDate} - ${participation.endDate}|"></span>
-            <form th:action="@{/certification/post/{participationId}(participationId=${participation.id})}"
+            <form th:action="@{/certification/image/{participationId}(participationId=${participation.id})}"
                   method="post"
                   enctype="multipart/form-data">
                 <div class="row g-3">

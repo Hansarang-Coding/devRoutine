@@ -4,15 +4,12 @@ import com.likelion.devroutine.auth.config.LoginUser;
 import com.likelion.devroutine.auth.dto.SessionUser;
 import com.likelion.devroutine.challenge.dto.*;
 import com.likelion.devroutine.challenge.service.ChallengeService;
-import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
-import com.likelion.devroutine.participant.enumerate.ResponseMessage;
+import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.service.ParticipationService;
-import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -80,7 +77,7 @@ public class ChallengeController {
             model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
             model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
             model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
-            return "participations/detail";
+            return "imageDetail";
         }catch(Exception e){
             model.addAttribute("errorMessage", e.getMessage());
             log.info(e.getMessage());
