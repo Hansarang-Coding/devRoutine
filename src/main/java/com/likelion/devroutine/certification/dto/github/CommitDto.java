@@ -13,4 +13,5 @@ import java.time.LocalDate;
 public class CommitDto {
     private String message;
     private GitUserDto author;
+    private String url;
 }

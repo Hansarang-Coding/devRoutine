@@ -17,7 +17,7 @@ public class CertificationCreateResponse {
         return CertificationCreateResponse.builder()
                 .challengeId(savedCertification.getParticipation().getChallenge().getId())
                 .description(savedCertification.getParticipation().getChallenge().getDescription())
-                .uploadImageUrl(savedCertification.getUploadImageUrl())
+                .uploadImageUrl(savedCertification.getUploadUrl())
                 .build();
     }
 

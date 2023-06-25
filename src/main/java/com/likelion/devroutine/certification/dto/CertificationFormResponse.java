@@ -1,5 +1,6 @@
 package com.likelion.devroutine.certification.dto;
 
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.participant.domain.Participation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class CertificationFormResponse {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+    private AuthenticationType authenticationType;
 
     public static CertificationFormResponse of(Participation participation){
         return CertificationFormResponse.builder()
@@ -24,6 +26,7 @@ public class CertificationFormResponse {
                 .description(participation.getChallenge().getDescription())
                 .startDate(participation.getChallenge().getStartDate())
                 .endDate(participation.getChallenge().getEndDate())
+                .authenticationType(participation.getChallenge().getAuthenticationType())
                 .build();
     }
 }
