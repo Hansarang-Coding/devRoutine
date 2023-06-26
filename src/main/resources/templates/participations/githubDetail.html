@@ -54,7 +54,7 @@
     <div style="white-space:pre; margin-top: 20px; margin-bottom: 50px; margin-left:30px">
       <p>[[${participationChallenge.getDescription()}]]</p>
     </div>
-    <div th:if="${challenge.getAuthenticationType().name().equals('PICTURE')}" style="margin-left: 20px">
+    <div th:if="${challenge.getAuthenticationType().name().equals('GITHUB')}" style="margin-left: 20px">
       <p style="font-size: 22px; font-weight: normal;">참가자</p>
       <hr style="border: solid 0.5px gray; margin-bottom: 10px">
       <div th:each="entry: ${participationChallenge.getCertificationResponses().entrySet()}">
@@ -67,7 +67,7 @@
           <div th:id="cert-list+${entryStat.index}" class="row row-cols-1 row-cols-md-3">
             <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification, num: ${entry.getValue()}" th:if="${num.count}<=5">
               <a th:href="@{|/certification/${certification.getCertificationId()}|}">
-                <img th:src="${certification.getUploadUrl()}" alt="My Image">
+                <img src="/assets/github_certification.png" />
               </a>
               <div class="card-body">
                 <p class="card-title description">[[${certification.getDescription}]]</p>
@@ -77,7 +77,7 @@
           <div th:id="cert-all+${entryStat.index}" class="row row-cols-1 row-cols-md-3" style="display: none;">
             <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
               <a th:href="@{|/certification/${certification.getCertificationId()}|}">
-                <img th:src="${certification.getUploadUrl()}" alt="My Image">
+                <img src="/assets/github_certification.png" />
               </a>
               <div class="card-body">
                 <p class="card-title description">[[${certification.getDescription}]]</p>

@@ -80,12 +80,13 @@ public class CertificationController {
     public String getCertificationDetail(@PathVariable Long certificationId, Model model,
                                          Authentication authentication,
                                          @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        model.addAttribute("certification", certificationService
-                .findCertificationDetail(certificationId));
+        CertificationDetailResponse certificationDetail=certificationService.findCertificationDetail(certificationId);
+        model.addAttribute("certification", certificationDetail);
         model.addAttribute("comments", commentService.findAll(certificationId, pageable));
         model.addAttribute("isPressed", likeService.isAlreadyPressedLike(certificationId,
                 authentication.getName()));
         model.addAttribute("likeCount", likeService.countLikes(certificationId));
+
         return "certification/imageDetail";
     }
 }

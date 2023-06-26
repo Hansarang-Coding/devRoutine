@@ -10,7 +10,12 @@
     <div style="margin-top: 20px; margin-left: 15px; margin-right: 15px;">
         <div class="d-flex justify-content-center">
             <div th:class="cert-card" class="card text-center col-lg-6 col-sm-12 mt-6" style="width: 18rem;">
-                <img th:src="${certification.getUploadUrl()}" class="card-img-top img-fluid" alt="깃허브 인증" style="margin-bottom: 10px;">
+                <th:block th:if="${certification.getAuthenticationType().name().equals('GITHUB')}">
+                    <a th:href="${certification.getUploadUrl()}" target="_blank">Github 커밋 자세히 보기</a>
+                </th:block>
+                <th:block th:if="${certification.getAuthenticationType().name().equals('PICTURE')}">
+                    <img th:src="${certification.getUploadUrl()}" class="card-img-top img-fluid" alt="깃허브 인증" style="margin-bottom: 10px;">
+                </th:block>
                 <div class="card-body text-center" style="margin-bottom: 10px;">
                     <p class="card-text" th:text="${certification.getDescription()}"></p>
                 </div>
@@ -18,7 +23,7 @@
         </div>
 
         <!-- 팝업 될 곳 -->
-        <div class="modal">
+        <div th:if="${certification.getAuthenticationType().name().equals('PICTURE')}" class="modal">
             <button>&times;</button>
             <div class="modalBox">
                 <img src="" alt="">
