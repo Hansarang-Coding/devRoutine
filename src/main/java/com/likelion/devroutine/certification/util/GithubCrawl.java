@@ -24,7 +24,7 @@ public class GithubCrawl {
                 .retrieve()
                 .bodyToFlux(UserEventDto.class)
                 .filter(res->
-                       res.getType().equals("PushEvent") && res.getCreated_at().plusHours(57l).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).equals(LocalDate.now().toString()))
+                    res.getType().equals("PushEvent") && res.getCreated_at().plusHours(8l).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).equals(LocalDate.now().toString()))
                 .collect(Collectors.toList())
                 .block();
 
