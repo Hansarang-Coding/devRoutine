@@ -1,13 +1,11 @@
 package com.likelion.devroutine.certification.util;
 
-import com.likelion.devroutine.certification.dto.github.RepositoryDto;
-import com.likelion.devroutine.certification.dto.github.CommitApiDto;
+import com.likelion.devroutine.certification.dto.github.UserEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,44 +15,23 @@ import static com.likelion.devroutine.certification.enumerate.CrawlingUrl.BASE_U
 @Slf4j
 @Component
 public class GithubCrawl {
-    public List<RepositoryDto> getUserRepository(String userName){
-        List<RepositoryDto> repos=WebClient.create(BASE_URL.getUrl())
+    public List<UserEventDto> getUserEvents(String userName){
+        //pushㄱㅏ 오늘 내에 있는 리포지토리 받아오기
+        //해당 리포지토리 별로 오늘 커밋내역 가져오기..?
+        List<UserEventDto> events=WebClient.create(BASE_URL.getUrl())
                 .get()
-                .uri(getUserRepositoryUrl(userName))
+                .uri(getUserEventUrl(userName))
                 .retrieve()
-                .bodyToFlux(RepositoryDto.class)
-                .filter(repositoryDto ->
-                        repositoryDto.getPushed_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).equals(LocalDate.now())
-                )
-                .sort(Comparator.comparing(RepositoryDto::getPushed_at).reversed())
+                .bodyToFlux(UserEventDto.class)
+                .filter(res->
+                    res.getType().equals("PushEvent") && res.getCreated_at().plusHours(8l).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).equals(LocalDate.now().toString()))
                 .collect(Collectors.toList())
                 .block();
 
-        log.info(repos.get(0).getName());
-        return repos;
-    }
-    public List<CommitApiDto> getUserCommit(String repo, String userName){
-        List<CommitApiDto> commits=WebClient.create(BASE_URL.getUrl())
-                .get()
-                .uri(getRepositoryCommitUrl(userName, repo))
-                .retrieve()
-                .bodyToFlux(CommitApiDto.class)
-                .filter(response ->
-                        response.getCommit().getAuthor().getName().equals(userName)
-                )
-                .collect(Collectors.toList())
-                .block();
-
-        //log.info(commits.get(0).getCommit().getMessage());
-
-        return commits;
-    }
-    public String getUserRepositoryUrl(String userName){
-        return "/users/"+userName+"/repos";
+        return events;
     }
 
-    public String getRepositoryCommitUrl(String userName, String repoName){
-        return "/repos/"+userName+
-                "/"+repoName+"/commits";
+    private String getUserEventUrl(String userName) {
+        return "/users/"+userName+"/events";
     }
 }

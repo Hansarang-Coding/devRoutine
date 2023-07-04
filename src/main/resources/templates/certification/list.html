@@ -47,7 +47,7 @@
             <div class="card text-center" th:each="c : ${certifications}" style="width: 18rem;">
                 <h5 class="card-header">[[${c.challengeTitle}]]</h5>
                 <a th:href="@{/certification/{certificationId}(certificationId=${c.certificationId})}">
-                    <img th:src="${c.uploadImageUrl}" class="card-img-top" alt="깃허브 인증">
+                    <img th:src="${c.uploadUrl}" class="card-img-top" alt="깃허브 인증">
                 </a>
                 <div class="row card-body text-center">
                     <a th:href="@{|/profile/${c.userId}|}">

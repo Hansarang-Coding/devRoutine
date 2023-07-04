@@ -28,7 +28,13 @@
                 <fieldset class="form-group">
                     <legend class="mt-4">인증 방식</legend>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="PICTURE" id="image" checked="checked" onclick="return false" name="authenticationType">
+                        <input class="form-check-input" type="checkbox" value="GITHUB" id="github" name="authenticationType" onclick='getAuthentication(this)'>
+                        <label class="form-check-label" for="github">
+                            GITHUB
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="PICTURE" id="image" checked="" name="authenticationType" onclick='getAuthentication(this)'>
                         <label class="form-check-label" for="image">
                             이미지
                         </label>
@@ -69,6 +75,15 @@
 <script>
     function getVigibility(element){
         const checkboxes = document.getElementsByName("vigibility");
+
+        checkboxes.forEach((cb)=>{
+            cb.checked=false;
+        })
+        element.checked=true;
+        console.log(checkboxes.values());
+    }
+    function getAuthentication(element){
+        const checkboxes = document.getElementsByName("authenticationType");
 
         checkboxes.forEach((cb)=>{
             cb.checked=false;

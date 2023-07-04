@@ -67,7 +67,7 @@
                     <div th:id="cert-list+${entryStat.index}" class="row row-cols-1 row-cols-md-3">
                         <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification, num: ${entry.getValue()}" th:if="${num.count}<=5">
                             <a th:href="@{|/certification/${certification.getCertificationId()}|}">
-                                <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
+                                <img th:src="${certification.getUploadUrl()}" alt="My Image">
                             </a>
                             <div class="card-body">
                                 <p class="card-title description">[[${certification.getDescription}]]</p>
@@ -77,7 +77,7 @@
                     <div th:id="cert-all+${entryStat.index}" class="row row-cols-1 row-cols-md-3" style="display: none;">
                         <div class="card text-center" style="width: 13rem; margin-right: 10px; margin-bottom: 10px" th:each="certification: ${entry.getValue()}">
                             <a th:href="@{|/certification/${certification.getCertificationId()}|}">
-                                <img th:src="${certification.getUploadImageUrl()}" alt="My Image">
+                                <img th:src="${certification.getUploadUrl()}" alt="My Image">
                             </a>
                             <div class="card-body">
                                 <p class="card-title description">[[${certification.getDescription}]]</p>

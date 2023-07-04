@@ -1,11 +1,13 @@
 package com.likelion.devroutine.certification.domain;
 
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.participant.domain.Participation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +22,9 @@ public class Certification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String uploadImageUrl;
+    private String uploadUrl;
+
+    private AuthenticationType authenticationType;
 
     private String description;
 
@@ -36,9 +40,10 @@ public class Certification {
 
     private LocalDateTime deletedAt;
 
-    public static Certification createCertification(String uploadImageUrl, String description, Participation participation) {
+    public static Certification createCertification(AuthenticationType authenticationType, String uploadImageUrl, String description, Participation participation) {
         return Certification.builder()
-                .uploadImageUrl(uploadImageUrl)
+                .uploadUrl(uploadImageUrl)
+                .authenticationType(authenticationType)
                 .description(description)
                 .participation(participation)
                 .build();

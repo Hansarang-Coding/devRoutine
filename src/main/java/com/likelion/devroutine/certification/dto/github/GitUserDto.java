@@ -11,5 +11,4 @@ import java.time.LocalDateTime;
 public class GitUserDto {
     private String name;
     private String email;
-    private LocalDateTime date;
 }

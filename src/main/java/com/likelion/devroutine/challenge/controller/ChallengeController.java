@@ -3,16 +3,14 @@ package com.likelion.devroutine.challenge.controller;
 import com.likelion.devroutine.auth.config.LoginUser;
 import com.likelion.devroutine.auth.dto.SessionUser;
 import com.likelion.devroutine.challenge.dto.*;
+import com.likelion.devroutine.challenge.enumerate.AuthenticationType;
 import com.likelion.devroutine.challenge.service.ChallengeService;
-import com.likelion.devroutine.participant.dto.ParticipationChallengeDto;
 import com.likelion.devroutine.participant.dto.ParticipationResponse;
-import com.likelion.devroutine.participant.enumerate.ResponseMessage;
+import com.likelion.devroutine.participant.dto.ParticipationResponse;
 import com.likelion.devroutine.participant.service.ParticipationService;
-import com.likelion.devroutine.user.dto.UserResponse;
 import com.likelion.devroutine.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -76,11 +74,15 @@ public class ChallengeController {
                 log.info("참여중이지 않은 상세조회");
                 return "challenges/detail";
             }
+            ChallengeDto challenge=challengeService.findByChallengeId(challengeId, authentication.getName());
             model.addAttribute("user", challengeService.getUserResponse(authentication.getName()));
-            model.addAttribute("challenge", challengeService.findByChallengeId(challengeId, authentication.getName()));
+            model.addAttribute("challenge", challenge);
             model.addAttribute("participationChallenge", participationService.findByParticipateChallenge(authentication.getName(), challengeId));
             model.addAttribute("followers", participationService.findFollowers(authentication.getName(), challengeId));
-            return "participations/detail";
+            if(challenge.getAuthenticationType().equals(AuthenticationType.GITHUB)){
+                return "participations/githubDetail";
+            }
+            return "participations/imageDetail";
         }catch(Exception e){
             model.addAttribute("errorMessage", e.getMessage());
             log.info(e.getMessage());

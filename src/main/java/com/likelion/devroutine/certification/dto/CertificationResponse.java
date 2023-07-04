@@ -18,7 +18,7 @@ public class CertificationResponse {
     private String name;
     private Long userId;
     private LocalDate createdDate;
-    private String uploadImageUrl;
+    private String uploadUrl;
     private String description;
 
     public static List<CertificationResponse> of(List<Certification> certifications){
@@ -29,7 +29,7 @@ public class CertificationResponse {
                         .name(certification.getParticipation().getUser().getName())
                         .userId(certification.getParticipation().getUser().getId())
                         .createdDate(certification.getCreatedAt().toLocalDate())
-                        .uploadImageUrl(certification.getUploadImageUrl())
+                        .uploadUrl(certification.getUploadUrl())
                         .description(certification.getDescription())
                         .build())
                 .collect(Collectors.toList());
